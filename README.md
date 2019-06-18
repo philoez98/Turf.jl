@@ -1,5 +1,4 @@
 # Turf.jl
- ---
 
 ##### Julia wrapper of the incredible [*turf.js*](https://github.com/Turfjs/turf) package for spatial analysis.  
 
@@ -8,15 +7,13 @@ and similar ways of doing everything, plus the benefit of using Julia.
 
 
 ## Installation
- ---
+
 TODO
 
 
 ## Example
- ---
 
  TODO
 
- ## Contribute
-  ---
+## Contribute
   TODO
