@@ -1,12 +1,15 @@
 module Utils
 
-include("../Constants.jl")
-include("./Geometry.jl")
+include("Constants.jl")
+include("./geojson/geom/Geometries.jl")
 
 using .Constants: factors, areaFactors, earthRadius
-using .Geometry
+using .Geometries
 
-export radiansToLength, lengthToRadians, lengthToDegrees, bearingToAzimuth, convertUnits
+export radiansToLength, lengthToRadians, lengthToDegrees, bearingToAzimuth, convertLength,
+        convertArea, distanceToSegment, rhumbBearing, rhumbDestination, destination, distance,
+        bearing, angle
+
 
 """
 Convert a distance measurement (assuming a spherical Earth) from radians to a more friendly unit.
@@ -140,6 +143,23 @@ function calculateRhumbBearing(a::Position, b::Position)
     return (rad2deg(θ) + 360) % 360
 end
 
+"""
+Takes a Point and calculates the location of a destination point given a distance in
+degrees, radians, miles, or kilometers; and bearing in degrees.
+This uses the [Haversine formula](http://en.wikipedia.org/wiki/Haversine_formula) to account for global curvature.
+"""
+function destination(origin::Position, distance::Float64, bearing::Float64, units::String)
+    lon1 = deg2rad(origin[1])
+    lat1 = deg2rad(origin[2])
+    bearingRad = deg2rad(bearing)
+    radians = lengthToRadians(distance, units)
+
+    lat2 = asin(sin(lat1) * cos(radians) + cos(lat1) * sin(radians) * cos(bearingRad))
+    lon2 = lon1 + atan(sin(bearingRad) * sin(radians) * cos(lat1) * cos(radians) - sin(lat1) * sin(lat2))
+
+    return Point([deg2rad(lon2), deg2rad(lat2)])
+end
+
 
 """
 Returns the destination Point having travelled the given distance along a Rhumb line from the
@@ -179,6 +199,125 @@ function calculateRhumbDestination(origin::Position, distance::Float64, bearing:
     λ2 = λ1 + Δλ
 
     return [((λ2 * 180 / pi) + 540) % 360 - 180, ϕ2 * 180 / pi]
+end
+
+
+"""
+Takes two points and finds the geographic bearing between them,
+i.e. the angle measured in degrees from the north line (0 degrees)
+"""
+function bearing(start::Position, stop::Position, final::Bool)
+    if final === true
+        bear = bearing(stop, start)
+        return (bear + 180) % 360
+    end
+
+    lon1 = deg2rad(start[1])
+    lon2 = deg2rad(stop[1])
+    lat1 = deg2rad(start[2])
+    lat2 = deg2rad(stop[2])
+
+    a = sin(lon2 - lon1) * cos(lat2)
+    b = cos(lat1) * sin(lat2) - sin(lat1)  * cos(lat2) * cos(lon2 - lon1)
+
+    return rad2deg(atan(a, b))
+
+end
+
+"""
+Finds the angle formed by two adjacent segments defined by 3 points. The result will be the (positive clockwise)
+angle with origin on the `start-mid` segment, or its explementary angle if required.
+"""
+function angle(start::Position, mid::Position, stop::Position, explementary::Bool, mearcator::Bool)
+    azimuth1 = bearingToAzimuth((mercator !== true) ? bearing(start, mid) : rhumbBearing(start, mid))
+    azimuth2 = bearingToAzimuth((mercator !== true) ? bearing(stop, mid) : rhumbBearing(stop, mid))
+
+    res = abs(azimuth1 - azimuth2)
+
+    if explementary === true
+        return 360 - res
+    end
+
+    return res
+end
+
+
+"""
+Takes one or more features and calculates the centroid using the mean of all vertices.
+This lessens the effect of small islands and artifacts when calculating the centroid of a set of polygons.
+"""
+function centroid(geojson::GeoJson)
+    x = 0, y = 0, len = 0
+
+    for point in geojson.geometry
+        x += point.coordinates[1]
+        y += point.coordinates[2]
+        len++
+    end
+
+    return Point([x / len, y / len])
+end
+
+
+"""
+Rotates any geojson Feature or Geometry of a specified angle, around its `centroid` or a given `pivot` point;
+all rotations follow the right-hand rule.
+"""
+function transformRotate(geojson::GeoJson, angle::Float64)
+    if angle === 0 return geojson end
+
+    pivot = centroid(geojson)
+
+    for point in geojson.geometry
+        initAngle = rhumbBearing(pivot, point.coordinates)
+        finalAngle = initAngle + angle
+        dist = rhumbDistance(pivot, point.coordinates)
+        newCoords = rhumbDestination(pivot, dist, finalAngle).coordinates
+        point.coordinates[1] = newCoords[1]
+        point.coordinates[2] = newCoords[2]
+    end
+
+    return geojson
+end
+
+
+function nearestPoint(target::Point, points::Vector{Point})
+    minDistance = Inf
+    index = 0
+
+    for (i, point) in enumerate(points)
+        dist = distance(target, point)
+        if dist < minDistance
+            index = i
+            minDistance = dist
+        end
+    end
+    nearest::Point = points[i]
+    nearest.distance = minDistance
+
+    return nearest
+end
+
+
+function distanceToSegment(point::Point, first::Point, last::Point, units::String="degrees", method::String="planar")
+    v = [last.coordinates[1] - first.coordinates[1], last.coordinates[2], first.coordinates[2]]
+    w = [point.coordinates[1] - first.coordinates[1], point.coordinates[2] - first.coordinates[2]]
+
+    c1 = sum(w.*v)
+    if c1 <= 0
+        return method === "planar" ? rhumbDistance(point.coordinates, first.coordinates, units) : distance(point.coordinates, first.coordinates, "degrees")
+    end
+    c2 = sum(v.*v)
+
+    if c2 <= c1
+        return method === "planar" ? rhumbDistance(point.coordinates, last.coordinates, units) : distance(point.coordinates, last.coordinates, "degrees")
+    end
+
+    b2 = c1 / c2
+
+    p = [first.coordinates[1] + (b2 * v[1]), first.coordinates[2] + (b2 * v[2])]
+
+    return method === "planar" ? rhumbDistance(point.coordinates, p.coordinates, units) : distance(point, p, "degrees")
 end
 
 end # module
