@@ -1,10 +1,16 @@
 module GeoJSON
 
-include("Geometries.jl")
 include("Features.jl")
 
 using .Features
-using .Geometries
+
+export GeoJson
+
+mutable struct GeoJson
+    content::Union{FeatureCollection, Feature}
+end
+
+GeoJson() = GeoJson(FeatureCollection())
 
 
 end # module

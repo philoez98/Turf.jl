@@ -1,8 +1,6 @@
 ### Based on the GeoInterface.jl implementation
 module Geometries
 
-
-
 export AbstractGeometry, AbstractPoint, AbstractMultiPoint, AbstractLineString,
         AbstractMultiLineString, AbstractPolygon, AbstractMultiPolygon,
         Position, latitude, longitude, elevation, coordinates, Point, MultiPoint,
@@ -47,7 +45,7 @@ Point(x::Float64,y::Float64) = Point([x,y])
 Point(x::Float64,y::Float64,z::Float64) = Point([x,y,z])
 Point(point::AbstractPoint) = Point(coordinates(point))
 
-struct MultiPoint <: AbstractMultiPoint
+mutable struct MultiPoint <: AbstractMultiPoint
     coordinates::Vector{Position}
 end
 
@@ -58,7 +56,7 @@ MultiPoint(points::Vector{T}) where {T <: AbstractPoint} = MultiPoint(coordinate
 MultiPoint(points::AbstractMultiPoint) = MultiPoint(coordinates(points))
 MultiPoint(line::AbstractLineString) = MultiPoint(coordinates(line))
 
-struct LineString <: AbstractLineString
+mutable struct LineString <: AbstractLineString
     coordinates::Vector{Position}
 end
 
@@ -66,7 +64,7 @@ LineString(points::Vector{T}) where {T <: AbstractPoint} = LineString(coordinate
 LineString(points::AbstractMultiPoint) = LineString(coordinates(points))
 LineString(line::AbstractLineString) = LineString(coordinates(line))
 
-struct MultiLineString <: AbstractMultiLineString
+mutable struct MultiLineString <: AbstractMultiLineString
     coordinates::Vector{Vector{Position}}
 end
 
@@ -79,7 +77,7 @@ MultiLineString(lines::Vector{T}) where {T <: AbstractLineString} = MultiLineStr
 MultiLineString(lines::AbstractMultiLineString) = MultiLineString(coordinates(lines))
 MultiLineString(poly::AbstractPolygon) = MultiLineString(coordinates(poly))
 
-struct Polygon <: AbstractPolygon
+mutable struct Polygon <: AbstractPolygon
     coordinates::Vector{Vector{Position}}
 end
 
@@ -92,7 +90,7 @@ Polygon(lines::Vector{T}) where {T <: AbstractLineString} = Polygon(coordinates(
 Polygon(lines::AbstractMultiLineString) = Polygon(coordinates(lines))
 Polygon(poly::AbstractPolygon) = Polygon(coordinates(poly))
 
-struct MultiPolygon <: AbstractPolygon
+mutable struct MultiPolygon <: AbstractPolygon
     coordinates::Vector{Vector{Vector{Position}}}
 end
 

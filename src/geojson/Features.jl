@@ -4,6 +4,8 @@ include("Geometries.jl")
 
 using .Geometries
 
+export Feature, FeatureCollection
+
 abstract type AbstractFeature end
 
 const Properties = Union{Dict{String, Any}, Nothing}
@@ -21,11 +23,11 @@ setType(feat::Feature) = feat.type = "Feature"
 
 mutable struct FeatureCollection <: AbstractFeature
         type::String
-        features::Union{Vector{Feature}, Nothing}
+        features::Union{Vector{Feature}}
 
         FeatureCollection(type::String, features::Vector{Feature}) = type === "FeatureCollection" ? new(type, features) : setType(new(type, features))
 end
-FeatureCollection() = FeatureCollection("FeatureCollection")
+FeatureCollection() = FeatureCollection("FeatureCollection", [])
 setType(feat::FeatureCollection) = feat.type = "FeatureCollection"
 
 end # module
