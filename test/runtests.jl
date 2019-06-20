@@ -4,6 +4,7 @@ using Test
     include("angle.jl")
     include("bearing.jl")
     include("utils.jl")
-    include("distance.jl")
+    #include("distance.jl")
+    include("destination.jl")
 
 end # begin

@@ -25,6 +25,6 @@ include("../src/geojson/Geometries.jl")
     e =  Geometries.Point([-75.534, 39.123])
     target = Geometries.Point([-75.4, 38.4])
 
-    @test nearestPoint(target, [a, b, c, d, e])
+    @test nearestPoint(target, a)
 
 end
