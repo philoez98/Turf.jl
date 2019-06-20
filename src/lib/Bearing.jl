@@ -1,16 +1,24 @@
-module Bearing
+include("../Utils.jl")
+include("../geojson/Geometries.jl")
 
-include("../../Utils.jl")
-include("../../geojson/Geometries.jl")
 
-using .Geometries
-
+"""
+Converts any bearing angle from the north line direction (positive clockwise)
+and returns an angle between 0-360 degrees (positive clockwise), 0 being the north line
+"""
+function bearingToAzimuth(bearing::AbstractFloat)::AbstractFloat
+    angle = bearing % 360
+    if angle < 0
+        angle += 360
+    end
+    return angle
+end
 
 """
 Takes two Positions and finds the bearing angle between them along a Rhumb line
 i.e. the angle measured in degrees start the north line (0 degrees)
 """
-function rhumbBearing(start::Position, stop::Position, final::Bool)
+function rhumbBearing(start::Geometries.Position, stop::Geometries.Position, final::Bool)
     bear360 = nothing
 
     if final === true
@@ -25,7 +33,7 @@ function rhumbBearing(start::Position, stop::Position, final::Bool)
 
 end
 
-function calculateRhumbBearing(a::Position, b::Position)
+function calculateRhumbBearing(a::Geometries.Position, b::Geometries.Position)
     ϕ1 = deg2rad(a[2])
     ϕ2 = deg2rad(b[2])
 
@@ -46,9 +54,9 @@ end
 Takes two points and finds the geographic bearing between them,
 i.e. the angle measured in degrees from the north line (0 degrees)
 """
-function bearing(start::Position, stop::Position, final::Bool)
+function bearing(start::Geometries.Position, stop::Geometries.Position, final::Bool)
     if final === true
-        bear = bearing(stop, start)
+        bear = bearing(stop, start, false)
         return (bear + 180) % 360
     end
 
@@ -63,6 +71,3 @@ function bearing(start::Position, stop::Position, final::Bool)
     return rad2deg(atan(a, b))
 
 end
-
-
-end # module

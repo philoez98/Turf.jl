@@ -1,18 +1,15 @@
-module Centering
-
-include("../../geojson/GeoJSON.jl")
-include("../../geojson/Features.jl")
-include("../../geojson/Geometries.jl")
-include("../../geojson/BBox.jl")
-
-
-using .GeoJSON, .Geometries, .Features, .BBox
+include("../geojson/GeoJSON.jl")
+include("../geojson/Features.jl")
+include("../geojson/Geometries.jl")
+include("../geojson/BBox.jl")
 
 """
+    centroid([geojson::GeoJSON.GeoJson])
+
 Takes one or more features and calculates the centroid using the mean of all vertices.
 This lessens the effect of small islands and artifacts when calculating the centroid of a set of polygons.
 """
-function centroid(geojson::GeoJson)
+function centroid(geojson::GeoJSON.GeoJson)
     x = 0
     y = 0
     len = 0
@@ -33,19 +30,15 @@ function centroid(geojson::GeoJson)
         end
     end
 
-    return Point([x / len, y / len])
+    return Geometries.Point([x / len, y / len])
 end
 
-"""
-Takes a GeoJson and returns the absolute center point of all features.
-"""
-function center(geojson::GeoJson)
+"""Takes a GeoJson and returns the absolute center point of all features."""
+function center(geojson::GeoJSON.GeoJson)
     box = bbox(geojson)
 
     x = (box[1] + box[3]) / 2
     y = (box[2] + box[4]) / 2
 
-    return Point([x, y])
+    return Geometries.Point([x, y])
 end
-
-end # module

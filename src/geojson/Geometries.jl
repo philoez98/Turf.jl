@@ -4,7 +4,7 @@ module Geometries
 export AbstractGeometry, AbstractPoint, AbstractMultiPoint, AbstractLineString,
         AbstractMultiLineString, AbstractPolygon, AbstractMultiPolygon,
         Position, latitude, longitude, elevation, coordinates, Point, MultiPoint,
-        MultiPolygon, MultiLineString, Polygon, LineString, Geometry
+        MultiPolygon, MultiLineString, Polygon, LineString, Geometry, Points
 
 
 const Position = Vector{Float64}
@@ -30,6 +30,8 @@ mutable struct Point <: AbstractPoint
 
     Point(coordinates) = length(coordinates) > 3 || length(coordinates) === 0 ? error("Out of Range") : new(coordinates)
 end
+
+const Points = Vector{Point}
 
 coordinates(obj::Vector{T}) where {T <: AbstractPoint} = Position[map(coordinates, obj)...]
 coordinates(obj::Vector{T}) where {T <: AbstractLineString} = Vector{Position}[map(coordinates, obj)...]

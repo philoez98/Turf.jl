@@ -1,14 +1,10 @@
-module Transformations
-
-include("../bearing/Bearing.jl")
-include("../../geojson/GeoJSON.jl")
-include("../../geojson/Geometries.jl")
-include("../../geojson/Features.jl")
-include("../../geojson/BBox.jl")
-include("../distance/Distance.jl")
-include("../centering/Centering.jl")
-
-using .GeoJSON, .Features, .Geometries, .BBox, .Centering
+include("./Bearing.jl")
+include("../geojson/GeoJSON.jl")
+include("../geojson/Geometries.jl")
+include("../geojson/Features.jl")
+include("../geojson/BBox.jl")
+include("./Distance.jl")
+include("./Centering.jl")
 
 
 const origin_options = ["sw", "se", "nw", "ne", "center", "centroid"]
@@ -17,7 +13,7 @@ const origin_options = ["sw", "se", "nw", "ne", "center", "centroid"]
 Rotates any geojson Feature or Geometry of a specified angle, around its `centroid` or a given `pivot` point;
 all rotations follow the right-hand rule.
 """
-function transformRotate(geojson::GeoJson, angle::Float64)
+function transformRotate(geojson::GeoJSON.GeoJson, angle::Float64)
     if angle === 0
         return geojson
     end
@@ -42,7 +38,7 @@ end
 Scale a GeoJSON from a given point by a factor of scaling (ex: factor=2 would make the GeoJSON 200% larger).
 If a FeatureCollection is provided, the origin point will be calculated based on each individual Feature.
 """
-function transformScale(geojson::GeoJson, factor::Float64, origin::String="centroid")
+function transformScale(geojson::GeoJSON.GeoJson, factor::Float64, origin::String="centroid")
 
     content = geojson.content
 
@@ -62,7 +58,7 @@ end
 """
 Scales a Feature.
 """
-function scale(feature::Feature, factor::Float64, origin::String="centroid")
+function scale(feature::GeoJSON.Feature, factor::Float64, origin::String="centroid")
 
     if !origin in origin_options
         throw(error("'$(origin)' is not a valid option. Allowed values are: $(origin_options)"))
@@ -94,7 +90,7 @@ end
 """
 Scales a Geometry.
 """
-function scale(feature::Geometry, factor::Float64, origin::String="centroid")
+function scale(feature::Geometries.Geometry, factor::Float64, origin::String="centroid")
 
     if !origin in origin_options
         throw(error("'$(origin)' is not a valid option. Allowed values are: $(origin_options)"))
@@ -125,7 +121,7 @@ function scale(feature::Geometry, factor::Float64, origin::String="centroid")
 
 end
 
-function getOrigin(geojson::Feature, origin::String)
+function getOrigin(geojson::GeoJSON.Feature, origin::String)
     if origin === nothing || origin === ""
         origin = "centroid"
     end
@@ -142,13 +138,13 @@ function getOrigin(geojson::Feature, origin::String)
     north = box[4]
 
     if origin in sw
-        return Point([west, south])
+        return Geometries.Point([west, south])
     elseif origin in se
-        return Point([east, south])
+        return Geometries.Point([east, south])
     elseif origin in nw
-        return Point([west, north])
+        return Geometries.Point([west, north])
     elseif origin in ne
-        return Point([east, north])
+        return Geometries.Point([east, north])
     elseif origin === "center"
         return center(geojson)
     elseif origin === "centroid"
@@ -157,5 +153,3 @@ function getOrigin(geojson::Feature, origin::String)
         throw(error("Invalid origin."))
     end
 end
-
-end # module

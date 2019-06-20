@@ -2,3 +2,6 @@ name = "Turf.jl"
 uuid = "e89237b0-9201-11e9-31b0-6361926203f7"
 authors = ["Filippo Nori <nori.filippo@gmail.com>"]
 version = "0.1.0"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

@@ -1,7 +1,5 @@
-module Destination
-
-include("../../Utils.jl")
-include("../../geojson/Geometries.jl")
+include("../Utils.jl")
+include("../geojson/Geometries.jl")
 
 using .Geometries
 
@@ -62,5 +60,3 @@ function calculateRhumbDestination(origin::Position, distance::Float64, bearing:
 
     return [((λ2 * 180 / pi) + 540) % 360 - 180, ϕ2 * 180 / pi]
 end
-
-end # module

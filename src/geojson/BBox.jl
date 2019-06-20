@@ -1,23 +1,16 @@
 # TODO: implement bbox for featurecollections
 # TODO: check correctness
-module BBox
 
 include("GeoJSON.jl")
 include("Geometries.jl")
 include("Features.jl")
 
-using .GeoJSON, .Geometries, .Features
-
-export BBox2D, BBox3D, bbox
-
 const BBox2D = Vector{Float64}(undef, 4)
 const BBox3D = Vector{Float64}(undef, 6)
 
 
-"""
-Takes a set of features, calculates the bbox of all input features, and returns a bounding box.
-"""
-function bbox(geojson::GeoJson)::BBox2D
+""" Takes a set of features, calculates the bbox of all input features, and returns a bounding box."""
+function bbox(geojson::GeoJSON.GeoJson)::BBox2D
     result::BBox2D = [Inf, Inf, -Inf, -Inf]
 
     if geojson.content.type === "FeatureCollection"
@@ -50,7 +43,7 @@ function bbox(geojson::GeoJson)::BBox2D
     return result
 end
 
-function bbox(geojson::Geometry)::BBox2D
+function bbox(geojson::Geometries.Geometry)::BBox2D
     result::BBox2D = [Inf, Inf, -Inf, -Inf]
 
     coords = geojson.coordinates
@@ -76,7 +69,7 @@ function bbox(geojson::Geometry)::BBox2D
     return result
 end
 
-function bbox(geojson::Feature)::BBox2D
+function bbox(geojson::Features.Feature)::BBox2D
     result::BBox2D = [Inf, Inf, -Inf, -Inf]
 
     coords = geojson.geometry.coordinates
@@ -101,5 +94,3 @@ function bbox(geojson::Feature)::BBox2D
 
     return result
 end
-
-end # module
