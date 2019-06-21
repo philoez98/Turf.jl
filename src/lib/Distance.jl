@@ -1,13 +1,13 @@
+using GeoInterface: Position, Point, xcoord, ycoord
 include("../Utils.jl")
-include("../geojson/Geometries.jl")
 
 
-function distance(from::Geometries.Position, to::Geometries.Position, options::String="kilometers")
-    δlat = deg2rad((Geometries.latitude(to) - Geometries.latitude(from)))
-    δlon = deg2rad((Geometries.longitude(to) - Geometries.longitude(from)))
+function distance(from::Position, to::Position, options::String="kilometers")
+    δlat = deg2rad((ycoord(to) - ycoord(from)))
+    δlon = deg2rad((xcoord(to) - xcoord(from)))
 
-    latFrom = deg2rad(Geometries.latitude(from))
-    latTo = deg2rad(Geometries.latitude(to))
+    latFrom = deg2rad(ycoord(from))
+    latTo = deg2rad(ycoord(to))
 
     res = sin(δlat / 2)^2 + sin(δlon / 2)^2 * cos(latFrom) * cos(latTo)
 
@@ -15,15 +15,15 @@ function distance(from::Geometries.Position, to::Geometries.Position, options::S
 end
 
 
-function distance(from::Geometries.Point, to::Geometries.Point, options::String="kilometers")
+function distance(from::Point, to::Point, options::String="kilometers")
     from = from.coordinates
     to = to.coordinates
 
-    δlat = deg2rad((Geometries.latitude(to) - Geometries.latitude(from)))
-    δlon = deg2rad((Geometries.longitude(to) - Geometries.longitude(from)))
+    δlat = deg2rad((ycoord(to) - ycoord(from)))
+    δlon = deg2rad((xcoord(to) - xcoord(from)))
 
-    latFrom = deg2rad(Geometries.latitude(from))
-    latTo = deg2rad(Geometries.latitude(to))
+    latFrom = deg2rad(ycoord(from))
+    latTo = deg2rad(ycoord(to))
 
     res = sin(δlat / 2)^2 + sin(δlon / 2)^2 * cos(latFrom) * cos(latTo)
 
@@ -31,16 +31,16 @@ function distance(from::Geometries.Point, to::Geometries.Point, options::String=
 end
 
 
-function rhumbDistance(from::Geometries.Position, to::Geometries.Position, units::String)
-    toLon = Geometries.longitude(to)
-    toLon += (Geometries.longitude(to) - Geometries.longitude(from) > 180) ? -360 : ((Geometries.longitude(from) - Geometries.longitude(to) > 180)) ? 360 : 0
+function rhumbDistance(from::Position, to::Position, units::String)
+    toLon = xcoord(to)
+    toLon += (xcoord(to) - xcoord(from) > 180) ? -360 : ((xcoord(from) - xcoord(to) > 180)) ? 360 : 0
 
-    ϕ1 = Geometries.latitude(from) * pi / 180
-    ϕ2 = Geometries.latitude(to) * pi / 180
+    ϕ1 = ycoord(from) * pi / 180
+    ϕ2 = ycoord(to) * pi / 180
 
     Δϕ = ϕ2 - ϕ1
 
-    Δλ = abs((toLon - Geometries.longitude(from))) * pi / 180
+    Δλ = abs((toLon - xcoord(from))) * pi / 180
     if Δλ > pi
         Δλ -= 2 * pi
     end
@@ -55,7 +55,7 @@ function rhumbDistance(from::Geometries.Position, to::Geometries.Position, units
     return convertLength(res, "metres", units)
 end
 
-function distanceToSegment(point::Geometries.Point, first::Geometries.Point, last::Geometries.Point, units::String="degrees", method::String="planar")
+function distanceToSegment(point::Point, first::Point, last::Point, units::String="degrees", method::String="planar")
     v = [last.coordinates[1] - first.coordinates[1], last.coordinates[2], first.coordinates[2]]
     w = [point.coordinates[1] - first.coordinates[1], point.coordinates[2] - first.coordinates[2]]
 
@@ -77,19 +77,20 @@ function distanceToSegment(point::Geometries.Point, first::Geometries.Point, las
 end
 
 
-function nearestPoint(target::Geometries.Point, points::Geometries.Points)
+function nearestPoint(target::Point, points::Vector{Point})
     minDistance = Inf
     index = 0
 
     for (i, point) in enumerate(points)
+        println(point.coordinates)
         dist = distance(target.coordinates, point.coordinates)
         if dist < minDistance
             index = i
             minDistance = dist
         end
     end
-    nearest::Geometries.Point = points[index]
-    nearest.distance = minDistance
+    nearest::Point = points[index]
+    print(minDistance)
 
     return nearest
 end

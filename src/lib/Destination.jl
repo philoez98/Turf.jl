@@ -1,12 +1,12 @@
+using GeoInterface: Position, Point
 include("../Utils.jl")
-include("../geojson/Geometries.jl")
 
 """
 Takes a Point and calculates the location of a destination point given a distance in
 degrees, radians, miles, or kilometers; and bearing in degrees.
 This uses the [Haversine formula](http://en.wikipedia.org/wiki/Haversine_formula) to account for global curvature.
 """
-function destination(origin::Geometries.Position, distance::Real, bearing::Real, units::String="kilometers")
+function destination(origin::Position, distance::Real, bearing::Real, units::String="kilometers")
     lon1 = deg2rad(origin[1])
     lat1 = deg2rad(origin[2])
     bearingRad = deg2rad(bearing)
@@ -15,7 +15,7 @@ function destination(origin::Geometries.Position, distance::Real, bearing::Real,
     lat2 = asin(sin(lat1) * cos(radians) + cos(lat1) * sin(radians) * cos(bearingRad))
     lon2 = lon1 + atan(sin(bearingRad) * sin(radians) * cos(lat1), cos(radians) - sin(lat1) * sin(lat2))
 
-    return Geometries.Point([rad2deg(lon2), rad2deg(lat2)])
+    return Point([rad2deg(lon2), rad2deg(lat2)])
 end
 
 
@@ -23,7 +23,7 @@ end
 Returns the destination Point having travelled the given distance along a Rhumb line from the
 origin Point with the (varant) given bearing.
 """
-function rhumbDestination(origin::Geometries.Position, distance::Real, bearing::Real, units::String="kilometers")
+function rhumbDestination(origin::Position, distance::Real, bearing::Real, units::String="kilometers")
     negative::Bool = distance < 0
     distanceinMeters = convertLength(abs(distance), units, "meters")
     if negative
@@ -34,10 +34,10 @@ function rhumbDestination(origin::Geometries.Position, distance::Real, bearing::
 
     dest[1] += (dest[1] - origin[1] > 180) ? -360 : (origin[1] - dest[1] > 180) ? 360 : 0
 
-    return Geometries.Point(dest)
+    return Point(dest)
 end
 
-function calculateRhumbDestination(origin::Geometries.Position, distance::Real, bearing::Real)
+function calculateRhumbDestination(origin::Position, distance::Real, bearing::Real)
     Δ = distance / Constants.earthRadius
     λ1 = origin[1] * pi /180
     ϕ1 = deg2rad(origin[2])

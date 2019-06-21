@@ -1,5 +1,6 @@
+using GeoInterface: Position
+
 include("../Utils.jl")
-include("../geojson/Geometries.jl")
 
 
 """
@@ -18,7 +19,7 @@ end
 Takes two Positions and finds the bearing angle between them along a Rhumb line
 i.e. the angle measured in degrees start the north line (0 degrees)
 """
-function rhumbBearing(start::Geometries.Position, stop::Geometries.Position, final::Bool)
+function rhumbBearing(start::Position, stop::Position, final::Bool)
     bear360 = nothing
 
     if final === true
@@ -33,7 +34,7 @@ function rhumbBearing(start::Geometries.Position, stop::Geometries.Position, fin
 
 end
 
-function calculateRhumbBearing(a::Geometries.Position, b::Geometries.Position)
+function calculateRhumbBearing(a::Position, b::Position)
     ϕ1 = deg2rad(a[2])
     ϕ2 = deg2rad(b[2])
 
@@ -54,7 +55,7 @@ end
 Takes two points and finds the geographic bearing between them,
 i.e. the angle measured in degrees from the north line (0 degrees)
 """
-function bearing(start::Geometries.Position, stop::Geometries.Position, final::Bool)
+function bearing(start::Position, stop::Position, final::Bool)
     if final === true
         bear = bearing(stop, start, false)
         return (bear + 180) % 360

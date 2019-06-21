@@ -1,11 +1,11 @@
-include("../geojson/Geometries.jl")
+using GeoInterface: Position
 include("Bearing.jl")
 
 """
 Finds the angle formed by two adjacent segments defined by 3 points. The result will be the (positive clockwise)
 angle with origin on the `start-mid` segment, or its explementary angle if required.
 """
-function angleAdjacent(start::Geometries.Position, mid::Geometries.Position, stop::Geometries.Position, explementary::Bool, mercator::Bool)
+function angleAdjacent(start::Position, mid::Position, stop::Position, explementary::Bool, mercator::Bool)
     azimuth1 = bearingToAzimuth((mercator !== true) ? bearing(start, mid, false) : rhumbBearing(start, mid))
     azimuth2 = bearingToAzimuth((mercator !== true) ? bearing(stop, mid, false) : rhumbBearing(stop, mid))
 

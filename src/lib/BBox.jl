@@ -1,49 +1,45 @@
 # TODO: implement bbox for featurecollections
 # TODO: check correctness
 
-include("GeoJSON.jl")
-include("Geometries.jl")
-include("Features.jl")
+using GeoInterface: AbstractFeature, AbstractGeometry, AbstractFeatureCollection
 
 const BBox2D = Vector{Float64}(undef, 4)
 const BBox3D = Vector{Float64}(undef, 6)
 
 
 """ Takes a set of features, calculates the bbox of all input features, and returns a bounding box."""
-function bbox(geojson::GeoJSON.GeoJson)::BBox2D
+function bbox(geojson::T) where {T<:AbstractFeatureCollection}
     result::BBox2D = [Inf, Inf, -Inf, -Inf]
 
-    if geojson.content.type === "FeatureCollection"
-        throw(error("Unsupported type"))
+    coords = []
+
+    for feat in geojson.features
+        push!(coords, feat.geometry.coordinates)
     end
 
-    coords = geojson.content.geometry.coordinates
 
-    if typeof(coords) === Vector{Vector{Float64, 1}, 1}
+    for (i, el) in enumerate(coords)
+        if result[1] > el[i][1]
+            result[1] = el[i][1]
+        end
 
-        for (i, el) in coords
-            if result[1] > el[i][1]
-                result[1] = el[i][1]
-            end
+        if result[2] > el[i][2]
+            result[2] = el[i][2]
+        end
 
-            if result[2] > el[i][2]
-                result[2] = el[i][2]
-            end
+        if result[3] < el[i][1]
+            result[3] = el[i][1]
+        end
 
-            if result[3] < el[i][1]
-                result[3] = el[i][1]
-            end
-
-            if result[4] < el[i][2]
-                result[4] = el[i][2]
-            end
+        if result[4] < el[i][2]
+            result[4] = el[i][2]
         end
     end
 
     return result
 end
 
-function bbox(geojson::Geometries.Geometry)::BBox2D
+function bbox(geojson::T) where {T <: AbstractGeometry}
     result::BBox2D = [Inf, Inf, -Inf, -Inf]
 
     coords = geojson.coordinates
@@ -69,7 +65,7 @@ function bbox(geojson::Geometries.Geometry)::BBox2D
     return result
 end
 
-function bbox(geojson::Features.Feature)::BBox2D
+function bbox(geojson::T) where {T<: AbstractFeature}
     result::BBox2D = [Inf, Inf, -Inf, -Inf]
 
     coords = geojson.geometry.coordinates

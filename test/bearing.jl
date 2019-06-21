@@ -1,10 +1,10 @@
+using GeoInterface: Position
 include("../src/lib/Bearing.jl")
-include("../src/geojson/Geometries.jl")
 
 @testset "bearing" begin
 
-    start = Geometries.Position([-75, 45])
-    stop = Geometries.Position([20, 60])
+    start = Position([-75, 45])
+    stop = Position([20, 60])
 
     @test bearing(start, stop, false) ≈ 37.75 atol=0.01
     @test bearing(start, stop, true) ≈ 120.01 atol=0.005
