@@ -1,10 +1,11 @@
 # Turf.jl
 
-##### Julia wrapper of the incredible [*turf.js*](https://github.com/Turfjs/turf) package for spatial analysis.  
+[![Build Status](https://travis-ci.org/philoez98/Turf.jl.svg?branch=master)](https://travis-ci.org/philoez98/Turf.jl)
+[![Coverage Status](https://coveralls.io/repos/github/philoez98/Turf.jl/badge.svg?branch=master)](https://coveralls.io/github/philoez98/Turf.jl?branch=master)
 
-*Turf.jl* is almost mapped 1 to 1 with the original *js* version of *turf*. So you can expect a familiar syntax, common coding conventions
-and similar ways of doing everything, plus the benefit of using Julia.
+A spatial analysis library writtem in Julia, ported from the great [*turf.js*](https://github.com/Turfjs/turf).
 
+Turf.jl aims to be as close as possible to the original library, providing a very similar API and conventions, but adapted for the Julia programming language.
 
 ## Installation
 

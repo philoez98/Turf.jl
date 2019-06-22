@@ -82,7 +82,6 @@ function nearestPoint(target::Point, points::Vector{Point})
     index = 0
 
     for (i, point) in enumerate(points)
-        println(point.coordinates)
         dist = distance(target.coordinates, point.coordinates)
         if dist < minDistance
             index = i
@@ -90,7 +89,6 @@ function nearestPoint(target::Point, points::Vector{Point})
         end
     end
     nearest::Point = points[index]
-    print(minDistance)
 
     return nearest
 end
