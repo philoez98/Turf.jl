@@ -57,7 +57,7 @@ function concave(poly::Polygon)
 end
 
 
-function equal(geo1::T, geo2::T) where {T <: AbstractGeometry}::Bool
+function equal(geo1::T, geo2::T) where {T <: AbstractGeometry}
     geotype(geo1) !== geotype(geo2) && return false
 
     geotype(geo1) === :Point && return comparePoints(geo1.coordinates, geo2.coordinates)
@@ -84,12 +84,17 @@ function parallel(line1::LineString, line2::LineString)::Bool
     seg1 = lineSegment(line1)
     seg2 = lineSegment(line2)
 
-    for i in 1:length(seg1)
+    for i in eachindex(seg1)
+        coors2 = nothing
         coors1 = seg1[i].coordinates
-        !isdefined(seg2[i]) && break
-        coors2 = seg2[i].coordinates
 
-        !isParallel(coors1, coors2) && return false
+        try
+            coors2 = seg2[i].coordinates
+        catch e
+            isa(e, BoundsError) && break
+
+        end
+        isParallel(coors1, coors2) == false && return false
     end
 
     return true
@@ -98,7 +103,7 @@ end
 """Compare slopes"""
 @inline function isParallel(p1::Vector{Position}, p2::Vector{Position})
     slope1 = bearingToAzimuth(rhumbBearing(p1[1], p2[1]))
-    slope2 = bearingToAzimuth(rhumbBearing(p2[2], p2[2]))
+    slope2 = bearingToAzimuth(rhumbBearing(p1[2], p2[2]))
 
     return slope1 === slope2
 end

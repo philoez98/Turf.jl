@@ -19,7 +19,7 @@ end
 Takes two Positions and finds the bearing angle between them along a Rhumb line
 i.e. the angle measured in degrees start the north line (0 degrees)
 """
-function rhumbBearing(start::Position, stop::Position, final::Bool)
+function rhumbBearing(start::Position, stop::Position, final::Bool=false)
     bear360 = nothing
 
     if final === true

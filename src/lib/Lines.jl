@@ -8,11 +8,10 @@ function lineSegment(geojson::LineString)
 end
 
 function lineSegmentFeature(geojson::Union{LineString, Polygon}, result::Vector{LineString})
-    coords::Vector{Position} = []
-    geom = geojson.geometry
+    coords = geojson.coordinates
 
-    geotype(geom) === :Polygon && (coords = geom.coordinates)
-    geotype(geom) === :LineString && (coords = [geom.coordinates])
+    #geotype(geojson) === :Polygon && (coords = geojson.coordinates)
+    #geotype(geojson) === :LineString && (coords = geojson.coordinates)
 
 
     segments = createSegments(coords)
@@ -26,8 +25,14 @@ end
 
 @inline function createSegments(coords::Vector{Position})
     segments = []
-    for i in eachindex(coords) - 1
+    if length(coords) === 2
+        push!(segments, Linestring([coords[1], coords[2]]))
+        return segments
+    end
+
+    for i in 1:length(coords)-1
         line = LineString([coords[i], coords[i + 1]])
         push!(segments, line)
     end
+    return segments
 end

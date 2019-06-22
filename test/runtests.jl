@@ -6,5 +6,5 @@ using Test
     include("utils.jl")
     include("distance.jl")
     include("destination.jl")
-
+    include("booleans.jl")
 end # begin
