@@ -1,4 +1,4 @@
-using GeoInterface: LineString, Position, Polygon, AbstractGeometry, geotype
+using GeoInterface: LineString, Position, Polygon, AbstractGeometry, geotype, Point
 include("Lines.jl")
 include("Bearing.jl")
 
@@ -7,9 +7,9 @@ include("Bearing.jl")
 function clockwise(line::Union{LineString, Vector{Position}})::Bool
 
     let ring end
-
+    # geotype fails with Vector{Vector{...}}
     if geotype(line) === :LineString
-        ring = line.geometry.coordinates
+        ring = line.coordinates
     else
         ring = line[1]
     end
@@ -31,18 +31,21 @@ end
 
 """Takes a polygon and return true or false as to whether it is concave or not."""
 function concave(poly::Polygon)
-    coords = poly.geometry.coordinates
+    coords = poly.coordinates
 
     length(coords[1]) <= 4 && return false
 
     sign = false
-    n = length(coords[1])
+    n = length(coords[1]) - 1
 
     for i in 1:n
-        dx1 = coords[1][(i + 2) % n][1] - coords[1][(i + 1) % n][1]
-        dy1 = coords[1][(i + 2) % n][2] - coords[1][(i + 1) % n][2]
-        dx2 = coords[1][i][1] - coords[1][(i + 1) % n][1]
-        dy2 = coords[1][i][2] - coords[1][(i + 1) % n][2]
+        j = ((i + 1) % n) === 0 ? 1 : (i + 1) % n
+        m = ((i + 2) % n) === 0 ? 1 : (i + 2) % n
+
+        dx1 = coords[1][m][1] - coords[1][j][1]
+        dy1 = coords[1][m][2] - coords[1][j][2]
+        dx2 = coords[1][i][1] - coords[1][j][1]
+        dy2 = coords[1][i][2] - coords[1][j][2]
 
         cross = (dx1 * dy2) - (dy1 * dx2)
 
@@ -106,4 +109,63 @@ end
     slope2 = bearingToAzimuth(rhumbBearing(p1[2], p2[2]))
 
     return slope1 === slope2
+end
+
+"""
+    pointOnLine(point::Point, line::LineString, ignoreEndVertices::Bool=false)::Bool
+
+Returns true if a point is on a line. Accepts a optional parameter to ignore the
+start and end vertices of the linestring.
+"""
+function pointOnLine(point::Point, line::LineString, ignoreEndVertices::Bool=false)::Bool
+    pCoords = point.coordinates
+    lCoords = line.coordinates
+
+    for i in 1:length(lCoords) - 1
+        ignore = "none"
+        if ignoreEndVertices == true
+            i === 1 && (ignore = "start")
+            i === length(lCoords) - 1 && (ignore = "end")
+            (i === 1 && i + 1 === length(lCoords) - 1) && (ignore = "both")
+        end
+        isPointOnSegment(lCoords[i], lCoords[i + 1], pCoords, ignore) == true && return true
+    end
+    return false
+end
+
+@inline function isPointOnSegment(start::Position, stop::Position, coords::Position, excludeBoundary::String = "none")::Bool
+    x, y = coords
+    x1, y1 = start
+    x2, y2 = stop
+
+    dxc = x - x1
+    dyc = y - y1
+    dx1 = x2 - x1
+    dy1 = y2 - y1
+
+    cross = dxc * dy1 - dyc * dx1
+    cross !== 0 && return false
+
+    if excludeBoundary === "none"
+        if abs(dx1) >= abs(dy1)
+            return dx1 > 0 ? x1 <= x && x <= x2 : x2 <= x && x <= x1
+        end
+        return dyl > 0 ? y1 <= y && y <= y2 : y2 <= y && y <= y1
+    elseif excludeBoundary === "start"
+        if abs(dx1) >= abs(dy1)
+             return dxl > 0 ? x1 < x && x <= x2 : x2 <= x && x < x1
+        end
+        return dyl > 0 ? y1 < y && y <= y2 : y2 <= y && y < y1
+    elseif excludeBoundary === "end"
+        if abs(dx1) >= abs(dy1)
+            return dxl > 0 ? x1 <= x && x < x2 : x2 < x && x <= x1
+        end
+        return dyl > 0 ? y1 <= y && y < y2 : y2 < y && y <= y1
+    elseif excludeBoundary === "both"
+        if abs(dxl) >= abs(dyl)
+            return dxl > 0 ? x1 < x && x < x2 : x2 < x && x < x1
+        end
+        return dyl > 0 ? y1 < y && y < y2 : y2 < y && y < y1
+    end
+    return false
 end

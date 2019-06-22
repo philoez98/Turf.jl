@@ -1,4 +1,4 @@
-using GeoInterface: LineString
+using GeoInterface: LineString, Polygon, Point
 include("../src/lib/Booleans.jl")
 
 @testset "booleans" begin
@@ -41,4 +41,25 @@ include("../src/lib/Booleans.jl")
 
     @test parallel(line1, line2) == true
 	@test parallel(line3, line4) == false
+
+	poly1 = Polygon([[[0, 0], [1, 0], [1, 1], [0.5, 0.5], [0, 1], [0, 0]]])
+	poly2 = Polygon([[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]])
+
+	@test concave(poly1) == true
+	@test concave(poly2) == false
+
+	l1 = LineString([[0, 0], [1, 1], [1, 0], [0, 0]])
+	l2 = LineString([[0, 0], [1, 0], [1, 1], [0, 0]])
+
+	@test clockwise(l1) == true
+	@test clockwise(l2) == false
+
+	l3 = LineString([[0, 0], [3, 3], [4, 4]])
+	p1 = Point([1, 1])
+
+	l4 = LineString([[0, 0], [3, 3]])
+	p2 = Point([0, 0])
+
+	@test pointOnLine(p2, l4, true) == false
+	@test pointOnLine(p1, l3, true) == true # <- this fails
 end
