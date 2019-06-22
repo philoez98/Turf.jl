@@ -1,12 +1,14 @@
-include("../geojson/Geometries.jl")
+using GeoInterface: LineString, Position, Polygon, AbstractGeometry, geotype
+include("Lines.jl")
+include("Bearing.jl")
 
 
 """Takes a ring and return true or false whether or not the ring is clockwise or counter-clockwise."""
-function clockwise(line::Union{Geometries.LineString, Vector{Geometries.Position}})::Bool
+function clockwise(line::Union{LineString, Vector{Position}})::Bool
 
     let ring end
 
-    if typeof(line) <: Geometries.AbstractLineString
+    if geotype(line) === :LineString
         ring = line.geometry.coordinates
     else
         ring = line[1]
@@ -28,7 +30,7 @@ function clockwise(line::Union{Geometries.LineString, Vector{Geometries.Position
 end
 
 """Takes a polygon and return true or false as to whether it is concave or not."""
-function concave(ploy::Geometries.Polygon)
+function concave(poly::Polygon)
     coords = poly.geometry.coordinates
 
     length(coords[1]) <= 4 && return false
@@ -55,14 +57,14 @@ function concave(ploy::Geometries.Polygon)
 end
 
 
-function equal(geo1::Geometries.Geometry, geo2::Geometries.Geometry)
-    geo1.type !== geo2.type && return false
+function equal(geo1::T, geo2::T) where {T <: AbstractGeometry}::Bool
+    geotype(geo1) !== geotype(geo2) && return false
 
-    geo1.type === "Point" && return comparePoints(geo1.coordinates, geo2.coordinates)
-    geo1.type === "LineString" && return compareLines(geo1.coordinates, geo2.coordinates)
+    geotype(geo1) === :Point && return comparePoints(geo1.coordinates, geo2.coordinates)
+    geotype(geo1) === :LineString && return compareLines(geo1.coordinates, geo2.coordinates)
 end
 
-function comparePoints(p1::Geometries.Position, p2::Geometries.Position)
+function comparePoints(p1::Position, p2::Position)
     length(p1) !== length(p2) && return false
 
     for i in eachindex(p1)
@@ -72,7 +74,31 @@ function comparePoints(p1::Geometries.Position, p2::Geometries.Position)
     return true
 end
 
-function compareLines(p1::Vector{Geometries.Position}, p2::Vector{Geometries.Position})
+function compareLines(p1::Vector{Position}, p2::Vector{Position})
     # TODO: complete this
     length(p1[1]) !== length(p2[1]) && return false
+end
+
+"""Return `true` if each segment of `line1` is parallel to the correspondent segment of `line2`"""
+function parallel(line1::LineString, line2::LineString)::Bool
+    seg1 = lineSegment(line1)
+    seg2 = lineSegment(line2)
+
+    for i in 1:length(seg1)
+        coors1 = seg1[i].coordinates
+        !isdefined(seg2[i]) && break
+        coors2 = seg2[i].coordinates
+
+        !isParallel(coors1, coors2) && return false
+    end
+
+    return true
+end
+
+"""Compare slopes"""
+@inline function isParallel(p1::Vector{Position}, p2::Vector{Position})
+    slope1 = bearingToAzimuth(rhumbBearing(p1[1], p2[1]))
+    slope2 = bearingToAzimuth(rhumbBearing(p2[2], p2[2]))
+
+    return slope1 === slope2
 end
