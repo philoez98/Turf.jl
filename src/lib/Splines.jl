@@ -4,6 +4,8 @@ using GeoInterface: Point
 
 import Base.@kwdef
 
+export Spline, AbstractSpline
+
 abstract type AbstractSpline end
 
 @kwdef struct Spline <: AbstractSpline
