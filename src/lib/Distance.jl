@@ -1,7 +1,3 @@
-using GeoInterface: Position, Point, xcoord, ycoord
-include("../Utils.jl")
-
-
 function distance(from::Position, to::Position, options::String="kilometers")
     δlat = deg2rad((ycoord(to) - ycoord(from)))
     δlon = deg2rad((xcoord(to) - xcoord(from)))
@@ -50,7 +46,7 @@ function rhumbDistance(from::Position, to::Position, units::String)
 
     Δ = sqrt(Δϕ * Δϕ + q * q * Δλ * Δλ)
 
-    res =  Δ * Constants.earthRadius
+    res =  Δ * earthRadius
 
     return convertLength(res, "metres", units)
 end

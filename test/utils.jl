@@ -1,14 +1,11 @@
-include("../src/Constants.jl")
-include("../src/Utils.jl")
-
 @testset "utils" begin
     @test radiansToLength(1, "radians") == 1
-    @test radiansToLength(1, "kilometers") == Constants.earthRadius / 1000
-    @test radiansToLength(1, "miles") == Constants.earthRadius / 1609.344
+    @test radiansToLength(1, "kilometers") == earthRadius / 1000
+    @test radiansToLength(1, "miles") == earthRadius / 1609.344
 
     @test lengthToRadians(1, "radians") == 1
-    @test lengthToRadians(Constants.earthRadius / 1000, "kilometers") == 1
-    @test lengthToRadians(Constants.earthRadius / 1609.344, "miles") == 1
+    @test lengthToRadians(earthRadius / 1000, "kilometers") == 1
+    @test lengthToRadians(earthRadius / 1609.344, "miles") == 1
 
     @test lengthToDegrees(1, "radians") ≈ 57.29 atol=0.01
     @test lengthToDegrees(100, "kilometers") ≈ 0.89 atol=0.01

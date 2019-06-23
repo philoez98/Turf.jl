@@ -1,8 +1,3 @@
-using GeoInterface: Position
-
-include("../Utils.jl")
-
-
 """
 Converts any bearing angle from the north line direction (positive clockwise)
 and returns an angle between 0-360 degrees (positive clockwise), 0 being the north line

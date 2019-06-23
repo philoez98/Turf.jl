@@ -1,7 +1,3 @@
-using GeoInterface: LineString
-include("Splines.jl")
-
-
 """
     bezier(line::LineString; resolution::Real=10000, sharpness::Real=0.85)
 

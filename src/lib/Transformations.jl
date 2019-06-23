@@ -1,11 +1,3 @@
-using GeoInterface: AbstractGeometry, Feature,
-AbstractFeatureCollection, AbstractFeature, geotype, Point
-include("Bearing.jl")
-include("BBox.jl")
-include("Distance.jl")
-include("Centering.jl")
-
-
 const origin_options = ["sw", "se", "nw", "ne", "center", "centroid"]
 
 """

@@ -1,5 +1,3 @@
-using GeoInterface: LineString, Polygon, geotype
-
 function lineSegment(geojson::LineString)
     result::Vector{LineString} = []
     lineSegmentFeature(geojson, result)

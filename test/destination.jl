@@ -1,6 +1,3 @@
-using GeoInterface: Position
-include("../src/lib/Destination.jl")
-
 @testset "destination" begin
 
     p1 = Position([-75, 38.10096062273525])

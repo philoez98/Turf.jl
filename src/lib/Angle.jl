@@ -1,6 +1,3 @@
-using GeoInterface: Position
-include("Bearing.jl")
-
 """
 Finds the angle formed by two adjacent segments defined by 3 points. The result will be the (positive clockwise)
 angle with origin on the `start-mid` segment, or its explementary angle if required.

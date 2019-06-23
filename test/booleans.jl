@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 using GeoInterface: LineString, Polygon, Point
 include("../src/lib/Booleans.jl")
 
+=======
+>>>>>>> c7d25c941b31a0ccfcd245532d84b7f5c3953cda
 @testset "booleans" begin
     line1 = LineString([[9.170356, 45.477985], [9.164434, 45.482551], [9.166644, 45.484003]])
     line2 = LineString([[9.169356, 45.477985], [9.163434, 45.482551], [9.165644, 45.484003]])

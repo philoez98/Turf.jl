@@ -1,6 +1,3 @@
-using GeoInterface: Point, AbstractGeometry
-include("BBox.jl")
-
 """
     centroid([geojson::GeoJSON.GeoJson])
 
