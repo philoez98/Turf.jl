@@ -2,7 +2,7 @@ import Base.@kwdef
 
 abstract type AbstractSpline end
 
-@kwdef struct Spline{R, P} <: AbstractSpline
+@kwdef struct Spline{R, P} #<: AbstractSpline
     points::Vector{P}
     duration::R = 10000
     sharpness::R = 0.85
