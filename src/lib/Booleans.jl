@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-using GeoInterface: LineString, Position, Polygon, AbstractGeometry, geotype, Point, MultiPolygon
-include("Lines.jl")
-include("Bearing.jl")
-include("BBox.jl")
-
-=======
->>>>>>> c7d25c941b31a0ccfcd245532d84b7f5c3953cda
 """Takes a ring and return true or false whether or not the ring is clockwise or counter-clockwise."""
 function clockwise(line::Union{LineString, Vector{Position}})::Bool
 

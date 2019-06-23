@@ -1,15 +1,9 @@
 # TODO: implement bbox for featurecollections
 # TODO: check correctness
 
-<<<<<<< HEAD
-using GeoInterface: AbstractFeature, AbstractGeometry, AbstractFeatureCollection, geotype
-
-const BBox2D = Vector{Float64}(undef, 4)
-const BBox3D = Vector{Float64}(undef, 6)
-=======
 isdefined(Turf, :BBox2D) || const BBox2D = Vector{Float64}(undef, 4)
 isdefined(Turf, :BBox3D) || const BBox3D = Vector{Float64}(undef, 6)
->>>>>>> c7d25c941b31a0ccfcd245532d84b7f5c3953cda
+
 
 
 """ Takes a set of features, calculates the bbox of all input features, and returns a bounding box."""

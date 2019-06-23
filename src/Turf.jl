@@ -1,15 +1,13 @@
-__precompile__(false)
-
 module Turf
 
 using GeoInterface: Point, Position, LineString, Feature, AbstractGeometry, AbstractFeature,
-    AbstractFeatureCollection, xcoord, ycoord, Polygon, geotype
+    AbstractFeatureCollection, xcoord, ycoord, Polygon, geotype, MultiPolygon
 
 export radiansToLength, lengthToRadians, lengthToDegrees, convertLength, convertArea,
     angleAdjacent, distance, distanceToSegment, rhumbDistance, rhumbBearing, rhumbDestination,
     destination, bearing, bearingToAzimuth, bbox, center, centroid, transformRotate, transformScale,
     bezier, concave, clockwise, nearestPoint, earthRadius, areaFactors, unitsFactor, parallel,
-    Spline, lineSegment
+    Spline, lineSegment, pointOnLine, pointInPolygon
 
 
 include("Constants.jl")
