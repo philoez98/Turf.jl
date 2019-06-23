@@ -2,7 +2,7 @@ import Base.@kwdef
 
 abstract type AbstractSpline end
 
-@kwdef struct Spline <: AbstractSpline
+@kwdef struct Spline
     points::Vector{Point}
     duration::Real = 10000
     sharpness::Real = 0.85
