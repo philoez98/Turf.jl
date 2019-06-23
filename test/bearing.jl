@@ -1,6 +1,3 @@
-using GeoInterface: Position
-include("../src/lib/Bearing.jl")
-
 @testset "bearing" begin
 
     start = Position([-75, 45])

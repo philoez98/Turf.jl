@@ -1,7 +1,3 @@
-using GeoInterface: Position, Point
-include("../src/lib/Distance.jl")
-
-
 @testset "distance" begin
     p1 = Position([-180, -90])
     p2 = Position([180, -90])

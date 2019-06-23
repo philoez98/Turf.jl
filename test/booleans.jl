@@ -1,6 +1,3 @@
-using GeoInterface: LineString
-include("../src/lib/Booleans.jl")
-
 @testset "booleans" begin
     line1 = LineString([[9.170356, 45.477985], [9.164434, 45.482551], [9.166644, 45.484003]])
     line2 = LineString([[9.169356, 45.477985], [9.163434, 45.482551], [9.165644, 45.484003]])

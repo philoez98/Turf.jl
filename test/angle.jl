@@ -1,7 +1,3 @@
-using GeoInterface: Position
-include("../src/lib/Angle.jl")
-
-
 @testset "angle" begin
     p1 = Position([5., 5.])
     p2 = Position([5., 6.])
