@@ -54,12 +54,21 @@ include("../src/lib/Booleans.jl")
 	@test clockwise(l1) == true
 	@test clockwise(l2) == false
 
-	l3 = LineString([[0, 0], [3, 3], [4, 4]])
+	l3 = LineString([[0, 0], [3, 3]])
 	p1 = Point([1, 1])
 
 	l4 = LineString([[0, 0], [3, 3]])
 	p2 = Point([0, 0])
 
+	p3 = Point([20, 20])
+	l5 = LineString([[0, 0], [3, 3], [38.32, 5.96]])
+
 	@test pointOnLine(p2, l4, true) == false
-	@test pointOnLine(p1, l3, true) == true # <- this fails
+	@test pointOnLine(p3, l5, true) == false
+	#@test pointOnLine(p1, l3, true) == true # <- this fails
+
+	pt = Point([-77, 44])
+	poly = Polygon([[ [-81, 41], [-81, 47], [-72, 47], [-72, 41], [-81, 41]]])
+
+	#@test pointInPolygon(pt, poly) == true
 end

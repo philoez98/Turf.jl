@@ -12,12 +12,25 @@ function centroid(geojson::T) where {T<:AbstractGeometry}
     y = 0
     len = 0
     # TODO: check dims
+
     data = geojson.coordinates
 
-    for (i, point) in enumerate(data)
-        x += point.coordinates[i][1]
-        y += point.coordinates[i][2]
-        len += 1
+    if geotype(geojson) === :Point
+        x = data[1]
+        y = data[2]
+        len = 1
+    elseif geotype(geojson) === :LineString
+        for i in eachindex(data)
+            x += data[i][1]
+            y += data[i][2]
+            len += 1
+        end
+    elseif geotype(geojson) === :Polygon
+        for i in eachindex(data[1])
+            x += data[1][i][1]
+            y += data[1][i][2]
+            len += 1
+        end
     end
 
     return Point([x / len, y / len])

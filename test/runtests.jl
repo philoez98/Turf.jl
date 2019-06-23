@@ -7,4 +7,5 @@ using Test
     include("distance.jl")
     include("destination.jl")
     include("booleans.jl")
+    include("centering.jl")
 end # begin

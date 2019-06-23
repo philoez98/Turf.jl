@@ -1,7 +1,7 @@
-using GeoInterface: LineString, Position, Polygon, AbstractGeometry, geotype, Point
+using GeoInterface: LineString, Position, Polygon, AbstractGeometry, geotype, Point, MultiPolygon
 include("Lines.jl")
 include("Bearing.jl")
-
+include("BBox.jl")
 
 """Takes a ring and return true or false whether or not the ring is clockwise or counter-clockwise."""
 function clockwise(line::Union{LineString, Vector{Position}})::Bool
@@ -121,11 +121,11 @@ function pointOnLine(point::Point, line::LineString, ignoreEndVertices::Bool=fal
     pCoords = point.coordinates
     lCoords = line.coordinates
 
+    ignore = "none"
     for i in 1:length(lCoords) - 1
-        ignore = "none"
         if ignoreEndVertices == true
             i === 1 && (ignore = "start")
-            i === length(lCoords) - 1 && (ignore = "end")
+            i === length(lCoords) - 2 && (ignore = "end")
             (i === 1 && i + 1 === length(lCoords) - 1) && (ignore = "both")
         end
         isPointOnSegment(lCoords[i], lCoords[i + 1], pCoords, ignore) == true && return true
@@ -150,22 +150,84 @@ end
         if abs(dx1) >= abs(dy1)
             return dx1 > 0 ? x1 <= x && x <= x2 : x2 <= x && x <= x1
         end
-        return dyl > 0 ? y1 <= y && y <= y2 : y2 <= y && y <= y1
+        return dy1 > 0 ? y1 <= y && y <= y2 : y2 <= y && y <= y1
     elseif excludeBoundary === "start"
         if abs(dx1) >= abs(dy1)
-             return dxl > 0 ? x1 < x && x <= x2 : x2 <= x && x < x1
+             return dx1 > 0 ? x1 < x && x <= x2 : x2 <= x && x < x1
         end
-        return dyl > 0 ? y1 < y && y <= y2 : y2 <= y && y < y1
+        return dy1 > 0 ? y1 < y && y <= y2 : y2 <= y && y < y1
     elseif excludeBoundary === "end"
         if abs(dx1) >= abs(dy1)
-            return dxl > 0 ? x1 <= x && x < x2 : x2 < x && x <= x1
+            return dx1 > 0 ? x1 <= x && x < x2 : x2 < x && x <= x1
         end
-        return dyl > 0 ? y1 <= y && y < y2 : y2 < y && y <= y1
+        return dy1 > 0 ? y1 <= y && y < y2 : y2 < y && y <= y1
     elseif excludeBoundary === "both"
-        if abs(dxl) >= abs(dyl)
-            return dxl > 0 ? x1 < x && x < x2 : x2 < x && x < x1
+        if abs(dx1) >= abs(dy1)
+            return dx1 > 0 ? x1 < x && x < x2 : x2 < x && x < x1
         end
-        return dyl > 0 ? y1 < y && y < y2 : y2 < y && y < y1
+        return dy1 > 0 ? y1 < y && y < y2 : y2 < y && y < y1
     end
     return false
+end
+
+
+"""
+Takes a Point and a Polygon and determines if the point
+resides inside the polygon. The polygon can be convex or concave. The function accounts for holes.
+"""
+function pointInPolygon(point::Point, polygon::Union{Polygon, MultiPolygon}, ignoreBoundary::Bool=false)
+
+    pt = point.coordinates
+    poly = polygon.coordinates
+
+    inBBox(pt, bbox(polygon)) == false && return false
+
+    geotype(polygon) === :Polygon && (poly = [poly])
+
+    inside = false
+    for i in eachindex(poly)
+        if inRing(pt, poly[i][1], ignoreBoundary)
+            inHole = false
+            k = 1
+
+            while k < length(poly[i]) && !inHole
+                inRing(pt, poly[i][k], !ignoreBoundary) == true && (inHole = true)
+                k += 1
+            end
+
+            !inHole && (inside = true)
+        end
+    end
+    return inside
+end
+
+function inRing(pt::Position, ring::Vector{Position}, ignoreBoundary::Bool=false)
+    inside = false
+
+    (ring[1][1] === ring[length(ring) - 1][1] && ring[1][2] === ring[length(ring) - 1][1]) && (ring = ring[1, length(ring) - 1])
+
+    for i in 1:length(ring) - 1
+        j = i + 1
+
+        xi = ring[i][1]
+        yi = ring[i][2]
+        xj = ring[j][1]
+        yj = ring[j][2]
+
+        onBoundary = (pt[2] * (xi - xj) + yi * (xj - pt[1]) + yj * (pt[1] - xi) === 0) &&
+            ((xi - pt[1]) * (xj - pt[1]) <= 0) && ((yi - pt[2]) * (yj - pt[2]) <= 0)
+
+        onBoundary && return !ignoreBoundary
+
+        intersect = ((yi > pt[2]) !== (yj > pt[2])) && (pt[1] < (xj - xi) * (pt[2] - yi) / (yj - yi) + xi)
+
+        intersect && (inside =  !inside)
+    end
+
+    return inside
+end
+
+function inBBox(pt::Position, bbox::Vector{Float64})
+    return bbox[1] <= pt[1] &&  bbox[2] <= pt[2] &&
+        bbox[3] >= pt[1] && bbox[4] >= pt[2]
 end
