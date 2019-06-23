@@ -1,11 +1,9 @@
-include("Constants.jl")
-
 """
 Convert a distance measurement (assuming a spherical Earth) from radians to a more friendly unit.
 Valid units: miles, nauticalmiles, inches, yards, meters, metres, kilometers, centimeters, feet
 """
 function radiansToLength(radians::Number, units::String="kilometers")::Number
-    factor = Constants.factors[units]
+    factor = factors[units]
     if factor == nothing
         throw(error("$(units) is not a valid unit."))
     end
@@ -17,7 +15,7 @@ Convert a distance measurement (assuming a spherical Earth) from a real-world un
 Valid units: miles, nauticalmiles, inches, yards, meters, metres, kilometers, centimeters, feet
 """
 function lengthToRadians(distance::Number, units::String="kilometers")::Number
-    factor =  Constants.factors[units]
+    factor =  factors[units]
     if factor == nothing
         throw(error("$(units) is not a valid unit."))
     end
@@ -48,8 +46,8 @@ function convertArea(area::Number, originalUnit::String="meters", finalUnit::Str
         throw(error("'area' must be a positive number."))
     end
 
-    startFactor =  Constants.areaFactors[originalUnit]
-    endFactor =  Constants.areaFactors[finalUnit]
+    startFactor =  areaFactors[originalUnit]
+    endFactor =  areaFactors[finalUnit]
 
     return (area / startFactor) * endFactor
 end

@@ -1,6 +1,3 @@
-using GeoInterface: Position, Point
-include("../Utils.jl")
-
 """
 Takes a Point and calculates the location of a destination point given a distance in
 degrees, radians, miles, or kilometers; and bearing in degrees.
@@ -38,7 +35,7 @@ function rhumbDestination(origin::Position, distance::Real, bearing::Real, units
 end
 
 function calculateRhumbDestination(origin::Position, distance::Real, bearing::Real)
-    Δ = distance / Constants.earthRadius
+    Δ = distance / earthRadius
     λ1 = origin[1] * pi /180
     ϕ1 = deg2rad(origin[2])
     θ = deg2rad(bearing)

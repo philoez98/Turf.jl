@@ -1,14 +1,7 @@
-module Constants
-
-export earthRadius, factors, unitsFactor, areaFactors
-
-"""
-Earth radius in meters (m).
-"""
-const earthRadius = 6371008.8
+isdefined(Turf, :earthRadius) || const earthRadius = 6371008.8 # Earth Radius in meters (m)
 
 
-const factors = Dict(
+isdefined(Turf, :factors) || const factors = Dict(
     "centimeters" => earthRadius * 100,
     "centimetres" => earthRadius * 100,
     "degrees" => earthRadius / 111325,
@@ -26,12 +19,7 @@ const factors = Dict(
     "yards" => earthRadius / 1.0936
 )
 
-
-
-"""
-Units of measurement factors based on 1 meter.
-"""
-const unitsFactor = Dict(
+isdefined(Turf, :unitsFactor) || const unitsFactor = Dict(
     "centimeters" => 100,
     "centimetres" => 100,
     "degrees" => 1 / 111325,
@@ -49,10 +37,7 @@ const unitsFactor = Dict(
     "yards" => 1 / 1.0936
 )
 
-"""
-Area of measurement factors based on 1 square meter.
-"""
-const areaFactors = Dict(
+isdefined(Turf, :areaFactors) || const areaFactors = Dict(
     "acres" => 0.000247105,
     "centimeters" => 10000,
     "centimetres" => 10000,
@@ -67,5 +52,3 @@ const areaFactors = Dict(
     "millimetres" => 1000000,
     "yards" => 1.195990046
 )
-
-end
