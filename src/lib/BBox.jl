@@ -79,27 +79,5 @@ function bbox(geojson::T) where {T <: AbstractGeometry}
 end
 
 function bbox(geojson::T) where {T<: AbstractFeature}
-    result = [Inf, Inf, -Inf, -Inf]
-
-    coords = geojson.geometry.coordinates
-
-    for el in coords
-        if result[1] > el[1]
-            result[1] = el[1]
-        end
-
-        if result[2] > el[2]
-            result[2] = el[2]
-        end
-
-        if result[3] < el[1]
-            result[3] = el[1]
-        end
-
-        if result[4] < el[2]
-            result[4] = el[2]
-        end
-    end
-
-    return result
+    return bbox(geojson.geometry)
 end

@@ -7,7 +7,8 @@ export radiansToLength, lengthToRadians, lengthToDegrees, convertLength, convert
     angleAdjacent, distance, distanceToSegment, rhumbDistance, rhumbBearing, rhumbDestination,
     destination, bearing, bearingToAzimuth, bbox, center, centroid, transformRotate, transformScale,
     bezier, concave, clockwise, nearestPoint, earthRadius, areaFactors, unitsFactor, parallel,
-    Spline, lineSegment, pointOnLine, pointInPolygon, medianCenter, massCenter, meanCenter
+    Spline, lineSegment, pointOnLine, pointInPolygon, medianCenter, massCenter, meanCenter, circle,
+    pNormDistance, distanceWeight
 
 
 include("Constants.jl")
@@ -21,6 +22,7 @@ include("lib/Lines.jl")
 include("lib/Centering.jl")
 include("lib/Transformations.jl")
 include("lib/Splines.jl")
+include("lib/Circle.jl")
 include("lib/BezierSpline.jl")
 include("lib/Booleans.jl")
 

@@ -27,7 +27,7 @@ function distance(from::Point, to::Point, options::String="kilometers")
 end
 
 
-function rhumbDistance(from::Position, to::Position, units::String)
+function rhumbDistance(from::Position, to::Position, units::String="kilometers")
     toLon = xcoord(to)
     toLon += (xcoord(to) - xcoord(from) > 180) ? -360 : ((xcoord(from) - xcoord(to) > 180)) ? 360 : 0
 
@@ -87,4 +87,76 @@ function nearestPoint(target::Point, points::Vector{Point})
     nearest::Point = points[index]
 
     return nearest
+end
+
+function distanceWeight(; geojson::T, treshold::Real=10000, p::Real=2, binary::Bool=false, alpha::Real=-1., standardization::Bool=false) where {T <: AbstractFeatureCollection}
+    features = []
+
+    for feat in geojson.features
+        push!(features, centroid(feat.geometry))
+    end
+
+    weights = []
+    for i in 1:length(geojson.features)
+        weights[i] = []
+    end
+
+    for i in 1:length(geojson.features)
+        for j in i:length(geojson.features)
+
+            i === j && (weights[i][j] = 0.)
+
+            dist = pNormDistance(geojson.features[i], geojson.features[j], p)
+            weights[i][j] = dist
+            weights[j][i] = dist
+        end
+    end
+
+    for i in 1:length(geojson.features)
+        for j in 1:length(geojson.features)
+            dist = weights[i][j]
+            dist === 0 && continue
+
+            if binary
+                if dist <= treshold
+                    weights[i][j] = 1.
+                else
+                    weights[i][j] = 0.
+                end
+            else
+                if dist <= treshold
+                    weights[i][j] = dist^alpha
+                else
+                    weights[i][j] = 0.
+                end
+
+            end
+        end
+    end
+
+    if standardization
+        for i in 1:length(geojson.features)
+            rows = reduce(+, weights[i])
+
+            for j in eachindex(geojson.features)
+                weights[i][j] = weights[i][j] / rows
+            end
+        end
+    end
+
+    return weights
+end
+
+""" Calcualte the Minkowski p-norm distance between two Points. """
+function pNormDistance(point1::Point, point2::Point, p::Real=2)::Real
+    coords1 = point1.coordinates
+    coords2 = point2.coordinates
+
+    Δx = coords1[1] - coords2[1]
+    Δy = coords1[2] - coords2[2]
+
+    p === 1 && return abs(Δx) + abs(Δy)
+
+    return (Δx^p + Δy^p)^(1/p)
+
 end

@@ -1,5 +1,5 @@
 using Test, Turf
-using GeoInterface: Position, Point, LineString, Polygon, geotype, AbstractGeometry, FeatureCollection
+using GeoInterface
 
 @testset "Turf" begin
     include("angle.jl")
@@ -9,4 +9,6 @@ using GeoInterface: Position, Point, LineString, Polygon, geotype, AbstractGeome
     include("destination.jl")
     include("booleans.jl")
     include("centering.jl")
+    include("transformations.jl")
+    include("circle.jl")
 end # begin

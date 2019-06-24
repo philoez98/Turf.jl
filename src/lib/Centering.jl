@@ -11,18 +11,19 @@ function centroid(geojson::T) where {T<:AbstractGeometry}
     # TODO: check dims
 
     data = geojson.coordinates
+    type = geotype(geojson)
 
-    if geotype(geojson) === :Point
+    if type === :Point
         x = data[1]
         y = data[2]
         len = 1.
-    elseif geotype(geojson) === :LineString
+    elseif type === :LineString
         for i in eachindex(data)
             x += data[i][1]
             y += data[i][2]
             len += 1
         end
-    elseif geotype(geojson) === :Polygon
+    elseif type === :Polygon || type === :Polygon
         for i in eachindex(data[1])
             x += data[1][i][1]
             y += data[1][i][2]
@@ -190,7 +191,7 @@ function findMedian(candidate::Position, previous::Position, centroids::FeatureC
 
     i = findfirst(x -> x.properties["candidates"] != nothing, centroids.features)
     feat = centroids.features[i]
-    
+
     tol = feat.properties["tolerance"]
     weight = feat.properties["weight"]
     xSum = 0.

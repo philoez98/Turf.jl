@@ -24,4 +24,7 @@
 
     @test nearestPoint(target, [a, b, c, d, e, f]).coordinates == [-75.33, 39.44]
 
+    @test pNormDistance(Point([2, 0]), Point([0, 0]), 2) == 2
+    @test pNormDistance(Point([1, 1]), Point([0, 0]), 1) == 2
+
 end

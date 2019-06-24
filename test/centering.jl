@@ -1,6 +1,3 @@
-using GeoInterface: Point, LineString, Feature, AbstractFeatureCollection
-include("../src/lib/Centering.jl")
-
 @testset "centering" begin
 
     p1 = Point([4.831961989402771, 45.75764678012361])
