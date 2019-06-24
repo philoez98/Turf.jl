@@ -1,5 +1,5 @@
 using Test, Turf
-using GeoInterface: Position, Point, LineString, Polygon, geotype, AbstractGeometry
+using GeoInterface: Position, Point, LineString, Polygon, geotype, AbstractGeometry, FeatureCollection
 
 @testset "Turf" begin
     include("angle.jl")

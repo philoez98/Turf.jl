@@ -1,4 +1,4 @@
-using GeoInterface: Point, LineString, Feature
+using GeoInterface: Point, LineString, Feature, AbstractFeatureCollection
 include("../src/lib/Centering.jl")
 
 @testset "centering" begin
@@ -49,5 +49,25 @@ include("../src/lib/Centering.jl")
     @test centroid(p1).coordinates == [4.831961989402771, 45.75764678012361]
     @test centroid(l1).coordinates == [4.860076904296875,45.75919915723537]
     @test centroid(poly).coordinates == [4.839177131652832,45.76256007199914]
+
+    poly2 = Polygon([[[0, 0], [0, 0], [0, 0], [0, 0]]])
+
+    @test meanCenter(poly).coordinates ≈ [4.839177,45.76256]
+    @test meanCenter(poly2).coordinates == [0, 0]
+    @test meanCenter(l1).coordinates ≈ [4.860077,45.759199]
+
+    @test massCenter(poly2).coordinates == [0, 0]
+    @test massCenter(poly).coordinates == [4.840728965137111,45.75581209996416]
+
+    coll = FeatureCollection([Feature(Point([0, 0])),
+      Feature(Point([1, 0])), Feature(Point([0, 1])),
+      Feature(Point([5, 8]))])
+
+    coll2 = FeatureCollection([Feature(Point([0, 0])),
+      Feature(Point([9, 9])), Feature(Point([9.25, 9.25])),
+      Feature(Point([9.5, 9.5])), Feature(Point([9.75, 9.75])), Feature(Point([10, 10]))])
+
+    @test medianCenter(coll).coordinates ≈ [0.383876,0.616989] atol=0.0001
+    @test medianCenter(coll2).coordinates ≈ [9.254246,9.254246] atol=0.0001
 
 end
