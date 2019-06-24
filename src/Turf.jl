@@ -1,7 +1,7 @@
 module Turf
 
 using GeoInterface: Point, Position, LineString, Feature, AbstractGeometry, AbstractFeature,
-    AbstractFeatureCollection, xcoord, ycoord, Polygon, geotype, MultiPolygon, MultiLineString
+    AbstractFeatureCollection, xcoord, ycoord, Polygon, geotype, MultiPolygon, MultiLineString, FeatureCollection
 
 export radiansToLength, lengthToRadians, lengthToDegrees, convertLength, convertArea,
     angleAdjacent, distance, distanceToSegment, rhumbDistance, rhumbBearing, rhumbDestination,
