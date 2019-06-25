@@ -299,6 +299,36 @@ function lineclip(points::Vector{P}, bbox::Vector{T}) where {T <: Real, P <: Abs
     return results
 end
 
+"""Sutherland-Hodgeman polygon clipping algorithm."""
+function polygonclip(points::Vector{P}, bbox::Vector{T}) where {P <: AbstractPoint, T <: Real}
+    let result, edge, prev, pInside, p, inside end
+    ranges = [1, 2, 4, 8]
+
+    for edge in ranges
+        result = []
+
+        prev = points[length(points) - 1]
+        pInside = !(bitcode(prev, bbox) & edge)
+
+        for i in 1:length(points)
+            p = points[i]
+            inside = !(bitcode(p, bbox) & edge)
+
+            inside !== pInside && push!(result, intersection(prev, p, edge, bbox))
+
+            inside && push!(result, p)
+
+            prev = p
+            pInside = inside
+        end
+
+        points = result
+        length(points) <= 0 && break
+    end
+
+    return result
+end
+
 
 """Intersect a segment against one of the 4 lines that make up the bbox"""
 function intersection(a::Point, b::Point, edge, bbox::Vector{T}) where {T <: Real}

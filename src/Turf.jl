@@ -7,7 +7,7 @@ export radiansToLength, lengthToRadians, lengthToDegrees, convertLength, convert
     destination, bearing, bearingToAzimuth, bbox, center, centroid, transformRotate, transformScale,
     bezier, concave, clockwise, nearestPoint, earthRadius, areaFactors, unitsFactor, parallel,
     Spline, lineSegment, pointOnLine, pointInPolygon, medianCenter, massCenter, meanCenter, circle,
-    pNormDistance, distanceWeight, ellipse, explode, midPoint, square, flip
+    pNormDistance, distanceWeight, ellipse, explode, midPoint, square, flip, lineclip, polygonclip
 
 
 include("Constants.jl")
