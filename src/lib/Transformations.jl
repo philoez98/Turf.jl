@@ -158,6 +158,9 @@ function getOrigin(geojson::Feature, origin::String)
     end
 end
 
+"""
+Takes a Geometry or a FeatureCollection and returns all positions as Points.
+"""
 function explode(geojson::T)::FeatureCollection where {T <: Union{AbstractFeatureCollection, AbstractGeometry}}
     points::Vector{Point} = []
 
@@ -201,5 +204,120 @@ function explode(geojson::T)::FeatureCollection where {T <: Union{AbstractFeatur
     end
 
     return FeatureCollection([Feature(x) for x in points])
+end
 
+"""Take input Features and Geometries and flips all of their coordinates from `[x, y]` to `[y, x]`."""
+function flip(geojson::T, mutate::Bool=false) where {T <: Union{AbstractFeature, AbstractGeometry}}
+    type = geotype(geojson)
+    coords = []
+    geom = nothing
+
+    !mutate && (geojson = deepcopy(geojson))
+
+    if type === :Feature
+        geom = geojson.geom
+        coords = geojson.geometry.coordinates
+    else
+        geom = geojson
+        coords = geojson.coordinates
+    end
+
+    if geotype(geom) === :Point
+        x = coords[1]
+        y = coords[2]
+        coords[1] = y
+        coords[2] = x
+    elseif geotype(geom) === :Polygon || geotype(geom) === :MultiLineString
+        for i in eachindex(coords)
+            x = coords[i][1]
+            y = coords[i][2]
+            coords[i][1] = y
+            coords[i][2] = x
+        end
+    elseif geotype(geom) === :LineString
+        for i in eachindex(coords[1])
+            x = coords[1][i][1]
+            y = coords[1][i][2]
+            coords[1][i][1] = y
+            coords[1][i][2] = x
+        end
+    end
+
+    return geojson
+
+end
+
+"""
+Cohen-Sutherland line clippign algorithm, adapted to efficiently to
+handle polylines rather than just segments
+"""
+function lineclip(points::Vector{P}, bbox::Vector{T}) where {T <: Real, P <: AbstractPoint}
+    len = length(points)
+    codeA = bitcode(points[1], bbox)
+    parts = []
+    results = []
+    let a, b, codeB, lastCode end
+
+    for i in 2:len
+        a = points[i - 1]
+        b = points[i]
+
+        codeB = lastCode = bitcode(b, bbox)
+
+        while true
+            if !(codeA | codeB)
+                push!(parts, a)
+
+                if codeB !== lastCode
+                    push!(parts, b)
+
+                    if i < len - 1
+                        push!(results, parts)
+                        parts = []
+                    end
+                elseif i === len - 1
+                    push!(parts, b)
+                end
+
+                break
+            elseif (codeA & codeB)
+                break
+
+            elseif codeA
+                a = intersection(a, b, codeB, bbox)
+                codeA = bitcode(b, bbox)
+
+            else
+                b = intersection(a, b, codeB, bbox)
+                codeB = bitcode(b, bbox)
+            end
+        end
+        codeA = lastCode
+    end
+    length(part) > 0 && push!(results, parts)
+
+    return results
+end
+
+
+"""Intersect a segment against one of the 4 lines that make up the bbox"""
+function intersection(a::Point, b::Point, edge, bbox::Vector{T}) where {T <: Real}
+    return edge & 8 ? [a[1] + (b[1] - a[1]) * (bbox[4] - a[1]) / (b[1] - a[1]), bbox[4]] : # top
+           edge & 4 ? [a[1] + (b[1] - a[1]) * (bbox[2] - a[2]) / (b[2] - a[2]), bbox[2]] : # bottom
+           edge & 2 ? [bbox[3], a[2] + (b[2] - a[2]) * (bbox[3] - a[1]) / (b[1] - a[1])] : # right
+           edge & 1 ? [bbox[1], a[2] + (b[2] - a[2]) * (bbox[1] - a[1]) / (b[1] - a[1])] : # left
+           nothing
+end
+
+
+@inline function bitcode(p::Point, bbox::Vector{T}) where {T <: Real}
+    code = 0
+
+    p[1] < bbox[1] && (code |= 1)
+    p[1] > bbox[3] && (code |= 2)
+
+    p[2] < bbox[2] && (code |= 4)
+    p[2] > bbox[4] && (code |= 8)
+
+    return code
 end

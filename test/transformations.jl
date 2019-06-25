@@ -39,4 +39,6 @@
 		@test feats[i].geometry.coordinates == res[i].coordinates
 	end
 
+	@test flip(Point([77.34374999999999,43.58039085560784,3000])).coordinates == [43.58039085560784,77.34374999999999,3000]
+
 end

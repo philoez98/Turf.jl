@@ -1,14 +1,13 @@
 module Turf
 
-using GeoInterface: Point, Position, LineString, Feature, AbstractGeometry, AbstractFeature,
-    AbstractFeatureCollection, xcoord, ycoord, Polygon, geotype, MultiPolygon, MultiLineString, FeatureCollection
+using GeoInterface
 
 export radiansToLength, lengthToRadians, lengthToDegrees, convertLength, convertArea,
     angleAdjacent, distance, distanceToSegment, rhumbDistance, rhumbBearing, rhumbDestination,
     destination, bearing, bearingToAzimuth, bbox, center, centroid, transformRotate, transformScale,
     bezier, concave, clockwise, nearestPoint, earthRadius, areaFactors, unitsFactor, parallel,
     Spline, lineSegment, pointOnLine, pointInPolygon, medianCenter, massCenter, meanCenter, circle,
-    pNormDistance, distanceWeight, ellipse, explode, midPoint
+    pNormDistance, distanceWeight, ellipse, explode, midPoint, square, flip
 
 
 include("Constants.jl")
@@ -24,6 +23,7 @@ include("lib/Transformations.jl")
 include("lib/Splines.jl")
 include("lib/Circle.jl")
 include("lib/Ellipse.jl")
+include("lib/Square.jl")
 include("lib/BezierSpline.jl")
 include("lib/Booleans.jl")
 

@@ -81,3 +81,21 @@ end
 function bbox(geojson::T) where {T<: AbstractFeature}
     return bbox(geojson.geometry)
 end
+
+"""Takes a bbox and returns an equivalent Polygon."""
+function bboxPolygon(bbox::Vector{T}) where {T <: Real}
+    west = bbox[1]
+    south = bbox[2]
+    east = bbox[3]
+    north = bbox[4]
+
+    length(bbox) === 6 && throw(error("BBoxes with 6 positions are not supported."))
+
+    lowLeft = [west, south]
+    topLeft = [west, north]
+    topRight = [east, north]
+    lowRight = [east, south]
+
+    return Polygon([[lowLeft, lowRight, topRight, topLeft, lowLeft]])
+
+end

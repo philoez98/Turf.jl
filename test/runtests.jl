@@ -12,4 +12,5 @@ using GeoInterface
     include("transformations.jl")
     include("ellipse.jl")
     include("circle.jl")
+    include("square.jl")
 end # begin
