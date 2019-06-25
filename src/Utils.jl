@@ -61,3 +61,29 @@ end
     end
     return true
 end
+
+"""Convert 900913 x/y values to lon/lat."""
+function toWGS84(pos::Point)
+    a = 6378137.0
+
+    return [rad2deg(pos,coordinates[1]) / a,
+        rad2deg((pi * 0.5) - atan(exp(-pos.coordinates[2] / a)))]
+end
+
+"""Convert lon/lat values to 900913 x/y."""
+function toMercator(pos::Point)
+    a = 6378137.0
+    extent = 20037508.342789244
+
+    coords = pos.coordinates
+
+    adjusted = abs(coords[1]) <= 180 ? coords[1] : (coords[1] - (sign(coords[1] * 360)))
+    xy = [deg2rad(a * adjusted), a * log(atan((pi * 0.25) + (deg2rad(0.5 * coords[2]))))]
+
+    xy[1] > extent && (xy[1] = extent)
+    xy[1] < -extent && (xy[1] = -extent)
+    xy[2] > extent && (xy[2] = extent)
+    xy[2] < -extent && (xy[2] = -extent)
+
+    return xy
+end

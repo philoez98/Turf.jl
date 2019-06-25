@@ -34,3 +34,38 @@ end
     end
     return segments
 end
+
+"""
+Creates a circular arc, of a circle of the given radius and center point, between bearing1 and bearing2;
+0 bearing is North of center point, positive clockwise.
+ """
+function linearc(center::Point, radius::Real, bearing1::Real, bearing2::Real, steps::Real=64., units::String="kilometers")
+    angle1 = to360(bearing1)
+    angle2 = to360(bearing2)
+
+    angle1 === angle2 && return LineString(circle(center=center, radius=radius, steps=steps, units=units).coordinates[1])
+
+    startdeg = angle1
+    enddeg = (angle1 < angle2) ?  angle2 :  angle2 + 360
+    α = startdeg
+
+    coords = []
+    i = 0
+
+    while α < enddeg
+        push!(coords, destination(center.coordinates, radius, α).coordinates)
+        i += 1
+        α = startdeg + i * 360 / steps
+    end
+
+    α > enddeg && push!(coords, destination(center.coordinates, radius, enddeg).coordinates)
+
+    return LineString(coords)
+end
+
+function to360(a::Real)
+    b = a % 360
+    b < 0 && (b += 360)
+
+    return b
+end
