@@ -126,7 +126,7 @@ function scale(feature::Feature, factor::Real, origin::String="centroid")
 end
 
 function getOrigin(geojson::Feature, origin::String)
-    if origin === nothing || origin === ""
+    if origin == nothing || origin === ""
         origin = "centroid"
     end
 
@@ -156,4 +156,50 @@ function getOrigin(geojson::Feature, origin::String)
     else
         throw(error("Invalid origin."))
     end
+end
+
+function explode(geojson::T)::FeatureCollection where {T <: Union{AbstractFeatureCollection, AbstractGeometry}}
+    points::Vector{Point} = []
+
+    if geotype(geojson) === :FeatureCollection
+        for feat in geojson.features
+            geom = feat.geometry
+
+            if geotype(geom) === :Point
+                push!(points, geom)
+
+            elseif geotype(geom) === :Polygon || geotype(geom) === :MultiLineString
+
+                for i in eachindex(geom.coordinates[1])
+                    push!(points, Point(geom.coordinates[1][i]))
+                end
+            elseif geotype(geom) === :LineString
+
+                for i in eachindex(geom.coordinates)
+                    push!(points, Point(geom.coordinates[i]))
+                end
+
+            end
+        end
+    else
+        if geotype(geojson) === :Point
+            push!(points, geojson)
+
+        elseif geotype(geojson) === :Polygon || geotype(geojson) === :MultiLineString
+
+            for i in eachindex(geojson.coordinates[1])
+                push!(points, Point(geojson.coordinates[1][i]))
+            end
+        elseif geotype(geojson) === :LineString
+
+            for i in eachindex(geojson.coordinates)
+                push!(points, Point(geojson.coordinates[i]))
+            end
+
+        end
+
+    end
+
+    return FeatureCollection([Feature(x) for x in points])
+
 end

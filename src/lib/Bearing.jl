@@ -50,7 +50,7 @@ end
 Takes two points and finds the geographic bearing between them,
 i.e. the angle measured in degrees from the north line (0 degrees)
 """
-function bearing(start::Position, stop::Position, final::Bool)
+function bearing(start::Position, stop::Position, final::Bool=false)
     if final === true
         bear = bearing(stop, start, false)
         return (bear + 180) % 360

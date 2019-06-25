@@ -27,4 +27,8 @@
     @test pNormDistance(Point([2, 0]), Point([0, 0]), 2) == 2
     @test pNormDistance(Point([1, 1]), Point([0, 0]), 1) == 2
 
+    mid = midPoint(Point([0, 10]), Point([0, 0]))
+
+    @test distance(Point([0, 10]), mid) ≈ distance(Point([0, 0]), mid)
+
 end

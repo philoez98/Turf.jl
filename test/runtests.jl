@@ -10,5 +10,6 @@ using GeoInterface
     include("booleans.jl")
     include("centering.jl")
     include("transformations.jl")
+    include("ellipse.jl")
     include("circle.jl")
 end # begin

@@ -160,3 +160,14 @@ function pNormDistance(point1::Point, point2::Point, p::Real=2)::Real
     return (Δx^p + Δy^p)^(1/p)
 
 end
+
+"""
+Takes two Points and returns a point midway between them.
+The midpoint is calculated geodesically, meaning the curvature of the earth is taken into account.
+"""
+function midPoint(first::Point, second::Point)
+    dist = distance(first, second)
+    bear = bearing(first.coordinates, second.coordinates)
+
+    return destination(first.coordinates, dist / 2, bear)
+end

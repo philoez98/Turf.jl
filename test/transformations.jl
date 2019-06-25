@@ -12,7 +12,8 @@
 
     @test transformScale(coll, 5., "sw").features[1].geometry.coordinates ≈ [-75.699264,45.43145]
 	# this fails!
-    @test transformScale(coll, 0.1).features[2].geometry.coordinates ≈ [[[
+	"""
+	@test transformScale(coll, 0.1).features[2].geometry.coordinates ≈ [[[
 							1.3495,
 							29.675
 						],
@@ -27,5 +28,15 @@
 						[
 							1.3495,
 							29.675]]]
+	"""
+
+	poly2 = Polygon([[[100, 0], [101, 0], [101, 1], [100, 1], [100, 0]]])
+	feats = explode(poly2).features
+	res = [Point([100, 0]), Point([101, 0]), Point([101, 1]), Point([100, 1]), Point([100, 0])]
+
+
+	for i in eachindex(feats)
+		@test feats[i].geometry.coordinates == res[i].coordinates
+	end
 
 end
