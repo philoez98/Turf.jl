@@ -161,7 +161,7 @@ end
 """
 Takes a Geometry or a FeatureCollection and returns all positions as Points.
 """
-function explode(geojson::T)::FeatureCollection where {T <: Union{AbstractFeatureCollection, AbstractGeometry}}
+function explode(geojson::T, pointsOnly::Bool=false)::FeatureCollection where {T <: Union{AbstractFeatureCollection, AbstractGeometry}}
     points::Vector{Point} = []
 
     if geotype(geojson) === :FeatureCollection
@@ -203,6 +203,7 @@ function explode(geojson::T)::FeatureCollection where {T <: Union{AbstractFeatur
 
     end
 
+    pointsOnly && return points
     return FeatureCollection([Feature(x) for x in points])
 end
 
@@ -350,4 +351,65 @@ end
     p[2] > bbox[4] && (code |= 8)
 
     return code
+end
+
+""" Finds the tangents of a Polygon from a Point."""
+function polygonTangents(pt::Point, poly::Polygon)
+    ptCoords = pt.coordinates
+    polyCoords = poly.coordinates
+
+    box = bbox(poly)
+    nearest = nothing
+    nearestIndex = 1
+
+    if ptCoords[1] > box[1] && ptCoords[1] < box[3] && ptCoords[2] > box[2] && ptCoords[2] < box[4]
+        nearest = nearestPoint(pt, explode(poly, true))
+        nearestIndex = findfirst(x -> x == nearest, explode(poly, true))
+    end
+
+    rtan = polyCoords[1][nearestIndex]
+    ltan = polyCoords[1][1]
+
+    if nearest != nothing
+        nearest.coordinates[2] < ptCoords[2] && (ltan = polyCoords[1][nearestIndex])
+    end
+
+    enext = nothing
+    eprev = isleft(polyCoords[1][1], polyCoords[1][length(polyCoords[1]) - 1], ptCoords)
+    out = process(polyCoords[1], ptCoords, eprev, enext, rtan, ltan)
+
+    rtan = out[1]
+    ltan = out[2]
+
+    return FeatureCollection([Feature(Point(rtan)), Feature(Point(ltan))])
+end
+
+function isleft(point1, point2, point3)
+    return (point2[1] - point1[1]) * (point3[2] - point1[2]) - (point3[1] - point1[1]) * (point2[2] - point1[2])
+end
+
+function isabove(point1, point2, point3)
+    return isleft(point1, point2, point3) > 0
+end
+
+function isbelow(point1, point2, point3)
+    return isleft(point1, point2, point3) < 0
+end
+
+function process(polyCoords, ptCoords, eprev, enext, rtan, ltan)
+    for i in 1:length(polyCoords) - 1
+        curr = polyCoords[i]
+        next = polyCoords[i + 1]
+
+        (i === length(polyCoords) - 1) && (next = polyCoords[1])
+
+        enext = isleft(curr, next, ptCoords)
+        if eprev <= 0 && enext > 0
+            !(isbelow(ptCoords, curr, rtan)) && (rtan = curr)
+        elseif eprev > 0 && enext <= 0
+            !(isabove(ptCoords, curr, ltan)) && (ltan = curr)
+        end
+        eprev = enext
+    end
+    return [rtan, ltan]
 end
