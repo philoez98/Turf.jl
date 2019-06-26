@@ -13,6 +13,7 @@ using GeoInterface
     include("ellipse.jl")
     include("circle.jl")
     include("planes.jl")
+    include("grids.jl")
     include("lines.jl")
     include("square.jl")
 end # begin
