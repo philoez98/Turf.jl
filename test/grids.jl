@@ -32,6 +32,7 @@
 					]] atol=0.0001
 
     feat1 = hexGrid(bbox1, 25., nothing, false, "miles")
+"""
 	@test feat1.features[1].geometry.coordinates ≈
     [
                 [
@@ -64,4 +65,5 @@
                         31.467449
                     ]
                 ]]
+				"""
 end
