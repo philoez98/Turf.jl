@@ -4,7 +4,7 @@ using GeoInterface
 
 export radiansToLength, lengthToRadians, lengthToDegrees, convertLength, convertArea,
     angleAdjacent, distance, distanceToSegment, rhumbDistance, rhumbBearing, rhumbDestination,
-    destination, bearing, bearingToAzimuth, bbox, center, centroid, transformRotate, transformScale,
+    destination, bearing, bearingToAzimuth, bbox, bboxPolygon, center, centroid, transformRotate, transformScale,
     bezier, concave, clockwise, nearestPoint, earthRadius, areaFactors, unitsFactor, parallel,
     Spline, lineSegment, pointOnLine, pointInPolygon, medianCenter, massCenter, meanCenter, circle,
     pNormDistance, distanceWeight, ellipse, explode, midPoint, square, flip, lineclip, polygonclip,
