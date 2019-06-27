@@ -2,6 +2,7 @@
 struct NNStatistics
     units::String
     arealUnits::String
+    area::Polygon
     observedMeanDistance::Real
     expectedMeanDistance::Real
     nearestNeighbourIndex::Real
@@ -41,7 +42,7 @@ hand, they may look rather evenly dispersed if the study area is limited to
 the city's downtown.
 """
 function analysis(data::F, area::Union{P, Nothing}=nothing, units::String="kilometers") where {F <: AbstractFeatureCollection, P <: AbstractPolygon}
-    area == nothing && (area = bboxPolygon(bbox(data)))
+    area == nothing && (area = bboxPolygon(bbox(data)[1]))
 
     feats = []
 
@@ -63,6 +64,6 @@ function analysis(data::F, area::Union{P, Nothing}=nothing, units::String="kilom
     expDist = 1 / (2 * sqrt(popDensity))
     var = 0.26136 / (sqrt(n * popDensity))
 
-    return NNStatistics(units, units * "²", obsDist, expDist, obsDist / expDist, n, (obsDist - expDist) / var)
+    return NNStatistics(units, units * "²", area, obsDist, expDist, obsDist / expDist, n, (obsDist - expDist) / var)
 
 end

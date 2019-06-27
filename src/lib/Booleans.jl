@@ -123,7 +123,7 @@ function pointOnLine(point::Point, line::LineString, ignoreEndVertices::Bool=fal
             i === length(lCoords) - 2 && (ignore = "end")
             (i === 1 && i + 1 === length(lCoords) - 1) && (ignore = "both")
         end
-        isPointOnSegment(lCoords[i], lCoords[i + 1], pCoords, ignore) == true && return true
+        isPointOnSegment(lCoords[i], lCoords[i + 1], pCoords, ignore) && return true
     end
     return false
 end
@@ -139,7 +139,7 @@ end
     dy1 = y2 - y1
 
     cross = dxc * dy1 - dyc * dx1
-    cross !== 0 && return false
+    cross != 0 && return false
 
     if excludeBoundary === "none"
         if abs(dx1) >= abs(dy1)
@@ -199,7 +199,7 @@ end
 function inRing(pt::Position, ring::Vector{Position}, ignoreBoundary::Bool=false)
     inside = false
 
-    (ring[1][1] === ring[length(ring) - 1][1] && ring[1][2] === ring[length(ring) - 1][1]) && (ring = ring[1, length(ring) - 1])
+    (ring[1][1] == ring[length(ring) - 1][1] && ring[1][2] == ring[length(ring) - 1][1]) && (ring = ring[1, length(ring) - 1])
 
     for i in 1:length(ring) - 1
         j = i + 1
@@ -209,7 +209,7 @@ function inRing(pt::Position, ring::Vector{Position}, ignoreBoundary::Bool=false
         xj = ring[j][1]
         yj = ring[j][2]
 
-        onBoundary = (pt[2] * (xi - xj) + yi * (xj - pt[1]) + yj * (pt[1] - xi) === 0) &&
+        onBoundary = (pt[2] * (xi - xj) + yi * (xj - pt[1]) + yj * (pt[1] - xi) == 0) &&
             ((xi - pt[1]) * (xj - pt[1]) <= 0) && ((yi - pt[2]) * (yj - pt[2]) <= 0)
 
         onBoundary && return !ignoreBoundary

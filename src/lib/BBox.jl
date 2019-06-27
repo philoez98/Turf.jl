@@ -8,34 +8,13 @@ isdefined(Turf, :BBox3D) || const BBox3D = Vector{Float64}(undef, 6)
 
 """ Takes a set of features, calculates the bbox of all input features, and returns a bounding box."""
 function bbox(geojson::T) where {T<:AbstractFeatureCollection}
-    result = [Inf, Inf, -Inf, -Inf]
-
-    coords = []
-
+    results::Vector{Vector{Float64}} = []
     for feat in geojson.features
-        push!(coords, feat.geometry.coordinates)
+        geom = feat.geometry
+        push!(results, bbox(geom))
     end
 
-
-    for (i, el) in enumerate(coords)
-        if result[1] > el[i][1]
-            result[1] = el[i][1]
-        end
-
-        if result[2] > el[i][2]
-            result[2] = el[i][2]
-        end
-
-        if result[3] < el[i][1]
-            result[3] = el[i][1]
-        end
-
-        if result[4] < el[i][2]
-            result[4] = el[i][2]
-        end
-    end
-
-    return result
+    return results
 end
 
 function bbox(geojson::T) where {T <: AbstractGeometry}
@@ -64,15 +43,13 @@ function bbox(geojson::T) where {T <: AbstractGeometry}
             result[4] < coords[1][i][2] && (result[4] = coords[1][i][2])
         end
     else
-        for el in coords
-            result[1] > el[1] && (result[1] = el[1])
+            result[1] > coords[1] && (result[1] = coords[1])
 
-            result[2] > el[2] && (result[2] = el[2])
+            result[2] > coords[2] && (result[2] = coords[2])
 
-            result[3] < el[1] && (result[3] = el[1])
+            result[3] < coords[1] && (result[3] = coords[1])
 
-            result[4] < el[2] && (result[4] = el[2])
-        end
+            result[4] < coords[2] && (result[4] = coords[2])
     end
 
     return result
