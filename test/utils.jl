@@ -20,4 +20,7 @@
     @test convertArea(1, "kilometers", "miles") == 0.386
     @test convertArea(1, "metres", "centimeters") == 10000
     @test convertArea(100, "meters", "feet") ≈ 1076.39 atol=0.01
+
+    poly = Polygon([[[125, -15],[113, -22],[117, -37],[130, -33],[148, -39],[154, -27],[144, -15],[125, -15]]])
+    @test area(poly) ≈ 7766240997209
 end

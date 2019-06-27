@@ -1,4 +1,4 @@
-isdefined(Turf, :earthRadius) || const earthRadius = 6371008.8 # Earth Radius in meters (m)
+isdefined(Turf, :earthRadius) || const earthRadius = 6371008.8 # Earth Radius used with the Harvesine formula and approximates using a spherical (non-ellipsoid) Earth.
 
 
 isdefined(Turf, :factors) || const factors = Dict(

@@ -8,7 +8,8 @@ export radiansToLength, lengthToRadians, lengthToDegrees, convertLength, convert
     bezier, concave, clockwise, nearestPoint, earthRadius, areaFactors, unitsFactor, parallel,
     Spline, lineSegment, pointOnLine, pointInPolygon, medianCenter, massCenter, meanCenter, circle,
     pNormDistance, distanceWeight, ellipse, explode, midPoint, square, flip, lineclip, polygonclip,
-    linearc, sector, planepoint, toWGS84, toMercator, pointGrid, rectangleGrid, hexGrid, polygonTangents
+    linearc, sector, planepoint, toWGS84, toMercator, pointGrid, rectangleGrid, hexGrid, polygonTangents,
+    area
 
 
 include("Constants.jl")

@@ -87,3 +87,86 @@ function toMercator(pos::Point)
 
     return xy
 end
+
+"""Takes one or more features and returns their area in square meters."""
+function area(geojson::T) where {T <: Union{AbstractFeatureCollection, AbstractGeometry}}
+    if geotype(geojson) === :FeatureCollection
+        results = []
+        for feat in geojson.features
+            push!(results, calculateArea(feat.geometry))
+        end
+
+        return results
+    else
+        return calculateArea(geojson)
+    end
+end
+
+function calculateArea(geom::T) where {T <: AbstractGeometry}
+    total = 0
+    type = geotype(geom)
+
+    (type === :Point || type === :LineString || type === :MultiLineString) && return 0
+
+    type === :Polygon && return polygonArea(geom.coordinates)
+
+    if type === :MultiPolygon
+        for i in 1:length(geom.coordinates)
+            total += polygonArea(geom.coordinates[i])
+        end
+
+        return total
+    end
+
+    return 0
+end
+
+function polygonArea(coords)
+    total = 0
+
+    if length(coords) > 0
+        total += abs(ringArea(coords[1]))
+
+        for i in 2:length(coords)
+            total -= abs(ringArea(coords[i]))
+        end
+    end
+
+    return total
+end
+
+
+function ringArea(coords)
+    total = 0
+    lowIndex = 1
+    midIndex = 1
+    upIndex = 1
+
+    if length(coords) > 2
+        for i in 1:length(coords) - 1
+            if i === length(coords) - 2
+                lowIndex = length(coords) - 2
+                midIndex = length(coords) - 1
+                upIndex = 1
+            elseif i === length(coords) - 1
+                lowIndex = length(coords) - 1
+                midIndex = 1
+                upIndex = 2
+            else
+                lowIndex = i
+                midIndex = i + 1
+                upIndex = i + 2
+            end
+
+            p1 = coords[lowIndex]
+            p2 = coords[midIndex]
+            p3 = coords[upIndex]
+
+            total += (p3[1] * (pi / 180) - (p1[1] * (pi / 180))) * sin(p2[2] * (pi / 180))
+        end
+
+        total = total * 6378137 * 6378137 / 2
+    end
+
+    return total
+end

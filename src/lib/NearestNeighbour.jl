@@ -39,7 +39,6 @@ dispersed, or randomly distributed. For example, a city's subway stops may
 look extremely clustered if the study area is an entire state. On the other
 hand, they may look rather evenly dispersed if the study area is limited to
 the city's downtown.
-
 """
 function analysis(data::F, area::Union{P, Nothing}=nothing, units::String="kilometers") where {F <: AbstractFeatureCollection, P <: AbstractPolygon}
     area == nothing && (area = bboxPolygon(bbox(data)))
