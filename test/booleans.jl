@@ -68,4 +68,18 @@
 	poly = Polygon([[ [-81, 41], [-81, 47], [-72, 47], [-72, 41], [-81, 41]]])
 
 	@test pointInPolygon(pt, poly) == true
+
+	poly3 = Polygon([[[1, 1], [1, 10], [10, 10], [10, 1], [1, 1]]])
+	poly4 = Polygon([[[1, 1], [2, 2], [3, 2], [1, 1]]])
+	line5 = LineString([[1, 1], [2, 3], [2, 3.5]])
+
+	line6 = LineString([[1, 1], [1, 2], [1, 3], [1, 4]])
+	poly5 = Polygon( [[[1, 1], [1, 20], [1, 3], [1, 4], [1, 1]]])
+	line7 = LineString([[1, 2], [1, 3], [1, 3.5]])
+
+	@test contains(poly3, poly4) == true
+	@test contains(poly3, line5) == true
+	@test contains(line6, Point([1, 2])) == true
+	@test contains(poly3, poly5) == false
+	@test contains(poly3 , line7) == false
 end

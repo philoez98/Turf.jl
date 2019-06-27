@@ -226,3 +226,93 @@ function inBBox(pt::Position, bbox::Vector{Float64})
     return bbox[1] <= pt[1] &&  bbox[2] <= pt[2] &&
         bbox[3] >= pt[1] && bbox[4] >= pt[2]
 end
+
+"""
+Return True if the second geometry is completely contained by the first geometry.
+The interiors of both geometries must intersect and, the interior and boundary of the secondary (geometry b)
+must not intersect the exterior of the primary (geometry a).
+`contains` returns the exact opposite result of `within`.
+"""
+function contains(ft1::AbstractGeometry, ft2::AbstractGeometry)
+    type1 = geotype(ft1)
+    type2 = geotype(ft2)
+
+    coords1 = ft1.coordinates
+    coords2 = ft2.coordinates
+
+    if geotype(ft1) === :Point
+        if geotype(ft2) === :Point
+            return coords1[1] == coords2[1] && coords1[2] == coords2[2]
+        end
+        throw(error("$(geotype(ft2)) is not a supported type."))
+    elseif geotype(ft1) === :LineString
+        if geotype(ft2) === :Point
+            return pointOnLine(ft2, ft1, true)
+        elseif geotype(ft2) === :LineString
+            return lineOnLine(ft1, ft2)
+        else
+            throw(error("$(geotype(ft2)) is not a supported type."))
+        end
+
+    elseif geotype(ft1) === :Polygon
+        if geotype(ft2) === :Point
+            return pointInPolygon(ft2, ft1, true)
+        elseif geotype(ft2) === :LineString
+            return lineInPolygon(ft1, ft2)
+        elseif geotype(ft2) === :Polygon
+            return polygonInPolygon(ft1, ft2)
+        else
+            throw(error("$(geotype(ft2)) is not a supported type."))
+        end
+    else
+        throw(error("$(geotype(ft1)) is not a supported type."))
+    end
+end
+
+contains(ft1::Feature, ft2::Feature) = contains(ft1.geometry, ft2.geometry)
+
+function lineInPolygon(poly::Polygon, line::LineString)
+    out = false
+
+    polybox = bbox(poly)
+    linebox = bbox(line)
+
+    !(bboxOverlap(polybox, linebox)) && return false
+
+    coords = line.coordinates
+
+    for i in 1:length(coords) - 1
+        mid = [(coords[i][1] + coords[i + 1][1]) / 2, (coords[i][2] + coords[i + 1][2]) / 2]
+        if pointInPolygon(Point(mid), poly, true)
+            out = true
+            break
+        end
+    end
+    return out
+end
+
+
+function polygonInPolygon(ft1::Polygon, ft2::Polygon)
+    polybox1 = bbox(ft1)
+    polybox2 = bbox(ft2)
+
+    !(bboxOverlap(polybox1, polybox2)) && return false
+
+    coords = ft2.coordinates
+
+    for ring in coords
+        for coord in ring
+            !(pointInPolygon(Point(coord), ft1)) && return false
+        end
+    end
+
+    return true
+end
+
+function bboxOverlap(box1::Vector{T}, box2::Vector{T}) where {T <: Real}
+    box1[1] > box2[1] && return false
+    box1[3] < box2[3] && return false
+    box1[2] > box2[2] && return false
+    box1[4] < box2[4] && return false
+    return true
+end
