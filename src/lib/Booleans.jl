@@ -233,39 +233,39 @@ The interiors of both geometries must intersect and, the interior and boundary o
 must not intersect the exterior of the primary (geometry a).
 `contains` returns the exact opposite result of `within`.
 """
-function contains(ft1::AbstractGeometry, ft2::AbstractGeometry)
+function contains(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
     type1 = geotype(ft1)
     type2 = geotype(ft2)
 
     coords1 = ft1.coordinates
     coords2 = ft2.coordinates
 
-    if geotype(ft1) === :Point
-        if geotype(ft2) === :Point
+    if type1 === :Point
+        if type2 === :Point
             return coords1[1] == coords2[1] && coords1[2] == coords2[2]
         end
-        throw(error("$(geotype(ft2)) is not a supported type."))
-    elseif geotype(ft1) === :LineString
-        if geotype(ft2) === :Point
+        throw(error("$(type2) is not a supported type."))
+    elseif type1 === :LineString
+        if type2 === :Point
             return pointOnLine(ft2, ft1, true)
-        elseif geotype(ft2) === :LineString
+        elseif type2 === :LineString
             return lineOnLine(ft1, ft2)
         else
-            throw(error("$(geotype(ft2)) is not a supported type."))
+            throw(error("$(type2) is not a supported type."))
         end
 
-    elseif geotype(ft1) === :Polygon
-        if geotype(ft2) === :Point
+    elseif type1 === :Polygon
+        if type2 === :Point
             return pointInPolygon(ft2, ft1, true)
-        elseif geotype(ft2) === :LineString
+        elseif type2 === :LineString
             return lineInPolygon(ft1, ft2)
-        elseif geotype(ft2) === :Polygon
+        elseif type2 === :Polygon
             return polygonInPolygon(ft1, ft2)
         else
-            throw(error("$(geotype(ft2)) is not a supported type."))
+            throw(error("$(type2) is not a supported type."))
         end
     else
-        throw(error("$(geotype(ft1)) is not a supported type."))
+        throw(error("$(type1) is not a supported type."))
     end
 end
 
@@ -291,18 +291,35 @@ function lineInPolygon(poly::Polygon, line::LineString)
     return out
 end
 
+function lineOnLine(line1::LineString, line2::LineString)
+    for i in eachindex(line1.coordinates)
+        !(pointOnLine(line1.coordinates[i], line2)) && return false
+    end
+    return true
+end
 
-function polygonInPolygon(ft1::Polygon, ft2::Polygon)
+function polygonInPolygon(ft1::Polygon, ft2::Polygon, reverse::Bool=false)
     polybox1 = bbox(ft1)
     polybox2 = bbox(ft2)
+    coords = []
 
-    !(bboxOverlap(polybox1, polybox2)) && return false
+    if reverse
+        coords = ft1.coordinates
+        !(bboxOverlap(polybox2, polybox1)) && return false
 
-    coords = ft2.coordinates
+        for ring in coords
+            for coord in ring
+                !(pointInPolygon(Point(coord), ft2)) && return false
+            end
+        end
+    else
+        coords = ft2.coordinates
+        !(bboxOverlap(polybox1, polybox2)) && return false
 
-    for ring in coords
-        for coord in ring
-            !(pointInPolygon(Point(coord), ft1)) && return false
+        for ring in coords
+            for coord in ring
+                !(pointInPolygon(Point(coord), ft1)) && return false
+            end
         end
     end
 
@@ -315,4 +332,59 @@ function bboxOverlap(box1::Vector{T}, box2::Vector{T}) where {T <: Real}
     box1[2] > box2[2] && return false
     box1[4] < box2[4] && return false
     return true
+end
+
+
+function within(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
+    type1 = geotype(ft1)
+    type2 = geotype(ft2)
+
+    coords1 = ft1.coordinates
+    coords2 = ft2.coordinates
+
+    if type1 === :Point
+        if type2 === :LineString
+            return pointOnLine(ft1, ft2, true)
+        elseif type2 === :Polygon
+            return pointInPolygon(ft1, ft2, true)
+        end
+        throw(error("$(type2) is not a supported type."))
+    elseif type1 === :LineString
+        if type2 === :Polygon
+            return lineInPolygon(ft1, ft2)
+        elseif type2 === :LineString
+            return lineOnLine(ft1, ft2)
+        else
+            throw(error("$(type2) is not a supported type."))
+        end
+
+    elseif type1 === :Polygon
+        if type2 === :Polygon
+            return polygonInPolygon(ft1, ft2, true)
+        else
+            throw(error("$(type2) is not a supported type."))
+        end
+    else
+        throw(error("$(type1) is not a supported type."))
+    end
+end
+
+function lineInPolygon(line::LineString, poly::Polygon)
+    polybox = bbox(poly)
+    linebox = bbox(line)
+
+    !(bboxOverlap(polybox, linebox)) && return false
+
+    coords = line.coordinates
+    inside = false
+
+    for i in 1:length(coords) - 1
+        !(pointInPolygon(Point(coords[i]), poly)) && return false
+        !inside && (inside = pointInPolygon(Point(coords[i]), poly, true))
+        if !inside
+            mid = [(coords[i][1] + coords[i + 1][1]) / 2, (coords[i][2] + coords[i + 1][2]) / 2]
+            inside = pointInPolygon(Point(mid), poly, true)
+        end
+    end
+    return inside
 end

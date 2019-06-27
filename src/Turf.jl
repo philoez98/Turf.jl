@@ -9,7 +9,7 @@ export radiansToLength, lengthToRadians, lengthToDegrees, convertLength, convert
     Spline, lineSegment, pointOnLine, pointInPolygon, medianCenter, massCenter, meanCenter, circle,
     pNormDistance, distanceWeight, ellipse, explode, midPoint, square, flip, lineclip, polygonclip,
     linearc, sector, planepoint, toWGS84, toMercator, pointGrid, rectangleGrid, hexGrid, polygonTangents,
-    area, contains
+    area, contains, within
 
 
 include("Constants.jl")

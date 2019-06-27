@@ -82,4 +82,10 @@
 	@test contains(line6, Point([1, 2])) == true
 	@test contains(poly3, poly5) == false
 	@test contains(poly3 , line7) == false
+
+	@test within(poly4, poly3) == true
+	@test within(line5, poly3) == true
+	@test within(poly5, poly3) == false
+	@test within(Point([1, 2]), line6) == true
+	@test within(line7, poly3) == false
 end
