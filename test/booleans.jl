@@ -170,4 +170,10 @@
 	points = lineIntersects(line10, line11)
 	@test points[1] ≈ [132.808697,-11.630938]
 	@test points[2] ≈ [119.832884,-19.58857]
+
+	@test crosses(LineString([[-2, 2], [4, 2]]), line6) == true
+	@test crosses(LineString([[0.5, 2.5], [1, 1]]), poly7) == true
+	@test crosses(MultiPoint([[1, 2], [12, 12]]), LineString([[1, 1], [1, 2], [1, 3], [1, 4]])) == true
+	@test crosses(MultiPoint([[1, 0], [12, 12]]), LineString([[1, 1], [1, 2], [1, 3], [1, 4]])) == false
+	@test crosses(LineString([[-2, 2], [-4, 2]]), poly7) == false
 end

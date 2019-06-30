@@ -128,7 +128,7 @@ function pointOnLine(point::Point, line::LineString, ignoreEndVertices::Bool=fal
     return false
 end
 
-@inline function isPointOnSegment(start::Position, stop::Position, coords::Position, excludeBoundary::String = "none")::Bool
+@inline function isPointOnSegment(start::Position, stop::Position, coords::Position, excludeBoundary::String="none")::Bool
     x, y = coords
     x1, y1 = start
     x2, y2 = stop
@@ -504,4 +504,116 @@ function intersects(line1::AbstractLineString, line2::AbstractLineString)
     end
 
     return nothing
+end
+
+"""
+Return `true` if the intersection results in a geometry whose dimension is one less than
+the maximum dimension of the two source geometries and the intersection set is interior to
+both source geometries.
+"""
+function crosses(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
+    type1 = geotype(ft1)
+    type2 = geotype(ft2)
+
+    if type1 === :MultiPoint
+        if type2 === :LineString
+            return MpCrossLs(ft1, ft2)
+        elseif type2 === :Polygon
+            return MpCrossPoly(ft1, ft2)
+        else
+            throw(error("Geometry $(type2) is not supported."))
+        end
+    elseif type1 === :LineString
+        if type2 === :MultiPoint
+            return MpCrossLs(ft2, ft1)
+        elseif type2 === :Polygon
+            return LsCrossPoly(ft1, ft2)
+        elseif type2 === :LineString
+            return LsCrossLs(ft1, ft2)
+        else
+            throw(error("Geometry $(type2) is not supported."))
+        end
+    elseif type1 === :Polygon
+        if type2 === :MultiPoint
+            return MpCrossPoly(ft2, ft1)
+        elseif type2 === :LineString
+            return LsCrossPoly(ft2, ft1)
+        else
+            throw(error("Geometry $(type2) is not supported."))
+        end
+    end
+
+    throw(error("Geometry $(type1) is not supported."))
+end
+
+
+function MpCrossLs(geom1::MultiPoint, geom2::LineString)
+    intPoint = false
+    extPoint = false
+
+    pLength = length(geom1.coordinates)
+    i = 1
+
+    while i < pLength && !intPoint && !extPoint
+
+        for j in 1:length(geom2.coordinates) - 1
+            incVertices = "both"
+
+            (j === 1 || j === length(geom2.coordinates) - 2) && (incVertices = "none")
+
+            if isPointOnSegment(geom2.coordinates[j], geom2.coordinates[j + 1], geom1.coordinates[i], incVertices)
+                intPoint = true
+            else
+                extPoint = true
+
+            end
+
+        end
+        i += 1
+    end
+
+    return intPoint && extPoint
+end
+
+function LsCrossLs(line1::LineString, line2::LineString)
+    inter = lineIntersects(line1, line2)
+
+    if length(inter) > 0
+        for i in 1:length(line1.coordinates) - 1
+            for j in 1:length(line2.coordinates) - 1
+                incVertices = "both"
+
+                (j === 1 || j === length(line2.coordinates) - 2) && (incVertices = "none")
+
+                isPointOnSegment(line1.coordinates[i], line1.coordinates[i + 1], line2.coordinates[j], incVertices) && return true
+            end
+        end
+    end
+    return false
+end
+
+function LsCrossPoly(line::LineString, poly::Polygon)
+    line2 = polygonToLine(poly)
+    inter = lineIntersects(line, line2)
+
+    (length(inter) > 0) && return true
+
+    return false
+end
+
+function MpCrossPoly(mp::MultiPoint, poly::Polygon)
+    intPoint = false
+    extPoint = false
+    pLength = length(mp.coordinates[1])
+    i = 1
+
+    while i < pLength && intPoint && extPoint
+        if pointInPolygon(Point(mp.coordinates[1][i]), poly)
+            intPoint = true
+        else
+            extPoint = true
+        end
+        i += 1
+    end
+    return intPoint && extPoint
 end
