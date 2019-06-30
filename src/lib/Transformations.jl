@@ -56,6 +56,56 @@ function transformRotate(; geojson::T, angle::Real, pivot::Point=nothing, mutate
     return geo
 end
 
+"""
+Moves any geojson Feature or Geometry of a specified distance along a Rhumb Line
+on the provided direction angle.
+"""
+function transformTranslate(geojson::T, distance::R, direction::R, vertical::R=0, mutate::Bool=false, units::String="kilometers") where {T <: Union{AbstractFeature, AbstractGeometry}, R <: Real}
+    (distance == 0 && vertical == 0) && return geojson
+
+    if distance < 0
+        distance  = -distance
+        direction = -direction
+    end
+
+    !mutate && (geojson = deepcopy(geojson))
+
+    coords = []
+    type = nothing
+
+    if typeof(geojson) <: AbstractGeometry
+        coords = geojson.coordinates
+        type = geotype(geojson)
+    else
+        coords = geojson.geometry.coordinates
+        type = geotype(geojson.geometry)
+    end
+
+    if type === :Point
+        newCoords = rhumbDestination(coords, distance, direction, units).coordinates
+        coords[1] = newCoords[1]
+        coords[2] = newCoords[2]
+        (vertical != 0 && length(coords) === 3) && (coords[3] += vertical)
+
+    elseif type === :Polygon || type === :MultiLineString
+        for i in eachindex(coords[1])
+            newCoords = rhumbDestination(coords[1][i], distance, direction, units).coordinates
+            coords[1][i][1] = newCoords[1]
+            coords[1][i][2] = newCoords[2]
+            (vertical != 0 && length(coords[1][i]) === 3) && (coords[1][i][3] += vertical)
+        end
+    elseif type === :LineString
+        for i in eachindex(coords)
+            newCoords = rhumbDestination(coords[i], distance, direction, units).coordinates
+            coords[i][1] = newCoords[1]
+            coords[i][2] = newCoords[2]
+            (vertical != 0 && length(coords[i]) === 3) && (coords[i][3] += vertical)
+        end
+    end
+
+    return geojson
+end
+
 
 
 """
