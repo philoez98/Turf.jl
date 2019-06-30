@@ -413,3 +413,16 @@ function process(polyCoords, ptCoords, eprev, enext, rtan, ltan)
     end
     return [rtan, ltan]
 end
+
+
+"""
+Converts a Polygon to LineString or MultiLineString
+"""
+function polygonToLine(poly::Polygon)
+    return coordinatesToLine(poly.coordinates)
+end
+
+function coordinatesToLine(coords::Vector{Vector{Position}})
+    length(coords) > 1 && return MultiLineString(coords)
+    return LineString(coords[1])
+end

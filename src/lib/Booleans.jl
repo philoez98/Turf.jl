@@ -388,3 +388,120 @@ function lineInPolygon(line::LineString, poly::Polygon)
     end
     return inside
 end
+
+"""Return `true` if the intersection of the two geometries is an empty set."""
+function disjoint(geom1::AbstractGeometry, geom2::AbstractGeometry)
+    type1 = geotype(geom1)
+    type2 = geotype(geom2)
+
+    coords1 = geom1.coordinates
+    coords2 = geom2.coordinates
+
+    if type1 === :Point
+        if type2 === :Point
+            return !(coords1[1] == coords2[1] && coords1[2] == coords2[2])
+        elseif type2 === :LineString
+            return !pointOnLine(geom1, geom2)
+        elseif type2 === :Polygon
+            !pointInPolygon(geom1, geom2)
+        end
+
+    elseif type1 === :LineString
+        if type2 === :Point
+            return !pointOnLine(geom2, geom1)
+        elseif type2 === :LineString
+            return !lineOnLine(geom1, geom2)
+        elseif type2 === :Polygon
+            return !lineInPolygon(geom2, geom1)
+        end
+    elseif type1 === :Polygon
+        if type2 === :Point
+            return !pointInPolygon(geom2, geom1)
+        elseif type2 === :LineString
+            return !lineInPolygon(geom1, geom2)
+        elseif type2 === :Polygon
+            return !polyInPoly(geom2, geom1)
+        end
+    end
+    return false
+end
+
+disjoint(geom1::AbstractFeature, geom2::AbstractFeature) = disjoint(geom1.geometry, geom2.geometry)
+
+function polyInPoly(poly1::Polygon, poly2::Polygon)
+    coords1 = poly1.coordinates
+    coords2 = poly2.coordinates
+
+    for ring in coords1
+        for coord in ring
+            (pointInPolygon(Point(coord), poly2)) && return true
+        end
+    end
+
+    for ring in coords2
+        for coord in ring
+            (pointInPolygon(Point(coord), poly1)) && return true
+        end
+    end
+
+    inter = lineIntersects(polygonToLine(poly1), polygonToLine(poly2))
+    inter != nothing && return true
+
+    return false
+
+end
+
+"""Find a point that intersects LineStrings with two coordinates each."""
+function lineIntersects(line1::AbstractLineString, line2::AbstractLineString)
+    coords1 = line1.coordinates
+    coords2 = line2.coordinates
+
+    (length(coords1) == 2 && length(coords2) == 2) && return intersects(line1, line2)
+
+    result = []
+
+    for i in 1:length(coords1) - 1
+        for j in 1:length(coords2) - 1
+            inter = intersects(LineString([coords1[i], coords1[i + 1]]), LineString([coords2[j], coords2[j + 1]]))
+            inter != nothing && push!(result, inter.coordinates)
+        end
+    end
+    return unique!(result)
+end
+
+
+
+
+function intersects(line1::AbstractLineString, line2::AbstractLineString)
+    coords1 = line1.coordinates
+    coords2 = line2.coordinates
+
+    (length(coords1) != 2 || length(coords2) != 2) && throw(error("Lines must contain only 2 coordinates."))
+
+    x1, y1 = coords1[1]
+    x2, y2 = coords1[2]
+    x3, y3 = coords2[1]
+    x4, y4 = coords2[2]
+
+    d = ((y4 - y3) * (x2 - x1)) - ((x4 - x3) * (y2 - y1))
+    a = ((x4 - x3) * (y1 - y3)) - ((y4 - y3) * (x1 - x3))
+    b = ((x2 - x1) * (y1 - y3)) - ((y2 - y1) * (x1 - x3))
+
+    if d == 0
+        if a == 0 && b == 0
+            return nothing
+        end
+        return nothing
+    end
+
+    ã = a / d
+    b̃ = b / d
+
+    if ã >= 0 && ã <= 1 && b̃ >= 0 && b̃ <= 1
+        x = x1 + (ã * (x2 - x1))
+        y = y1 + (ã * (y2 - y1))
+        return Point([x, y])
+    end
+
+    return nothing
+end
