@@ -1,25 +1,25 @@
-isdefined(Turf, :earthRadius) || const earthRadius = 6371008.8 # Earth Radius used with the Harvesine formula and approximates using a spherical (non-ellipsoid) Earth.
+isdefined(Turf, :earth_radius) || const earth_radius = 6371008.8 # Earth Radius used with the Harvesine formula and approximates using a spherical (non-ellipsoid) Earth.
 
 
 isdefined(Turf, :factors) || const factors = Dict(
-    "centimeters" => earthRadius * 100,
-    "centimetres" => earthRadius * 100,
-    "degrees" => earthRadius / 111325,
-    "feet" => earthRadius * 3.28084,
-    "inches" => earthRadius * 39.370,
-    "kilometers" => earthRadius / 1000,
-    "kilometres" => earthRadius / 1000,
-    "meters" => earthRadius,
-    "metres" => earthRadius,
-    "miles" => earthRadius / 1609.344,
-    "millimeters" => earthRadius * 1000,
-    "millimetres" => earthRadius * 1000,
-    "nauticalmiles" => earthRadius / 1852,
+    "centimeters" => earth_radius * 100,
+    "centimetres" => earth_radius * 100,
+    "degrees" => earth_radius / 111325,
+    "feet" => earth_radius * 3.28084,
+    "inches" => earth_radius * 39.370,
+    "kilometers" => earth_radius / 1000,
+    "kilometres" => earth_radius / 1000,
+    "meters" => earth_radius,
+    "metres" => earth_radius,
+    "miles" => earth_radius / 1609.344,
+    "millimeters" => earth_radius * 1000,
+    "millimetres" => earth_radius * 1000,
+    "nauticalmiles" => earth_radius / 1852,
     "radians" => 1,
-    "yards" => earthRadius / 1.0936
+    "yards" => earth_radius / 1.0936
 )
 
-isdefined(Turf, :unitsFactor) || const unitsFactor = Dict(
+isdefined(Turf, :units_factors) || const units_factors = Dict(
     "centimeters" => 100,
     "centimetres" => 100,
     "degrees" => 1 / 111325,
@@ -33,11 +33,11 @@ isdefined(Turf, :unitsFactor) || const unitsFactor = Dict(
     "millimeters" => 1000,
     "millimetres" => 1000,
     "nauticalmiles" => 1 / 1852,
-    "radians" => 1 / earthRadius,
+    "radians" => 1 / earth_radius,
     "yards" => 1 / 1.0936
 )
 
-isdefined(Turf, :areaFactors) || const areaFactors = Dict(
+isdefined(Turf, :area_factors) || const area_factors = Dict(
     "acres" => 0.000247105,
     "centimeters" => 10000,
     "centimetres" => 10000,

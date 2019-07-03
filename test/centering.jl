@@ -49,12 +49,12 @@
 
     poly2 = Polygon([[[0, 0], [0, 0], [0, 0], [0, 0]]])
 
-    @test meanCenter(poly).coordinates ≈ [4.839177,45.76256]
-    @test meanCenter(poly2).coordinates == [0, 0]
-    @test meanCenter(l1).coordinates ≈ [4.860077,45.759199]
+    @test meancenter(poly).coordinates ≈ [4.839177,45.76256]
+    @test meancenter(poly2).coordinates == [0, 0]
+    @test meancenter(l1).coordinates ≈ [4.860077,45.759199]
 
-    @test massCenter(poly2).coordinates == [0, 0]
-    @test massCenter(poly).coordinates == [4.840728965137111,45.75581209996416]
+    @test masscenter(poly2).coordinates == [0, 0]
+    @test masscenter(poly).coordinates == [4.840728965137111,45.75581209996416]
 
     coll = FeatureCollection([Feature(Point([0, 0])),
       Feature(Point([1, 0])), Feature(Point([0, 1])),
@@ -64,7 +64,7 @@
       Feature(Point([9, 9])), Feature(Point([9.25, 9.25])),
       Feature(Point([9.5, 9.5])), Feature(Point([9.75, 9.75])), Feature(Point([10, 10]))])
 
-    @test medianCenter(coll).coordinates ≈ [0.383876,0.616989] atol=0.0001
-    @test medianCenter(coll2).coordinates ≈ [9.254246,9.254246] atol=0.0001
+    @test mediancenter(coll).coordinates ≈ [0.383876,0.616989] atol=0.0001
+    @test mediancenter(coll2).coordinates ≈ [9.254246,9.254246] atol=0.0001
 
 end

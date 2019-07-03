@@ -2,7 +2,7 @@
 Convert a distance measurement (assuming a spherical Earth) from radians to a more friendly unit.
 Valid units: miles, nauticalmiles, inches, yards, meters, metres, kilometers, centimeters, feet
 """
-function radiansToLength(radians::Number, units::String="kilometers")::Number
+function radians_to_length(radians::Number, units::String="kilometers")::Number
     factor = factors[units]
     if factor == nothing
         throw(error("$(units) is not a valid unit."))
@@ -14,7 +14,7 @@ end
 Convert a distance measurement (assuming a spherical Earth) from a real-world unit to radians.
 Valid units: miles, nauticalmiles, inches, yards, meters, metres, kilometers, centimeters, feet
 """
-function lengthToRadians(distance::Number, units::String="kilometers")::Number
+function length_to_radians(distance::Number, units::String="kilometers")::Number
     factor =  factors[units]
     if factor == nothing
         throw(error("$(units) is not a valid unit."))
@@ -26,28 +26,28 @@ end
 Convert a distance measurement (assuming a spherical Earth) from a real-world unit into degrees.
 Valid units: miles, nauticalmiles, inches, yards, meters, metres, centimeters, kilometres, feet
 """
-function lengthToDegrees(distance::Number, units::String="kilometers")::Number
-    return rad2deg(lengthToRadians(distance, units))
+function length_to_degrees(distance::Number, units::String="kilometers")::Number
+    return rad2deg(length_to_radians(distance, units))
 end
 
 """
 Converts a length to the requested unit.
 """
-function convertLength(length::Number, originalUnit::String="kilometers", finalUnit::String="kilometers")::Number
-    return length >= 0 ? radiansToLength(lengthToRadians(length, originalUnit), finalUnit) : error("'length' must be a positive number.")
+function convert_length(length::Number, originalUnit::String="kilometers", finalUnit::String="kilometers")::Number
+    return length >= 0 ? radians_to_length(length_to_radians(length, originalUnit), finalUnit) : error("'length' must be a positive number.")
 end
 
 
 """
 Converts an area to the requested unit.
 """
-function convertArea(area::Number, originalUnit::String="meters", finalUnit::String="kilometers")::Number
+function convert_area(area::Number, originalUnit::String="meters", finalUnit::String="kilometers")::Number
     if area < 0
         throw(error("'area' must be a positive number."))
     end
 
-    startFactor =  areaFactors[originalUnit]
-    endFactor =  areaFactors[finalUnit]
+    startFactor =  area_factors[originalUnit]
+    endFactor =  area_factors[finalUnit]
 
     return (area / startFactor) * endFactor
 end
@@ -63,7 +63,7 @@ end
 end
 
 """Convert 900913 x/y values to lon/lat."""
-function toWGS84(pos::Point)
+function to_WGS84(pos::Point)
     a = 6378137.0
 
     return [rad2deg(pos.coordinates[1]) / a,
@@ -71,7 +71,7 @@ function toWGS84(pos::Point)
 end
 
 """Convert lon/lat values to 900913 x/y."""
-function toMercator(pos::Point)
+function to_mercator(pos::Point)
     a = 6378137.0
     extent = 20037508.342789244
 

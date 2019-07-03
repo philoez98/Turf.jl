@@ -4,7 +4,7 @@ const origin_options = ["sw", "se", "nw", "ne", "center", "centroid"]
 Rotates any geojson Feature or Geometry of a specified angle, around its `centroid` or a given `pivot` point;
 all rotations follow the right-hand rule.
 """
-function transformRotate(; geojson::T, angle::Real, pivot::Point=nothing, mutate::Bool=false) where {T <: AbstractGeometry}
+function transform_rotate(; geojson::T, angle::Real, pivot::Point=nothing, mutate::Bool=false) where {T <: AbstractGeometry}
     if angle === 0
         return geojson
     end
@@ -24,30 +24,30 @@ function transformRotate(; geojson::T, angle::Real, pivot::Point=nothing, mutate
 
     if type === :Point
 
-        initAngle = rhumbBearing(pivot.coordinates, coords)
+        initAngle = rhumb_bearing(pivot.coordinates, coords)
         finalAngle = initAngle + angle
-        dist = rhumbDistance(pivot.coordinates, coords)
-        newCoords = rhumbDestination(pivot.coordinates, dist, finalAngle).coordinates
+        dist = rhumb_distance(pivot.coordinates, coords)
+        newCoords = rhumb_destination(pivot.coordinates, dist, finalAngle).coordinates
         coords[1] = newCoords[1]
         coords[2] = newCoords[2]
 
     elseif type === :Polygon || type === :MultiLineString
 
         for i in eachindex(coords[1])
-            initAngle = rhumbBearing(pivot.coordinates, coords[1][i])
+            initAngle = rhumb_bearing(pivot.coordinates, coords[1][i])
             finalAngle = initAngle + angle
-            dist = rhumbDistance(pivot.coordinates, coords[1][i])
-            newCoords = rhumbDestination(pivot.coordinates, dist, finalAngle).coordinates
+            dist = rhumb_distance(pivot.coordinates, coords[1][i])
+            newCoords = rhumb_destination(pivot.coordinates, dist, finalAngle).coordinates
             coords[1][i][1] = newCoords[1]
             coords[1][i][2] = newCoords[2]
         end
     elseif type === :LineString
 
         for i in eachindex(coords)
-            initAngle = rhumbBearing(pivot.coordinates, coords[i])
+            initAngle = rhumb_bearing(pivot.coordinates, coords[i])
             finalAngle = initAngle + angle
-            dist = rhumbDistance(pivot.coordinates, coords[i])
-            newCoords = rhumbDestination(pivot.coordinates, dist, finalAngle).coordinates
+            dist = rhumb_distance(pivot.coordinates, coords[i])
+            newCoords = rhumb_destination(pivot.coordinates, dist, finalAngle).coordinates
             coords[i][1] = newCoords[1]
             coords[i][2] = newCoords[2]
         end
@@ -60,7 +60,7 @@ end
 Moves any geojson Feature or Geometry of a specified distance along a Rhumb Line
 on the provided direction angle.
 """
-function transformTranslate(geojson::T, distance::R, direction::R, vertical::R=0, mutate::Bool=false, units::String="kilometers") where {T <: Union{AbstractFeature, AbstractGeometry}, R <: Real}
+function transform_translate(geojson::T, distance::R, direction::R, vertical::R=0, mutate::Bool=false, units::String="kilometers") where {T <: Union{AbstractFeature, AbstractGeometry}, R <: Real}
     (distance == 0 && vertical == 0) && return geojson
 
     if distance < 0
@@ -82,21 +82,21 @@ function transformTranslate(geojson::T, distance::R, direction::R, vertical::R=0
     end
 
     if type === :Point
-        newCoords = rhumbDestination(coords, distance, direction, units).coordinates
+        newCoords = rhumb_destination(coords, distance, direction, units).coordinates
         coords[1] = newCoords[1]
         coords[2] = newCoords[2]
         (vertical != 0 && length(coords) === 3) && (coords[3] += vertical)
 
     elseif type === :Polygon || type === :MultiLineString
         for i in eachindex(coords[1])
-            newCoords = rhumbDestination(coords[1][i], distance, direction, units).coordinates
+            newCoords = rhumb_destination(coords[1][i], distance, direction, units).coordinates
             coords[1][i][1] = newCoords[1]
             coords[1][i][2] = newCoords[2]
             (vertical != 0 && length(coords[1][i]) === 3) && (coords[1][i][3] += vertical)
         end
     elseif type === :LineString
         for i in eachindex(coords)
-            newCoords = rhumbDestination(coords[i], distance, direction, units).coordinates
+            newCoords = rhumb_destination(coords[i], distance, direction, units).coordinates
             coords[i][1] = newCoords[1]
             coords[i][2] = newCoords[2]
             (vertical != 0 && length(coords[i]) === 3) && (coords[i][3] += vertical)
@@ -112,7 +112,7 @@ end
 Scale a GeoJson from a given point by a factor of scaling (ex: factor=2 would make the GeoJson 200% larger).
 If a FeatureCollection is provided, the origin point will be calculated based on each individual Feature.
 """
-function transformScale(geojson::T, factor::Float64, origin::String="centroid") where {T <: AbstractFeatureCollection}
+function transform_scale(geojson::T, factor::Float64, origin::String="centroid") where {T <: AbstractFeatureCollection}
 
     for (i, feat) in enumerate(geojson.features)
         geojson.features[i] = scale(feat, factor, origin)
@@ -140,11 +140,11 @@ function scale(feature::Feature, factor::Real, origin::String="centroid")
     if type === :LineString
 
         for i in eachindex(coords)
-            start = rhumbDistance(center.coordinates, coords[i])
-            bearing = rhumbBearing(center.coordinates, coords[i])
+            start = rhumb_distance(center.coordinates, coords[i])
+            bearing = rhumb_bearing(center.coordinates, coords[i])
             distance = start * factor
 
-            newCoords = rhumbDestination(center.coordinates, distance, bearing).coordinates
+            newCoords = rhumb_destination(center.coordinates, distance, bearing).coordinates
 
             coords[i][1] = newCoords[1]
             coords[i][2] = newCoords[2]
@@ -156,11 +156,11 @@ function scale(feature::Feature, factor::Real, origin::String="centroid")
     elseif type === :Polygon || type === :MultiLineString
 
         for i in eachindex(coords[1])
-            start = rhumbDistance(center.coordinates, coords[1][i])
-            bearing = rhumbBearing(center.coordinates, coords[1][i])
+            start = rhumb_distance(center.coordinates, coords[1][i])
+            bearing = rhumb_bearing(center.coordinates, coords[1][i])
             distance = start * factor
 
-            newCoords = rhumbDestination(center.coordinates, distance, bearing).coordinates
+            newCoords = rhumb_destination(center.coordinates, distance, bearing).coordinates
 
             coords[1][i][1] = newCoords[1]
             coords[1][i][2] = newCoords[2]
@@ -404,7 +404,7 @@ end
 end
 
 """ Finds the tangents of a Polygon from a Point."""
-function polygonTangents(pt::Point, poly::Polygon)
+function polygon_tangents(pt::Point, poly::Polygon)
     ptCoords = pt.coordinates
     polyCoords = poly.coordinates
 
@@ -413,7 +413,7 @@ function polygonTangents(pt::Point, poly::Polygon)
     nearestIndex = 1
 
     if ptCoords[1] > box[1] && ptCoords[1] < box[3] && ptCoords[2] > box[2] && ptCoords[2] < box[4]
-        nearest = nearestPoint(pt, explode(poly, true))
+        nearest = nearestpoint(pt, explode(poly, true))
         nearestIndex = findfirst(x -> x == nearest, explode(poly, true))
     end
 
@@ -468,7 +468,7 @@ end
 """
 Converts a Polygon to LineString or MultiLineString
 """
-function polygonToLine(poly::Polygon)
+function polygon_to_line(poly::Polygon)
     return coordinatesToLine(poly.coordinates)
 end
 
@@ -478,27 +478,27 @@ function coordinatesToLine(coords::Vector{Vector{Position}})
 end
 
 """Convert a GeoJSON object to the defined `projection`"""
-function convertTo(geojson::AbstractGeometry, projection::String, mutate::Bool=false)
+function convert_to(geojson::AbstractGeometry, projection::String, mutate::Bool=false)
     allowed_proj = ["mercator", "wgs84"]
 
     !(projection in allowed_proj) && throw(error("$(projection) is not a valid option."))
 
     type = geotype(geojson)
 
-    type === :Point && return Point((projection === "mercator") ? toMercator(geojson) : toWGS84(geojson))
+    type === :Point && return Point((projection === "mercator") ? to_mercator(geojson) : to_WGS84(geojson))
 
     !mutate && (geojson = deepcopy(geojson))
 
     coords = geojson.coordinates
     if type === :LineString
         for i in eachindex(coords)
-            newCoords = (projection === "mercator") ? toMercator(Point(coords[i])) : toWGS84(Point(coords[i]))
+            newCoords = (projection === "mercator") ? to_mercator(Point(coords[i])) : to_WGS84(Point(coords[i]))
             coords[i][1] = newCoords[1]
             coords[i][2] = newCoords[2]
         end
     elseif type === :Polygon
         for i in eachindex(coords[1])
-            newCoords = (projection === "mercator") ? toMercator(Point(coords[1][i])) : toWGS84(Point(coords[1][i]))
+            newCoords = (projection === "mercator") ? to_mercator(Point(coords[1][i])) : to_WGS84(Point(coords[1][i]))
             coords[1][i][1] = newCoords[1]
             coords[1][i][2] = newCoords[2]
         end
@@ -509,7 +509,7 @@ function convertTo(geojson::AbstractGeometry, projection::String, mutate::Bool=f
     return geojson
 end
 
-convertTo(geojson::Feature, projection::String, mutate::Bool=false) = convertTo(geojson.geometry, projection, mutate)
+convert_to(geojson::Feature, projection::String, mutate::Bool=false) = convert_to(geojson.geometry, projection, mutate)
 
 """
 Combines a FeatureCollection of Point, LineString, or Polygon features

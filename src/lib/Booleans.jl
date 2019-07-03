@@ -1,4 +1,17 @@
-"""Takes a ring and return true or false whether or not the ring is clockwise or counter-clockwise."""
+"""
+    clockwise(line::Union{LineString, Vector{Position}})::Bool
+
+Take a ring and return true or false whether or not the ring is clockwise or counter-clockwise.
+
+# Examples
+```jldoctest
+julia> line = LineString([[0, 0], [1, 1], [1, 0], [0, 0]])
+LineString(Array{Float64,1}[[0.0, 0.0], [1.0, 1.0], [1.0, 0.0], [0.0, 0.0]])
+
+julia> clockwise(line)
+true
+```
+"""
 function clockwise(line::Union{LineString, Vector{Position}})::Bool
 
     let ring end
@@ -24,8 +37,21 @@ function clockwise(line::Union{LineString, Vector{Position}})::Bool
     return sum > 0
 end
 
-"""Takes a polygon and return true or false as to whether it is concave or not."""
-function concave(poly::Polygon)
+"""
+    concave(poly::Polygon)::Bool
+
+Take a polygon and return true or false as to whether it is concave or not.
+
+# Examples
+```jldoctest
+julia> poly = Polygon([[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]])
+Polygon(Array{Array{Float64,1},1}[[[0.0, 0.0], [0.0, 1.0], [1.0, 1.0], [1.0, 0.0], [0.0, 0.0]]])
+
+julia> concave(poly)
+false
+```
+"""
+function concave(poly::Polygon)::Bool
     coords = poly.coordinates
 
     length(coords[1]) <= 4 && return false
@@ -77,10 +103,26 @@ function compareLines(p1::Vector{Position}, p2::Vector{Position})
     length(p1[1]) !== length(p2[1]) && return false
 end
 
-"""Return `true` if each segment of `line1` is parallel to the correspondent segment of `line2`"""
+"""
+    parallel(line1::LineString, line2::LineString)::Bool
+
+Return `true` if each segment of `line1` is parallel to the correspondent segment of `line2`
+
+# Examples
+```jldoctest
+julia> line1 = LineString([[9.170356, 45.477985], [9.164434, 45.482551], [9.166644, 45.484003]])
+LineString(Array{Float64,1}[[9.17036, 45.478], [9.16443, 45.4826], [9.16664, 45.484]])
+
+julia> line2 = LineString([[9.169356, 45.477985], [9.163434, 45.482551], [9.165644, 45.484003]])
+LineString(Array{Float64,1}[[9.16936, 45.478], [9.16343, 45.4826], [9.16564, 45.484]])
+
+julia> parallel(line1, line2)
+true
+```
+"""
 function parallel(line1::LineString, line2::LineString)::Bool
-    seg1 = lineSegment(line1)
-    seg2 = lineSegment(line2)
+    seg1 = linesegment(line1)
+    seg2 = linesegment(line2)
 
     for i in eachindex(seg1)
         coors2 = nothing
@@ -98,21 +140,32 @@ function parallel(line1::LineString, line2::LineString)::Bool
     return true
 end
 
-"""Compare slopes"""
 @inline function isParallel(p1::Vector{Position}, p2::Vector{Position})
-    slope1 = bearingToAzimuth(rhumbBearing(p1[1], p2[1]))
-    slope2 = bearingToAzimuth(rhumbBearing(p1[2], p2[2]))
+    slope1 = bearing_to_azimuth(rhumb_bearing(p1[1], p2[1]))
+    slope2 = bearing_to_azimuth(rhumb_bearing(p1[2], p2[2]))
 
     return slope1 === slope2
 end
 
 """
-    pointOnLine(point::Point, line::LineString, ignoreEndVertices::Bool=false)::Bool
+    point_on_line(point::Point, line::LineString, ignoreEndVertices::Bool=false)::Bool
 
 Returns true if a point is on a line. Accepts a optional parameter to ignore the
 start and end vertices of the linestring.
+
+# Examples
+```jldoctest
+julia> point = Point([1,1])
+Point([1.0, 1.0])
+
+julia> line = LineString([[0, 0], [3, 3], [4, 4]])
+LineString(Array{Float64,1}[[0.0, 0.0], [3.0, 3.0], [4.0, 4.0]])
+
+julia> point_on_line(point, line)
+true
+```
 """
-function pointOnLine(point::Point, line::LineString, ignoreEndVertices::Bool=false)::Bool
+function point_on_line(point::Point, line::LineString, ignoreEndVertices::Bool=false)::Bool
     pCoords = point.coordinates
     lCoords = line.coordinates
 
@@ -167,10 +220,24 @@ end
 
 
 """
+    point_in_polygon(point::Point, polygon::Union{Polygon, MultiPolygon}, ignoreBoundary::Bool=false)::Bool
+
 Takes a Point and a Polygon and determines if the point
 resides inside the polygon. The polygon can be convex or concave. The function accounts for holes.
+
+# Examples
+```jldoctest
+julia> point = Point([-77, 44])
+Point([-77.0, 44.0])
+
+julia> poly = Polygon([[ [-81, 41], [-81, 47], [-72, 47], [-72, 41], [-81, 41]]])
+Polygon(Array{Array{Float64,1},1}[[[-81.0, 41.0], [-81.0, 47.0], [-72.0, 47.0], [-72.0, 41.0], [-81.0, 41.0]]])
+
+julia> point_in_polygon(point, poly)
+true
+```
 """
-function pointInPolygon(point::Point, polygon::Union{Polygon, MultiPolygon}, ignoreBoundary::Bool=false)
+function point_in_polygon(point::Point, polygon::Union{Polygon, MultiPolygon}, ignoreBoundary::Bool=false)::Bool
 
     pt = point.coordinates
     poly = polygon.coordinates
@@ -228,10 +295,24 @@ function inBBox(pt::Position, bbox::Vector{Float64})
 end
 
 """
-Return True if the second geometry is completely contained by the first geometry.
+    contains(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
+
+Return true if the second geometry is completely contained by the first geometry.
 The interiors of both geometries must intersect and, the interior and boundary of the secondary (geometry b)
 must not intersect the exterior of the primary (geometry a).
 `contains` returns the exact opposite result of `within`.
+
+# Examples
+```jldoctest
+julia> line = LineString([[1, 1], [1, 2], [1, 3], [1, 4]])
+LineString(Array{Float64,1}[[1.0, 1.0], [1.0, 2.0], [1.0, 3.0], [1.0, 4.0]])
+
+julia> point = Point([1, 2])
+Point([1.0, 2.0])
+
+julia> contains(line, point)
+true
+```
 """
 function contains(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
     type1 = geotype(ft1)
@@ -247,7 +328,7 @@ function contains(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
         throw(error("$(type2) is not a supported type."))
     elseif type1 === :LineString
         if type2 === :Point
-            return pointOnLine(ft2, ft1, true)
+            return point_on_line(ft2, ft1, true)
         elseif type2 === :LineString
             return lineOnLine(ft1, ft2)
         else
@@ -256,7 +337,7 @@ function contains(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
 
     elseif type1 === :Polygon
         if type2 === :Point
-            return pointInPolygon(ft2, ft1, true)
+            return point_in_polygon(ft2, ft1, true)
         elseif type2 === :LineString
             return lineInPolygon(ft1, ft2)
         elseif type2 === :Polygon
@@ -283,7 +364,7 @@ function lineInPolygon(poly::Polygon, line::LineString)
 
     for i in 1:length(coords) - 1
         mid = [(coords[i][1] + coords[i + 1][1]) / 2, (coords[i][2] + coords[i + 1][2]) / 2]
-        if pointInPolygon(Point(mid), poly, true)
+        if point_in_polygon(Point(mid), poly, true)
             out = true
             break
         end
@@ -293,7 +374,7 @@ end
 
 function lineOnLine(line1::LineString, line2::LineString)
     for i in eachindex(line1.coordinates)
-        !(pointOnLine(line1.coordinates[i], line2)) && return false
+        !(point_on_line(line1.coordinates[i], line2)) && return false
     end
     return true
 end
@@ -309,7 +390,7 @@ function polygonInPolygon(ft1::Polygon, ft2::Polygon, reverse::Bool=false)
 
         for ring in coords
             for coord in ring
-                !(pointInPolygon(Point(coord), ft2)) && return false
+                !(point_in_polygon(Point(coord), ft2)) && return false
             end
         end
     else
@@ -318,7 +399,7 @@ function polygonInPolygon(ft1::Polygon, ft2::Polygon, reverse::Bool=false)
 
         for ring in coords
             for coord in ring
-                !(pointInPolygon(Point(coord), ft1)) && return false
+                !(point_in_polygon(Point(coord), ft1)) && return false
             end
         end
     end
@@ -334,7 +415,26 @@ function bboxOverlap(box1::Vector{T}, box2::Vector{T}) where {T <: Real}
     return true
 end
 
+"""
+    within(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
 
+Return `true` if the first geometry is completely within the second geometry.
+The interiors of both geometries must intersect and, the interior and boundary of the primary (geometry a)
+must not intersect the exterior of the secondary (geometry b).
+`within` returns the exact opposite result of `contains`.
+
+# Examples
+```jldoctest
+julia> line = LineString([[1, 1], [1, 2], [1, 3], [1, 4]])
+LineString(Array{Float64,1}[[1.0, 1.0], [1.0, 2.0], [1.0, 3.0], [1.0, 4.0]])
+
+julia> point = Point([1, 2])
+Point([1.0, 2.0])
+
+julia> within(point, line)
+true
+```
+"""
 function within(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
     type1 = geotype(ft1)
     type2 = geotype(ft2)
@@ -344,9 +444,9 @@ function within(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
 
     if type1 === :Point
         if type2 === :LineString
-            return pointOnLine(ft1, ft2, true)
+            return point_on_line(ft1, ft2, true)
         elseif type2 === :Polygon
-            return pointInPolygon(ft1, ft2, true)
+            return point_in_polygon(ft1, ft2, true)
         end
         throw(error("$(type2) is not a supported type."))
     elseif type1 === :LineString
@@ -379,18 +479,34 @@ function lineInPolygon(line::LineString, poly::Polygon)
     inside = false
 
     for i in 1:length(coords) - 1
-        !(pointInPolygon(Point(coords[i]), poly)) && return false
-        !inside && (inside = pointInPolygon(Point(coords[i]), poly, true))
+        !(point_in_polygon(Point(coords[i]), poly)) && return false
+        !inside && (inside = point_in_polygon(Point(coords[i]), poly, true))
         if !inside
             mid = [(coords[i][1] + coords[i + 1][1]) / 2, (coords[i][2] + coords[i + 1][2]) / 2]
-            inside = pointInPolygon(Point(mid), poly, true)
+            inside = point_in_polygon(Point(mid), poly, true)
         end
     end
     return inside
 end
 
-"""Return `true` if the intersection of the two geometries is an empty set."""
-function disjoint(geom1::AbstractGeometry, geom2::AbstractGeometry)
+"""
+    disjoint(geom1::AbstractGeometry, geom2::AbstractGeometry)::Bool
+
+Return `true` if the intersection of the two geometries is an empty set.
+
+# Examples
+```jldoctest
+julia> poly = Polygon([[[-1, 2], [3, 2], [3, 3], [-1, 3], [-1, 2]]])
+Polygon(Array{Array{Float64,1},1}[[[-1.0, 2.0], [3.0, 2.0], [3.0, 3.0], [-1.0, 3.0], [-1.0, 2.0]]])
+
+julia> point = Point([1, 1])
+Point([1.0, 1.0])
+
+julia> disjoint(poly, point)
+true
+```
+"""
+function disjoint(geom1::AbstractGeometry, geom2::AbstractGeometry)::Bool
     type1 = geotype(geom1)
     type2 = geotype(geom2)
 
@@ -401,14 +517,14 @@ function disjoint(geom1::AbstractGeometry, geom2::AbstractGeometry)
         if type2 === :Point
             return !(coords1[1] == coords2[1] && coords1[2] == coords2[2])
         elseif type2 === :LineString
-            return !pointOnLine(geom1, geom2)
+            return !point_on_line(geom1, geom2)
         elseif type2 === :Polygon
-            !pointInPolygon(geom1, geom2)
+            !point_in_polygon(geom1, geom2)
         end
 
     elseif type1 === :LineString
         if type2 === :Point
-            return !pointOnLine(geom2, geom1)
+            return !point_on_line(geom2, geom1)
         elseif type2 === :LineString
             return !lineOnLine(geom1, geom2)
         elseif type2 === :Polygon
@@ -416,7 +532,7 @@ function disjoint(geom1::AbstractGeometry, geom2::AbstractGeometry)
         end
     elseif type1 === :Polygon
         if type2 === :Point
-            return !pointInPolygon(geom2, geom1)
+            return !point_in_polygon(geom2, geom1)
         elseif type2 === :LineString
             return !lineInPolygon(geom1, geom2)
         elseif type2 === :Polygon
@@ -434,25 +550,41 @@ function polyInPoly(poly1::Polygon, poly2::Polygon)
 
     for ring in coords1
         for coord in ring
-            (pointInPolygon(Point(coord), poly2)) && return true
+            (point_in_polygon(Point(coord), poly2)) && return true
         end
     end
 
     for ring in coords2
         for coord in ring
-            (pointInPolygon(Point(coord), poly1)) && return true
+            (point_in_polygon(Point(coord), poly1)) && return true
         end
     end
 
-    inter = lineIntersects(polygonToLine(poly1), polygonToLine(poly2))
+    inter = line_intersects(polygon_to_line(poly1), polygon_to_line(poly2))
     inter != nothing && return true
 
     return false
 
 end
 
-"""Find a point that intersects LineStrings with two coordinates each."""
-function lineIntersects(line1::AbstractLineString, line2::AbstractLineString)
+"""
+    line_intersects(line1::AbstractLineString, line2::AbstractLineString)
+
+Find a point that intersects LineStrings with two coordinates each.
+
+# Examples
+```jldoctest
+julia> line1 = LineString([[124.584961,-12.768946],[126.738281,-17.224758]])
+LineString(Array{Float64,1}[[124.585, -12.7689], [126.738, -17.2248]])
+
+julia> line2 = LineString([[123.354492,-15.961329],[127.22168,-14.008696]])
+LineString(Array{Float64,1}[[123.354, -15.9613], [127.222, -14.0087]])
+
+julia> line_intersects(line1, line2)
+Point([125.584, -14.8357])
+```
+"""
+function line_intersects(line1::AbstractLineString, line2::AbstractLineString)
     coords1 = line1.coordinates
     coords2 = line2.coordinates
 
@@ -507,9 +639,23 @@ function intersects(line1::AbstractLineString, line2::AbstractLineString)
 end
 
 """
+     crosses(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
+
 Return `true` if the intersection results in a geometry whose dimension is one less than
 the maximum dimension of the two source geometries and the intersection set is interior to
 both source geometries.
+
+# Examples
+```jldoctest
+julia> line = LineString([[1, 1], [1, 2], [1, 3], [1, 4]])
+LineString(Array{Float64,1}[[1.0, 1.0], [1.0, 2.0], [1.0, 3.0], [1.0, 4.0]])
+
+julia> line2 = LineString([[-2, 2], [4, 2]])
+LineString(Array{Float64,1}[[-2.0, 2.0], [4.0, 2.0]])
+
+julia> crosses(line2, line)
+true
+```
 """
 function crosses(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
     type1 = geotype(ft1)
@@ -578,7 +724,7 @@ function MpCrossLs(geom1::MultiPoint, geom2::LineString)
 end
 
 function LsCrossLs(line1::LineString, line2::LineString)
-    inter = lineIntersects(line1, line2)
+    inter = line_intersects(line1, line2)
 
     if length(inter) > 0
         for i in 1:length(line1.coordinates) - 1
@@ -595,8 +741,8 @@ function LsCrossLs(line1::LineString, line2::LineString)
 end
 
 function LsCrossPoly(line::LineString, poly::Polygon)
-    line2 = polygonToLine(poly)
-    inter = lineIntersects(line, line2)
+    line2 = polygon_to_line(poly)
+    inter = line_intersects(line, line2)
 
     (length(inter) > 0) && return true
 
@@ -610,7 +756,7 @@ function MpCrossPoly(mp::MultiPoint, poly::Polygon)
     i = 1
 
     while i < pLength && intPoint && extPoint
-        if pointInPolygon(Point(mp.coordinates[1][i]), poly)
+        if point_in_polygon(Point(mp.coordinates[1][i]), poly)
             intPoint = true
         else
             extPoint = true

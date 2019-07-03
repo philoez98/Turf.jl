@@ -48,7 +48,7 @@ end
 Takes any Geojson Geometry and returns its [center of mass](https://en.wikipedia.org/wiki/Center_of_mass) using this formula:
 [Centroid of Polygon](https://en.wikipedia.org/wiki/Centroid#Centroid_of_polygon).
 """
-function massCenter(geojson::T) where {T <: AbstractGeometry}
+function masscenter(geojson::T) where {T <: AbstractGeometry}
     type = geotype(geojson)
 
 
@@ -100,7 +100,7 @@ end
 """
 Takes a GeoJson Geometry and returns the mean center. Can be weighted.
 """
-function meanCenter(geojson::T, weight::Real=1) where {T <: Union{AbstractGeometry, AbstractFeatureCollection}}
+function meancenter(geojson::T, weight::Real=1) where {T <: Union{AbstractGeometry, AbstractFeatureCollection}}
     # TODO: so ugly! Reafactor?
     xs = 0.
     ys = 0.
@@ -164,9 +164,9 @@ function meanCenter(geojson::T, weight::Real=1) where {T <: Union{AbstractGeomet
     return Point([xs / ns, ys / ns])
 end
 
-function medianCenter(geojson::T, weight::Real=1, tol::Real=0.001, count::Integer=10) where {T <: AbstractFeatureCollection}
+function mediancenter(geojson::T, weight::Real=1, tol::Real=0.001, count::Integer=10) where {T <: AbstractFeatureCollection}
 
-    mean = meanCenter(geojson)
+    mean = meancenter(geojson)
 
     feat1 = Feature(nothing)
 

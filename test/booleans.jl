@@ -60,14 +60,14 @@
 	p3 = Point([20, 20])
 	l5 = LineString([[0, 0], [3, 3], [38.32, 5.96]])
 
-	@test pointOnLine(p2, l4, true) == false
-	@test pointOnLine(p3, l5, true) == false
-	@test pointOnLine(p1, l3) == true
+	@test point_on_line(p2, l4, true) == false
+	@test point_on_line(p3, l5, true) == false
+	@test point_on_line(p1, l3) == true
 
 	pt = Point([-77, 44])
 	poly = Polygon([[ [-81, 41], [-81, 47], [-72, 47], [-72, 41], [-81, 41]]])
 
-	@test pointInPolygon(pt, poly) == true
+	@test point_in_polygon(pt, poly) == true
 
 	poly3 = Polygon([[[1, 1], [1, 10], [10, 10], [10, 1], [1, 1]]])
 	poly4 = Polygon([[[1, 1], [2, 2], [3, 2], [1, 1]]])
@@ -103,7 +103,7 @@
 	line8 = LineString([[124.584961,-12.768946],[126.738281,-17.224758]])
 	line9 = LineString([[123.354492,-15.961329],[127.22168,-14.008696]])
 
-	@test lineIntersects(line8, line9).coordinates ≈ [125.583754,-14.835723]
+	@test line_intersects(line8, line9).coordinates ≈ [125.583754,-14.835723]
 
 	line10 = LineString([
 					[
@@ -167,7 +167,7 @@
 						132.890625,
 						-7.754537]])
 
-	points = lineIntersects(line10, line11)
+	points = line_intersects(line10, line11)
 	@test points[1] ≈ [132.808697,-11.630938]
 	@test points[2] ≈ [119.832884,-19.58857]
 

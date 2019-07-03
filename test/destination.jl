@@ -7,10 +7,10 @@
     res2 = destination(p2, 100, 180).coordinates
 
     p3 = Position([12, -54])
-    res3 = rhumbDestination(p3, -100, 45).coordinates
+    res3 = rhumb_destination(p3, -100, 45).coordinates
 
     p4 = Position([-75, 38.10096062273525])
-    res4 = rhumbDestination(p4, 100, 0).coordinates
+    res4 = rhumb_destination(p4, 100, 0).coordinates
 
     @test round.(res1; digits=6) == [-75.0, 39.000281]
     @test round.(res2; digits=5) == [-75, 38.10068]

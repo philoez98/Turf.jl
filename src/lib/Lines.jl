@@ -1,16 +1,15 @@
-function lineSegment(geojson::LineString)
+"""
+Create a 2-vertex LineString segments from a LineString.
+"""
+function linesegment(geojson::LineString)
     result::Vector{LineString} = []
-    lineSegmentFeature(geojson, result)
+    linesegmentFeature(geojson, result)
 
     return result
 end
 
-function lineSegmentFeature(geojson::Union{LineString, Polygon}, result::Vector{LineString})
+function linesegmentFeature(geojson::Union{LineString, Polygon}, result::Vector{LineString})
     coords = geojson.coordinates
-
-    #geotype(geojson) === :Polygon && (coords = geojson.coordinates)
-    #geotype(geojson) === :LineString && (coords = geojson.coordinates)
-
 
     segments = createSegments(coords)
 

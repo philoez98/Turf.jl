@@ -60,7 +60,7 @@ function bbox(geojson::T) where {T<: AbstractFeature}
 end
 
 """Takes a bbox and returns an equivalent Polygon."""
-function bboxPolygon(bbox::Vector{T}) where {T <: Real}
+function bbox_polygon(bbox::Vector{T}) where {T <: Real}
     west = bbox[1]
     south = bbox[2]
     east = bbox[3]

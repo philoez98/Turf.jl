@@ -9,8 +9,8 @@ function ellipse(; center::Point, xAxis::Real, yAxis::Real, steps::Real=64, angl
     if units === "degrees"
         angle = deg2rad(angle)
     else
-        xAxis = rhumbDestination(coords, xAxis, 90, units).coordinates
-        yAxis = rhumbDestination(coords, yAxis, 0, units).coordinates
+        xAxis = rhumb_destination(coords, xAxis, 90, units).coordinates
+        yAxis = rhumb_destination(coords, yAxis, 0, units).coordinates
         xAxis = xAxis[1] - coords[1]
         yAxis = yAxis[2] - coords[2]
     end
@@ -38,6 +38,6 @@ function ellipse(; center::Point, xAxis::Real, yAxis::Real, steps::Real=64, angl
 
     units === "degrees" && return Polygon([elCoords])
 
-    return transformRotate(geojson=Polygon([elCoords]), angle=angle, pivot=pivot)
+    return transform_rotate(geojson=Polygon([elCoords]), angle=angle, pivot=pivot)
 
 end

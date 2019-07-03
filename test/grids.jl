@@ -3,10 +3,10 @@
     bbox2 = [-220.78125,-80.64703474739618,-29.53125,78.34941069014629]
     bbox3 = [-5.1,-5.1,5.1,5.1]
 
-    feat2 = pointGrid(bbox2, 500., nothing, "miles")
+    feat2 = point_grid(bbox2, 500., nothing, "miles")
     @test feat2.features[1].geometry.coordinates ≈ [-199.504452, -77.132893]
 
-    feat3 = rectangleGrid(bbox3, 1., 1., nothing, "degrees")
+    feat3 = rectangle_grid(bbox3, 1., 1., nothing, "degrees")
     @test feat3.features[1].geometry.coordinates ≈ [
 					[
 						[
@@ -31,7 +31,7 @@
 						]
 					]] atol=0.0001
 
-    feat1 = hexGrid(bbox1, 25., nothing, false, "miles")
+    feat1 = hexgrid(bbox1, 25., nothing, false, "miles")
 """
 	@test feat1.features[1].geometry.coordinates ≈
     [

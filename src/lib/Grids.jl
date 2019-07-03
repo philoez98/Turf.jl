@@ -1,5 +1,5 @@
 """Create a Point grid from a bounding box"""
-function pointGrid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
+function point_grid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
     results = []
 
     west = bbox[1]
@@ -45,7 +45,7 @@ function pointGrid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=n
 end
 
 """Creates a grid of rectangles from a bounding box."""
-function rectangleGrid(bbox::Vector{T}, width::T, height::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
+function rectangle_grid(bbox::Vector{T}, width::T, height::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
     results = []
 
     west = bbox[1]
@@ -128,7 +128,7 @@ Takes a bounding box and the diameter of the cell and returns a FeatureCollectio
 hexagons or triangles Polygon aligned in an "odd-q" vertical grid as
 described in [Hexagonal Grids](http://www.redblobgames.com/grids/hexagons/).
 """
-function hexGrid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=nothing, triangles::Bool=false, units::String="kilometers") where {T <: Real}
+function hexgrid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=nothing, triangles::Bool=false, units::String="kilometers") where {T <: Real}
     west = bbox[1]
     south = bbox[2]
     east = bbox[3]

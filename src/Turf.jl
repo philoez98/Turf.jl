@@ -2,14 +2,14 @@ module Turf
 
 using GeoInterface
 
-export radiansToLength, lengthToRadians, lengthToDegrees, convertLength, convertArea,
-    angleAdjacent, distance, distanceToSegment, rhumbDistance, rhumbBearing, rhumbDestination,
-    destination, bearing, bearingToAzimuth, bbox, bboxPolygon, center, centroid, transformRotate, transformScale,
-    bezier, concave, clockwise, nearestPoint, earthRadius, areaFactors, unitsFactor, parallel,
-    Spline, lineSegment, pointOnLine, pointInPolygon, medianCenter, massCenter, meanCenter, circle,
-    pNormDistance, distanceWeight, ellipse, explode, midPoint, square, flip, lineclip, polygonclip,
-    linearc, sector, planepoint, toWGS84, toMercator, pointGrid, rectangleGrid, hexGrid, polygonTangents,
-    area, contains, within, disjoint, lineIntersects, polygonToLine, transformTranslate, valid, crosses, convertTo,
+export radians_to_length, length_to_radians, length_to_degrees, convert_length, convert_area,
+    angle_adjacent, distance, distance_to_segment, rhumb_distance, rhumb_bearing, rhumb_destination,
+    destination, bearing, bearing_to_azimuth, bbox, bbox_polygon, center, centroid, transform_rotate, transform_scale,
+    bezier, concave, clockwise, nearestpoint, earth_radius, area_factors, units_factors, parallel,
+    Spline, linesegment, point_on_line, point_in_polygon, mediancenter, masscenter, meancenter, circle,
+    pnorm_distance, distance_weight, ellipse, explode, midpoint, square, flip, lineclip, polygonclip,
+    linearc, sector, planepoint, to_WGS84, to_mercator, point_grid, rectangle_grid, hexgrid, polygon_tangents,
+    area, contains, within, disjoint, line_intersects, polygon_to_line, transform_translate, valid, crosses, convert_to,
     combine
 
 

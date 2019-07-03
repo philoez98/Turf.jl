@@ -2,7 +2,7 @@
 Converts any bearing angle from the north line direction (positive clockwise)
 and returns an angle between 0-360 degrees (positive clockwise), 0 being the north line
 """
-function bearingToAzimuth(bearing::AbstractFloat)::AbstractFloat
+function bearing_to_azimuth(bearing::AbstractFloat)::AbstractFloat
     angle = bearing % 360
     if angle < 0
         angle += 360
@@ -14,7 +14,7 @@ end
 Takes two Positions and finds the bearing angle between them along a Rhumb line
 i.e. the angle measured in degrees start the north line (0 degrees)
 """
-function rhumbBearing(start::Position, stop::Position, final::Bool=false)
+function rhumb_bearing(start::Position, stop::Position, final::Bool=false)
     bear360 = nothing
 
     if final === true

@@ -42,7 +42,7 @@ hand, they may look rather evenly dispersed if the study area is limited to
 the city's downtown.
 """
 function analysis(data::F, area::Union{P, Nothing}=nothing, units::String="kilometers") where {F <: AbstractFeatureCollection, P <: AbstractPolygon}
-    area == nothing && (area = bboxPolygon(bbox(data)[1]))
+    area == nothing && (area = bbox_polygon(bbox(data)[1]))
 
     feats = []
 
@@ -55,12 +55,12 @@ function analysis(data::F, area::Union{P, Nothing}=nothing, units::String="kilom
     obsDist = []
     for (index, p) in enumerate(feats)
         other = filter((f, i) -> i !== index, feats)
-        push!(obsDist, distance(p, nearestPoint(p, other).coordinates, units))
+        push!(obsDist, distance(p, nearestpoint(p, other).coordinates, units))
     end
 
     reduce((a, b) -> a + b, obsDist)
 
-    popDensity = n / convertArea(area(area), "meters", units)
+    popDensity = n / convert_area(area(area), "meters", units)
     expDist = 1 / (2 * sqrt(popDensity))
     var = 0.26136 / (sqrt(n * popDensity))
 
