@@ -546,6 +546,8 @@ function crosses(ft1::AbstractGeometry, ft2::AbstractGeometry)::Bool
     throw(error("Geometry $(type1) is not supported."))
 end
 
+crosses(ft1::Feature, ft2::Feature) = crosses(ft1.geometry, ft2.geometry)
+
 
 function MpCrossLs(geom1::MultiPoint, geom2::LineString)
     intPoint = false

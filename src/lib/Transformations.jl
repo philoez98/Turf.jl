@@ -476,3 +476,111 @@ function coordinatesToLine(coords::Vector{Vector{Position}})
     length(coords) > 1 && return MultiLineString(coords)
     return LineString(coords[1])
 end
+
+"""Convert a GeoJSON object to the defined `projection`"""
+function convertTo(geojson::AbstractGeometry, projection::String, mutate::Bool=false)
+    allowed_proj = ["mercator", "wgs84"]
+
+    !(projection in allowed_proj) && throw(error("$(projection) is not a valid option."))
+
+    type = geotype(geojson)
+
+    type === :Point && return Point((projection === "mercator") ? toMercator(geojson) : toWGS84(geojson))
+
+    !mutate && (geojson = deepcopy(geojson))
+
+    coords = geojson.coordinates
+    if type === :LineString
+        for i in eachindex(coords)
+            newCoords = (projection === "mercator") ? toMercator(Point(coords[i])) : toWGS84(Point(coords[i]))
+            coords[i][1] = newCoords[1]
+            coords[i][2] = newCoords[2]
+        end
+    elseif type === :Polygon
+        for i in eachindex(coords[1])
+            newCoords = (projection === "mercator") ? toMercator(Point(coords[1][i])) : toWGS84(Point(coords[1][i]))
+            coords[1][i][1] = newCoords[1]
+            coords[1][i][2] = newCoords[2]
+        end
+    else
+        throw(error("$(type) is not supported."))
+    end
+
+    return geojson
+end
+
+convertTo(geojson::Feature, projection::String, mutate::Bool=false) = convertTo(geojson.geometry, projection, mutate)
+
+"""
+Combines a FeatureCollection of Point, LineString, or Polygon features
+into MultiPoint, MultiLineString, or MultiPolygon features.
+"""
+function combine(ft::FeatureCollection)
+
+    groups = Dict{String, Any}([
+        "MultiPoint" => [[], Dict{String, Any}()],
+        "MultiLineString" => [[], Dict{String, Any}()],
+        "MultiPolygon" => [[], Dict{String, Any}()]]
+    )
+
+    function add_to_group(ft::Feature, key::String, multi::Bool)
+        if multi
+            if geotype(ft.geometry) === :MultiPoint
+                for i in eachindex(ft.geometry.coordinates)
+                    push!(groups[key][1], ft.geometry.coordinates[i])
+                end
+            elseif geotype(ft.geometry) === :MultiLineString
+                for i in eachindex(ft.geometry.coordinates[1])
+                    push!(groups[key][1], ft.geometry.coordinates[1][i])
+                end
+            else
+                for i in eachindex(ft.geometry.coordinates[1][1])
+                    push!(groups[key][1], ft.geometry.coordinates[1][1][i])
+                end
+            end
+        else
+            if geotype(ft.geometry) === :Point
+                groups[key][1] = vcat(groups[key][1], [ft.geometry.coordinates])
+            elseif geotype(ft.geometry) === :LineString
+                groups[key][1] = vcat(groups[key][1], ft.geometry.coordinates)
+            elseif geotype(ft.geometry) === :Polygon
+                groups[key][1] = vcat(groups[key][1], ft.geometry.coordinates...)
+            end
+        end # function
+
+        merge!(groups[key][2], ft.properties)
+    end
+
+    for feat in ft.features
+        type = geotype(feat.geometry)
+        try
+            add_to_group(feat, string(type), true)
+        catch e
+            if isa(e, KeyError)
+                newType = "Multi" * string(type)
+                add_to_group(feat, newType, false)
+            else
+                throw(e)
+            end
+        end
+    end
+
+    features::Vector{Feature} = []
+
+    groups = filter( x -> length(groups[x.first][1]) > 0, groups)
+
+    for g in keys(groups)
+        if g === "MultiPoint"
+            point = MultiPoint(values(groups[g][1]))
+            push!(features, Feature(point, groups[g][2]))
+        elseif g === "MultiLineString"
+            point = MultiLineString([values(groups[g][1])])
+            push!(features, Feature(point, groups[g][2]))
+        elseif g === "MultiPolygon"
+            point = MultiPolygon([[values(groups[g][1])]])
+            push!(features, Feature(point, groups[g][2]))
+        end
+    end
+
+    return FeatureCollection(features)
+end

@@ -170,4 +170,84 @@
 							25
 						]
 					]]
+
+	poly7 = Polygon([[[
+					-20031393.380526427,
+					-1860477.2684611906
+				],
+				[
+					19998984.080533516,
+					-1906645.233545436
+				],
+				[
+					20014882.98241683,
+					-1959233.9090056375
+				],
+				[
+					-20002653.0578912,
+					-1937831.5410857894
+				],
+				[
+					-19990117.385252435,
+					-1892275.0722278224
+				],
+				[
+					-20031393.380526427,
+					-1860477.2684611906
+					]]])
+
+	#@test convertTo(poly7, "wgs84").coordinates
+
+	res = convertTo(Point([10, 40]), "mercator")
+	@test convertTo(res, "wgs84") ≈ Point([10, 40]) atol=0.5
+
+	pt1 = Point([50, 51])
+	pt2 = MultiPoint([[100, 101], [101, 102]])
+
+	fc1 = combine(FeatureCollection([Feature(pt1), Feature(pt2)]))
+
+	@test fc1.features[1].geometry.coordinates ≈ [[50, 51], [100, 101], [101, 102]]
+
+	l1 = LineString([[102.0,-10.0],[130.0,4.0]])
+	l2 = LineString([[40.0,-20.0],[150.0,18.0]])
+
+	fc2 = combine(FeatureCollection([Feature(l1), Feature(l2)]))
+
+	@test fc2.features[1].geometry.coordinates == [[[102, -10], [130, 4], [40, -20], [150, 18]]]
+
+	pl1 = Polygon([[
+            [20.0, 0.0],
+            [101.0, 0.0],
+            [101.0, 1.0],
+            [100.0, 1.0],
+            [100.0, 0.0],
+            [20.0, 0.0]]])
+
+	pl2 = MultiPolygon([
+		[[
+            [30.0, 0.0],
+            [102.0, 0.0],
+            [103.0, 1.0],
+            [30.0, 0.0]
+        ]],
+        [[
+                [20.0, 5.0],
+                [92.0, 5.0],
+                [93.0, 6.0],
+                [20.0, 5.0]
+            ],
+            [
+                [25, 5],
+                [30, 5],
+                [30, 5.5],
+                [25, 5]]]])
+
+	fc3 = combine(FeatureCollection([Feature(pl1), Feature(pl2)]))
+	@test fc3.features[1].geometry.coordinates == [[[[20, 0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0], [20, 0],[30.0, 0.0], [102.0, 0.0], [103.0, 1.0], [30.0, 0.0]]]]
+
+	l3 = LineString([[102.0, -10.0],[130.0, 4.0]])
+	ml = MultiLineString([[[40.0, -20.0],[150.0, 18.0], [50, -10],[160, 28]]])
+
+	fc4 = combine(FeatureCollection([Feature(l3), Feature(ml)]))
+	@test fc4.features[1].geometry.coordinates == [[[102., -10.], [130., 4.], [40., -20.], [150., 18.], [50, -10], [160, 28]]]
 end
