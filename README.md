@@ -18,7 +18,6 @@ TODO
 
 ## Getting Help
 
-- **Need help with your code?**: [ask a new question](https://stackoverflow.com/questions/tagged/mapbox+android).
 - **Have a bug to report?** [Open an issue](https://github.com/philoez98/Turf.jl/issues/new/choose). If possible, include the version of Turf and Julia, a full log, and a project that shows the issue.
 - **Have a feature request?** [Open an issue](https://github.com/philoez98/Turf.jl/issues/new/choose). Tell us what the feature should do and why you want the feature.
 
