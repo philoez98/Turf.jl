@@ -25,4 +25,4 @@ TODO
 ## Contribute
 
 Contributions are highly welcomed and appreciated.
-If you want to contribute to this project, feel free to open an [issue](https://github.com/philoez98/Turf.jl/issues/new/choose) to discuss your proposal and its implementation. Once it's all good make a [pull request]https://github.com/philoez98/Turf.jl/pulls) and you're done. Thank you for helping out!
+If you want to contribute to this project, feel free to open an [issue](https://github.com/philoez98/Turf.jl/issues/new/choose) to discuss your proposal and its implementation. Once it's all good make a [pull request](https://github.com/philoez98/Turf.jl/pulls) and you're done. Thank you for helping out!

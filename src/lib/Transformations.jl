@@ -82,7 +82,7 @@ julia> transform_translate(poly, 300, 70)
 Polygon(Array{Array{Float64,1},1}[[[2.91184, 29.9228], [6.41184, 29.9228], [5.50479, 32.9228], [2.91184, 29.9228]]])
 ```
 """
-function transform_translate(; geojson::T, distance::R, direction::R, vertical::R=0, mutate::Bool=false, units::String="kilometers") where {T <: Union{AbstractFeature, AbstractGeometry}, R <: Real}
+function transform_translate(geojson::T, distance::R, direction::R, vertical::R=0, mutate::Bool=false, units::String="kilometers") where {T <: Union{AbstractFeature, AbstractGeometry}, R <: Real}
     (distance == 0 && vertical == 0) && return geojson
 
     if distance < 0
