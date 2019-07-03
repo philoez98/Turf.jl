@@ -1,8 +1,19 @@
 const origin_options = ["sw", "se", "nw", "ne", "center", "centroid"]
 
 """
+    transform_rotate([geojson::T[, angle::Real], pivot::Point=nothing, mutate::Bool=false) where {T <: AbstractGeometry}
+
 Rotates any geojson Feature or Geometry of a specified angle, around its `centroid` or a given `pivot` point;
 all rotations follow the right-hand rule.
+
+# Examples
+```jldoctest
+julia> point = Point([-75.69926351308823,45.43145021122502])
+Point([-75.6993, 45.4315])
+
+julia> transform_rotate(geojson=point, angle=80., pivot=Point([-75.6, 45.3]))
+Point([-75.433, 45.3915])
+```
 """
 function transform_rotate(; geojson::T, angle::Real, pivot::Point=nothing, mutate::Bool=false) where {T <: AbstractGeometry}
     if angle === 0
@@ -57,10 +68,21 @@ function transform_rotate(; geojson::T, angle::Real, pivot::Point=nothing, mutat
 end
 
 """
+    transform_translate([geojson::T[, distance::R[, direction::R]]], vertical::R=0, mutate::Bool=false, units::String="kilometers") where {T <: Union{AbstractFeature, AbstractGeometry}, R <: Real}
+
 Moves any geojson Feature or Geometry of a specified distance along a Rhumb Line
 on the provided direction angle.
+
+# Examples
+```jldoctest
+julia> poly = Polygon([[[0, 29], [3.5, 29], [2.5, 32], [0, 29]]])
+Polygon(Array{Array{Float64,1},1}[[[0.0, 29.0], [3.5, 29.0], [2.5, 32.0], [0.0, 29.0]]])
+
+julia> transform_translate(poly, 300, 70)
+Polygon(Array{Array{Float64,1},1}[[[2.91184, 29.9228], [6.41184, 29.9228], [5.50479, 32.9228], [2.91184, 29.9228]]])
+```
 """
-function transform_translate(geojson::T, distance::R, direction::R, vertical::R=0, mutate::Bool=false, units::String="kilometers") where {T <: Union{AbstractFeature, AbstractGeometry}, R <: Real}
+function transform_translate(; geojson::T, distance::R, direction::R, vertical::R=0, mutate::Bool=false, units::String="kilometers") where {T <: Union{AbstractFeature, AbstractGeometry}, R <: Real}
     (distance == 0 && vertical == 0) && return geojson
 
     if distance < 0
@@ -109,8 +131,19 @@ end
 
 
 """
+    transform_scale([geojson::T[, factor::Float64]], origin::String="centroid") where {T <: AbstractFeatureCollection}
+
 Scale a GeoJson from a given point by a factor of scaling (ex: factor=2 would make the GeoJson 200% larger).
 If a FeatureCollection is provided, the origin point will be calculated based on each individual Feature.
+
+# Examples
+```jldoctest
+julia> coll = FeatureCollection([Feature(Point([-75.69926351308823,45.43145021122502])), Feature(Polygon([[[0, 29], [3.5, 29], [2.5, 32], [0, 29]]]))])
+FeatureCollection{Feature}(Feature[Feature(Point([-75.6993, 45.4315]), Dict{String,Any}()), Feature(Polygon(Array{Array{Float64,1},1}[[[0.0, 29.0], [3.5, 29.0], [2.5, 32.0], [0.0, 29.0]]]), Dict{String,Any}())], nothing, nothing)
+
+julia> transform_scale(coll, 0.1)
+FeatureCollection{Feature}(Feature[Feature(Point([-75.6993, 45.4315]), Dict{String,Any}()), Feature(Polygon(Array{Array{Float64,1},1}[[[1.3495, 29.675], [1.70067, 29.675], [1.59896, 29.975], [1.3495, 29.675]]]), Dict{String,Any}())], nothing, nothing)
+```
 """
 function transform_scale(geojson::T, factor::Float64, origin::String="centroid") where {T <: AbstractFeatureCollection}
 
@@ -123,7 +156,18 @@ end
 
 
 """
+    scale([feature::Feature[, factor::Real]], origin::String="centroid")
+
 Scale a Feature.
+
+# Examples
+```jldoctest
+julia> feature = Feature(Polygon([[[0, 29], [3.5, 29], [2.5, 32], [0, 29]]]))
+Feature(Polygon(Array{Array{Float64,1},1}[[[0.0, 29.0], [3.5, 29.0], [2.5, 32.0], [0.0, 29.0]]]), Dict{String,Any}())
+
+julia> scale(feature, 0.1)
+Feature(Polygon(Array{Array{Float64,1},1}[[[1.3495, 29.675], [1.70067, 29.675], [1.59896, 29.975], [1.3495, 29.675]]]), Dict{String,Any}())
+```
 """
 function scale(feature::Feature, factor::Real, origin::String="centroid")
 
@@ -209,9 +253,25 @@ function getOrigin(geojson::Feature, origin::String)
 end
 
 """
+    explode([geojson::T], pointsOnly::Bool=false)::FeatureCollection where {T <: Union{AbstractFeatureCollection, AbstractGeometry}}
+
 Takes a Geometry or a FeatureCollection and returns all positions as Points.
+
+# Examples
+```jldoctest
+julia> poly = Polygon([[[100, 0], [101, 0], [101, 1], [100, 1], [100, 0]]])
+Polygon(Array{Array{Float64,1},1}[[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]])
+
+julia> explode(poly, true)
+5-element Array{Point,1}:
+ Point([100.0, 0.0])
+ Point([101.0, 0.0])
+ Point([101.0, 1.0])
+ Point([100.0, 1.0])
+ Point([100.0, 0.0])
+ ```
 """
-function explode(geojson::T, pointsOnly::Bool=false)::FeatureCollection where {T <: Union{AbstractFeatureCollection, AbstractGeometry}}
+function explode(geojson::T, pointsOnly::Bool=false) where {T <: Union{AbstractFeatureCollection, AbstractGeometry}}
     points::Vector{Point} = []
 
     if geotype(geojson) === :FeatureCollection
@@ -257,7 +317,20 @@ function explode(geojson::T, pointsOnly::Bool=false)::FeatureCollection where {T
     return FeatureCollection([Feature(x) for x in points])
 end
 
-"""Take input Features and Geometries and flips all of their coordinates from `[x, y]` to `[y, x]`."""
+"""
+    flip([geojson::T], mutate::Bool=false) where {T <: Union{AbstractFeature, AbstractGeometry}}
+
+Take input Features and Geometries and flips all of their coordinates from `[x, y]` to `[y, x]`.
+
+# Examples
+```jldoctest
+julia> point = Point([77.34374999999999,43.58039085560784,3000])
+Point([77.3437, 43.5804, 3000.0])
+
+julia> flip(point)
+Point([43.5804, 77.3437, 3000.0])
+ ```
+"""
 function flip(geojson::T, mutate::Bool=false) where {T <: Union{AbstractFeature, AbstractGeometry}}
     type = geotype(geojson)
     coords = []
@@ -350,7 +423,9 @@ function lineclip(points::Vector{P}, bbox::Vector{T}) where {T <: Real, P <: Abs
     return results
 end
 
-"""Sutherland-Hodgeman polygon clipping algorithm."""
+"""
+Sutherland-Hodgeman polygon clipping algorithm.
+"""
 function polygonclip(points::Vector{P}, bbox::Vector{T}) where {P <: AbstractPoint, T <: Real}
     let result, edge, prev, pInside, p, inside end
     ranges = [1, 2, 4, 8]
@@ -381,7 +456,9 @@ function polygonclip(points::Vector{P}, bbox::Vector{T}) where {P <: AbstractPoi
 end
 
 
-"""Intersect a segment against one of the 4 lines that make up the bbox"""
+"""
+Intersect a segment against one of the 4 lines that make up the bbox
+"""
 function intersection(a::Point, b::Point, edge, bbox::Vector{T}) where {T <: Real}
     return edge & 8 ? [a[1] + (b[1] - a[1]) * (bbox[4] - a[1]) / (b[1] - a[1]), bbox[4]] : # top
            edge & 4 ? [a[1] + (b[1] - a[1]) * (bbox[2] - a[2]) / (b[2] - a[2]), bbox[2]] : # bottom
@@ -403,7 +480,26 @@ end
     return code
 end
 
-""" Finds the tangents of a Polygon from a Point."""
+"""
+    polygon_tangents(pt::Point, poly::Polygon)
+
+Finds the tangents of a Polygon from a Point.
+
+# Examples
+```jldoctest
+julia> point = Point([92.46093749999999,54.67383096593114])
+Point([92.4609, 54.6738])
+
+julia> poly = Polygon([[[100, 0], [101, 0], [101, 1], [100, 1], [100, 0]]])
+Polygon(Array{Array{Float64,1},1}[[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]])
+
+julia> poly = Polygon([[[48.1641, 20.6328], [76.6406, 20.6328], [76.6406, 38.8226], [48.1641, 38.8226], [48.1641, 20.6328]]])
+Polygon(Array{Array{Float64,1},1}[[[48.1641, 20.6328], [76.6406, 20.6328], [76.6406, 38.8226], [48.1641, 38.8226], [48.1641, 20.6328]]])
+
+julia> polygon_tangents(point, poly)
+FeatureCollection{Feature}(Feature[Feature(Point([48.1641, 38.8226]), Dict{String,Any}()), Feature(Point([76.6406, 20.6328]), Dict{String,Any}())], nothing, nothing)
+ ```
+"""
 function polygon_tangents(pt::Point, poly::Polygon)
     ptCoords = pt.coordinates
     polyCoords = poly.coordinates
@@ -466,7 +562,18 @@ end
 
 
 """
+    polygon_to_line([poly::Polygon])
+
 Converts a Polygon to LineString or MultiLineString
+
+# Examples
+```jldoctest
+julia> poly = Polygon([[[-2.275543, 53.464547],[-2.275543, 53.489271],[-2.215118, 53.489271],[-2.215118, 53.464547],[-2.275543, 53.464547]]])
+Polygon(Array{Array{Float64,1},1}[[[-2.27554, 53.4645], [-2.27554, 53.4893], [-2.21512, 53.4893], [-2.21512, 53.4645], [-2.27554, 53.4645]]])
+
+julia> polygon_to_line(poly)
+LineString(Array{Float64,1}[[-2.27554, 53.4645], [-2.27554, 53.4893], [-2.21512, 53.4893], [-2.21512, 53.4645], [-2.27554, 53.4645]])
+ ```
 """
 function polygon_to_line(poly::Polygon)
     return coordinatesToLine(poly.coordinates)
@@ -477,7 +584,11 @@ function coordinatesToLine(coords::Vector{Vector{Position}})
     return LineString(coords[1])
 end
 
-"""Convert a GeoJSON object to the defined `projection`"""
+"""
+    convert_to([geojson::AbstractGeometry[, projection::String]], mutate::Bool=false)
+
+Convert a GeoJSON object to the defined `projection`
+"""
 function convert_to(geojson::AbstractGeometry, projection::String, mutate::Bool=false)
     allowed_proj = ["mercator", "wgs84"]
 
@@ -512,8 +623,22 @@ end
 convert_to(geojson::Feature, projection::String, mutate::Bool=false) = convert_to(geojson.geometry, projection, mutate)
 
 """
-Combines a FeatureCollection of Point, LineString, or Polygon features
+    combine([ft::FeatureCollection])
+
+Combine a FeatureCollection of Point, LineString, or Polygon features
 into MultiPoint, MultiLineString, or MultiPolygon features.
+
+# Examples
+```jldoctest
+julia> l1 = LineString([[102.0,-10.0],[130.0,4.0]])
+LineString(Array{Float64,1}[[102.0, -10.0], [130.0, 4.0]])
+
+julia> l2 = LineString([[40.0,-20.0],[150.0,18.0]])
+LineString(Array{Float64,1}[[40.0, -20.0], [150.0, 18.0]])
+
+julia> combine(FeatureCollection([Feature(l1), Feature(l2)]))
+FeatureCollection{Feature}(Feature[Feature(MultiLineString(Array{Array{Float64,1},1}[[[102.0, -10.0], [130.0, 4.0], [40.0, -20.0], [150.0, 18.0]]]), Dict{String,Any}())], nothing, nothing)
+```
 """
 function combine(ft::FeatureCollection)
 
