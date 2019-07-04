@@ -85,9 +85,6 @@ This document tracks the currently implemented features of the Turf.js library.
 - [ ] turf-shortest-path
 - [ ] turf-unkink-polygon
 
-## Helper
-The helper functions are all part of the GeoJson module; this class contains unit conversion and additional functionality to help other calculations.
-
 ## Random
 - [ ] turf-random-interpolate
 - [ ] turf-random-isobands
