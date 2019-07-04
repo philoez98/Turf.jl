@@ -250,4 +250,8 @@
 
 	fc4 = combine(FeatureCollection([Feature(l3), Feature(ml)]))
 	@test fc4.features[1].geometry.coordinates == [[[102., -10.], [130., 4.], [40., -20.], [150., 18.], [50, -10], [160, 28]]]
+
+	fc4 = FeatureCollection([Feature(pt1)])
+	fc5 = FeatureCollection([Feature(Polygon([[[49, 52], [51, 50.5], [49, 51], [49, 52], [49, 52]]]), Dict("poly" => true))])
+	@test tag(fc4, fc5,"poly", "inside").features[1].properties == Dict("inside" => true)
 end

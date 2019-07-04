@@ -709,3 +709,25 @@ function combine(ft::FeatureCollection)
 
     return FeatureCollection(features)
 end
+
+"""
+    tag(fc1::FeatureCollection, fc2::FeatureCollection, in_field::String, out_field::String)::FeatureCollection
+
+Take a set of Points and a set of Polygons and performs a spatial join.
+"""
+function tag(fc1::FeatureCollection, fc2::FeatureCollection, in_field::String, out_field::String)::FeatureCollection
+    points = deepcopy(fc1)
+    polys = deepcopy(fc2)
+
+    for feat in points.features
+        geotype(feat.geometry) !== :Point && throw(error("$(feat.geometry) is not a supported geometry."))
+        for feat2 in polys.features
+            geotype(feat2.geometry) !== :Polygon && throw(error("$(feat2.geometry) is not a supported geometry."))
+
+            if point_in_polygon(feat.geometry, feat2.geometry)
+                feat.properties[out_field] = feat2.properties[in_field]
+            end
+        end
+    end
+    return points
+end

@@ -34,7 +34,7 @@ function centroid(geojson::T) where {T<:AbstractGeometry}
     return Point([x / len, y / len])
 end
 
-"""Takes a GeoJson and returns the absolute center point of all features."""
+"""Take a GeoJson Geometry and return the absolute center point."""
 function center(geojson::T) where {T <: AbstractGeometry}
     box = bbox(geojson)
 
@@ -45,7 +45,7 @@ function center(geojson::T) where {T <: AbstractGeometry}
 end
 
 """
-Takes any Geojson Geometry and returns its [center of mass](https://en.wikipedia.org/wiki/Center_of_mass) using this formula:
+Take any GeoJson Geometry and return its [center of mass](https://en.wikipedia.org/wiki/Center_of_mass) using this formula:
 [Centroid of Polygon](https://en.wikipedia.org/wiki/Centroid#Centroid_of_polygon).
 """
 function masscenter(geojson::T) where {T <: AbstractGeometry}
@@ -98,10 +98,10 @@ function masscenter(geojson::T) where {T <: AbstractGeometry}
 end
 
 """
-Takes a GeoJson Geometry and returns the mean center. Can be weighted.
+Take a GeoJson Geometry and return the mean center. Can be weighted.
 """
 function meancenter(geojson::T, weight::Real=1) where {T <: Union{AbstractGeometry, AbstractFeatureCollection}}
-    # TODO: so ugly! Reafactor?
+    # TODO: so ugly! Refactor?
     xs = 0.
     ys = 0.
     ns = 0.
