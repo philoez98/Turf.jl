@@ -32,7 +32,7 @@ TODO
 
 ## Available Functionality
 
-A list with the currently available features can be found [here]("https://github.com/philoez98/Turf.jl/blob/master/Turf.md").
+A list with the currently available features can be found [here](https://github.com/philoez98/Turf.jl/blob/master/Turf.md).
 Please open an issue if there's a specific *Turf.js* method that you'd like to have implemented.
 
 ## Contribute
