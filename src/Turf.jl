@@ -2,6 +2,7 @@ module Turf
 
 using Reexport
 @reexport using GeoInterface
+@reexport using GeoJSON
 
 export radians_to_length, length_to_radians, length_to_degrees, convert_length, convert_area,
     angle_adjacent, distance, distance_to_segment, rhumb_distance, rhumb_bearing, rhumb_destination,
