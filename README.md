@@ -10,7 +10,16 @@ Turf.jl uses [GeoInteface.jl](https://github.com/JuliaGeo/GeoInterface.jl) for c
 
 ## Installation
 
-TODO
+Turf.jl can be installed either from the Pkg REPL mode:
+
+```
+pkg> add Turf
+```
+or via `Pkg`:
+
+```
+julia> import Pkg; Pkg.add("Turf")
+```
 
 ## Example
 
@@ -18,10 +27,16 @@ TODO
 
 ## Getting Help
 
-- **Have a bug to report?** [Open an issue](https://github.com/philoez98/Turf.jl/issues/new/choose). If possible, include the version of Turf and Julia, a full log, and a project that shows the issue.
+- **Have a bug to report?** [Open an issue](https://github.com/philoez98/Turf.jl/issues/new/choose). Include the version of Turf and Julia, a full log, and some code that shows the issue.
 - **Have a feature request?** [Open an issue](https://github.com/philoez98/Turf.jl/issues/new/choose). Tell us what the feature should do and why you want the feature.
+
+## Available Functionality
+
+A list with the currently available features can be found [here]("https://github.com/philoez98/Turf.jl/blob/master/Turf.md").
+Please open an issue if there's a specific *Turf.js* method that you'd like to have implemented.
 
 ## Contribute
 
 Contributions are highly welcomed and appreciated.
-If you want to contribute to this project, feel free to open an [issue](https://github.com/philoez98/Turf.jl/issues/new/choose) to discuss your proposal and its implementation. Once it's all good make a [pull request](https://github.com/philoez98/Turf.jl/pulls) and you're done. Thank you for helping out!
+If you want to contribute to this project, feel free to open an [issue](https://github.com/philoez98/Turf.jl/issues/new/choose) to discuss your proposal and its implementation. Once it's all good make a [pull request](https://github.com/philoez98/Turf.jl/pulls) and you're done.
+Thank you for helping out!
