@@ -587,7 +587,7 @@ end
 """
     convert_to([geojson::AbstractGeometry[, projection::String]], mutate::Bool=false)
 
-Convert a GeoJSON object to the defined `projection`
+Convert a GeoJSON object to the defined `projection`.
 """
 function convert_to(geojson::AbstractGeometry, projection::String, mutate::Bool=false)
     allowed_proj = ["mercator", "wgs84"]

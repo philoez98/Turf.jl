@@ -1,5 +1,4 @@
 using Test, Turf
-using GeoInterface
 
 @testset "Turf" begin
     include("angle.jl")

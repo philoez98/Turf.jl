@@ -35,9 +35,11 @@ end
 end
 
 """
+    linearc(center::Point, radius::Real, bearing1::Real, bearing2::Real, steps::Real=64., units::String="kilometers")
+    
 Creates a circular arc, of a circle of the given radius and center point, between bearing1 and bearing2;
 0 bearing is North of center point, positive clockwise.
- """
+"""
 function linearc(center::Point, radius::Real, bearing1::Real, bearing2::Real, steps::Real=64., units::String="kilometers")
     angle1 = to360(bearing1)
     angle2 = to360(bearing2)

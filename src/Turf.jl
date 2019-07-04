@@ -1,6 +1,7 @@
 module Turf
 
-using GeoInterface
+using Reexport
+@reexport using GeoInterface
 
 export radians_to_length, length_to_radians, length_to_degrees, convert_length, convert_area,
     angle_adjacent, distance, distance_to_segment, rhumb_distance, rhumb_bearing, rhumb_destination,
@@ -10,7 +11,7 @@ export radians_to_length, length_to_radians, length_to_degrees, convert_length, 
     pnorm_distance, distance_weight, ellipse, explode, midpoint, square, flip, lineclip, polygonclip,
     linearc, sector, planepoint, to_WGS84, to_mercator, point_grid, rectangle_grid, hexgrid, polygon_tangents,
     area, contains, within, disjoint, line_intersects, polygon_to_line, transform_translate, valid, crosses, convert_to,
-    combine, scale
+    combine, scale, square_grid, triangle_grid
 
 
 include("Constants.jl")
@@ -31,8 +32,5 @@ include("lib/Square.jl")
 include("lib/Grids.jl")
 include("lib/BezierSpline.jl")
 include("lib/Booleans.jl")
-
-
-
 
 end

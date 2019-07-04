@@ -213,3 +213,80 @@ function hexgrid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=not
 
     return FeatureCollection([Feature(x) for x in results])
 end
+
+"""
+    square_grid(bbox::Vector{T}, cell_side::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
+
+Create a square grid from a bounding box.
+"""
+function square_grid(bbox::Vector{T}, cell_side::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
+    return rectangle_grid(bbox, cell_side, cell_side, mask, units)
+end
+
+"""
+    triangle_grid(bbox::Vector{T}, cell_side::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
+
+Take a bounding box and a cell depth and returns a set of triangular Polygons in a grid.
+"""
+function triangle_grid(bbox::Vector{T}, cell_side::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
+    results = []
+
+    x_frac = cell_side / (distance([bbox[1], bbox[2]], [bbox[3], bbox[2]], units))
+    cell_width = x_frac * (bbox[3] - bbox[1])
+    y_frac = cell_side / (distance([bbox[1], bbox[2]], [bbox[1], bbox[4]], units))
+    cell_height = y_frac * (bbox[4] - bbox[2])
+
+    xi = 0
+    curr_x = bbox[1]
+
+    while curr_x <= bbox[2]
+        yi = 0
+        curr_y = bbox[2]
+
+        while curr_y <= bbox[4]
+            cell1 = nothing
+            cell2 = nothing
+
+            if xi % 2 == 0 && yi % 2 == 0
+                cell1 = Polygon([[[curr_x, curr_y], [curr_x, curr_y + cell_height],
+                    [curr_x + cell_width, curr_y], [curr_x, curr_y]]])
+
+                cell2 = Polygon([[[curr_x, curr_y + cell_height], [curr_x + cell_width, curr_y + cell_height],
+                    [curr_x + cell_width, curr_y], [curr_x, curr_y + cell_height]]])
+            elseif xi % 2 == 0 && yi % 2 == 1
+                cell1 = Polygon([[[curr_x, curr_y], [curr_x + cell_width, curr_y + cell_height],
+                    [curr_x + cell_width, curr_y], [curr_x, curr_y]]])
+
+                cell2 = Polygon([[[curr_x, curr_y], [curr_x, curr_y + cell_height],
+                    [curr_x + cell_width, curr_y + cell_height], [curr_x, curr_y]]])
+
+            elseif yi % 2 == 0 && xi % 2 == 1
+                cell1 = Polygon([[[curr_x, curr_y], [curr_x, curr_y + cell_height],
+                    [curr_x + cell_width, curr_y + cell_height], [curr_x, curr_y]]])
+
+                cell2 = Polygon([[[curr_x, curr_y], [curr_x + cell_width, curr_y + cell_height],
+                    [curr_x + cell_width, curr_y], [curr_x, curr_y]]])
+            elseif yi % 2 == 1 && xi % 2 == 1
+                cell1 = Polygon([[[curr_x, curr_y], [curr_x, curr_y + cell_height],
+                    [curr_x + cell_width, curr_y], [curr_x, curr_y]]])
+
+                cell2 = Polygon([[[curr_x, curr_y + cell_height], [curr_x + cell_width, curr_y + cell_height],
+                    [curr_x + cell_width, curr_y], [curr_x, curr_y + cell_height]]])
+            end
+
+            if mask != nothing
+                # intersects...
+                push!(results, cell1)
+                push!(results, cell2)
+            else
+                push!(results, cell1)
+                push!(results, cell2)
+            end
+            curr_y += cell_height
+            yi += 1
+        end
+        xi += 1
+        curr_x += cell_width
+    end
+    return FeatureCollection([Feature(x) for x in results])
+end
