@@ -67,6 +67,8 @@ function transform_rotate(; geojson::T, angle::Real, pivot::Point=nothing, mutat
     return geo
 end
 
+transform_rotate!(; geojson::T, angle::Real, pivot::Point=nothing) where {T <: AbstractGeometry} = transform_rotate(geojson=geojson, angle=angle, pivot=pivot, mutate=true)
+
 """
     transform_translate([geojson::T[, distance::R[, direction::R]]], vertical::R=0, mutate::Bool=false, units::String="kilometers") where {T <: Union{AbstractFeature, AbstractGeometry}, R <: Real}
 
@@ -128,6 +130,7 @@ function transform_translate(geojson::T, distance::R, direction::R, vertical::R=
     return geojson
 end
 
+transform_translate!(geojson::T, distance::R, direction::R, vertical::R=0, units::String="kilometers") where {T <: Union{AbstractFeature, AbstractGeometry}, R <: Real} = transform_translate(geojson, distance, direction, vertical, true, units)
 
 
 """
@@ -145,15 +148,23 @@ julia> transform_scale(coll, 0.1)
 FeatureCollection{Feature}(Feature[Feature(Point([-75.6993, 45.4315]), Dict{String,Any}()), Feature(Polygon(Array{Array{Float64,1},1}[[[1.3495, 29.675], [1.70067, 29.675], [1.59896, 29.975], [1.3495, 29.675]]]), Dict{String,Any}())], nothing, nothing)
 ```
 """
-function transform_scale(geojson::T, factor::Float64, origin::String="centroid") where {T <: AbstractFeatureCollection}
+function transform_scale(geojson::T, factor::Real, origin::String="centroid", mutate::Bool=false) where {T <: AbstractFeatureCollection}
 
-    for (i, feat) in enumerate(geojson.features)
-        geojson.features[i] = scale(feat, factor, origin)
+    geo = []
+    if !mutate
+        geo = deepcopy(geojson)
+    else
+        geo = geojson
     end
 
-    return geojson
+    for (i, feat) in enumerate(geo.features)
+        geo.features[i] = scale(feat, factor, origin)
+    end
+
+    return geo
 end
 
+transform_scale!(geojson::T, factor::Real, origin::String="centroid") where {T <: AbstractFeatureCollection} = transform_scale(geojson, factor, origin, true)
 
 """
     scale([feature::Feature[, factor::Real]], origin::String="centroid")
@@ -336,14 +347,19 @@ function flip(geojson::T, mutate::Bool=false) where {T <: Union{AbstractFeature,
     coords = []
     geom = nothing
 
-    !mutate && (geojson = deepcopy(geojson))
+    geo = []
+    if !mutate
+        geo = deepcopy(geojson)
+    else
+        geo = geojson
+    end
 
     if type === :Feature
-        geom = geojson.geom
-        coords = geojson.geometry.coordinates
+        geom = geo.geom
+        coords = geo.geometry.coordinates
     else
-        geom = geojson
-        coords = geojson.coordinates
+        geom = geo
+        coords = geo.coordinates
     end
 
     if geotype(geom) === :Point
@@ -367,9 +383,11 @@ function flip(geojson::T, mutate::Bool=false) where {T <: Union{AbstractFeature,
         end
     end
 
-    return geojson
+    return geo
 
 end
+
+flip!(geojson::T) where {T <: Union{AbstractFeature, AbstractGeometry}} = flip(geojson, true)
 
 """
 Cohen-Sutherland line clippign algorithm, adapted to efficiently to
@@ -598,9 +616,14 @@ function convert_to(geojson::AbstractGeometry, projection::String, mutate::Bool=
 
     type === :Point && return Point((projection === "mercator") ? to_mercator(geojson) : to_WGS84(geojson))
 
-    !mutate && (geojson = deepcopy(geojson))
+    geo = []
+    if !mutate
+        geo = deepcopy(geojson)
+    else
+        geo = geojson
+    end
 
-    coords = geojson.coordinates
+    coords = geo.coordinates
     if type === :LineString
         for i in eachindex(coords)
             newCoords = (projection === "mercator") ? to_mercator(Point(coords[i])) : to_WGS84(Point(coords[i]))
@@ -617,10 +640,12 @@ function convert_to(geojson::AbstractGeometry, projection::String, mutate::Bool=
         throw(error("$(type) is not supported."))
     end
 
-    return geojson
+    return geo
 end
 
 convert_to(geojson::Feature, projection::String, mutate::Bool=false) = convert_to(geojson.geometry, projection, mutate)
+convert_to!(geojson::Feature, projection::String) = convert_to(geojson.geometry, projection, true)
+convert_to!(geojson::AbstractGeometry, projection::String) = convert_to(geojson, projection, true)
 
 """
     combine([ft::FeatureCollection])
