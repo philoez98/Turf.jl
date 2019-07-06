@@ -6,7 +6,7 @@
 
 A spatial analysis library written in Julia, ported from the great [*Turf.js*](https://github.com/Turfjs/turf).
 
-Turf.jl uses [GeoInteface.jl](https://github.com/JuliaGeo/GeoInterface.jl) for creating and handling all geographic data.
+Turf.jl uses [GeoInteface.jl](https://github.com/JuliaGeo/GeoInterface.jl) and [GeoJSON.jl](https://github.com/JuliaGeo/GeoJSON.jl) for creating and handling all geographic data.
 
 ## Installation
 
@@ -23,7 +23,98 @@ julia> import Pkg; Pkg.add("Turf")
 
 ## Example
 
-TODO
+For example, let's try to identify which points are within a certain polygon on the map and mark them with a different color.
+We can do this only using Turf.
+
+```
+# Turf already exports all symbols of GeoInterface.jl and GeoJSON.jl, so there's no need to import them
+using Turf
+
+# Let's create a basic geojson with a polygon and some points
+fc = """
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [5.185547, 47.753949],
+            [-0.703125, 39.637989],
+            [7.910156, 30.974436],
+            [12.568359, 48.107339],
+            [5.185547, 47.753949]
+          ]
+        ]
+      }
+    },
+     {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {"type": "Point", "coordinates": [12.304688, 43.3882]}
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {"type": "Point", "coordinates": [8.964844, 42.031854]}
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {"type": "Point", "coordinates": [2.548828, 41.901134]}
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {"type": "Point", "coordinates": [9.84375, 36.525174]}
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {"type": "Point", "coordinates": [-0.878906, 38.546418]}
+    },
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {"type": "Point", "coordinates": [3.47168, 46.407564]}
+    }
+  ]
+}
+"""
+# convert the geojson into a FeatureCollection object
+geo_data = GeoJSON.parse(fc)
+
+# extract the polygon
+polygon = geo_data.features[1].geometry
+
+# loop to see which points are inside the polygon
+# and add a 'marker-color' property to them
+for i in 2:length(geo_data.features)
+    feature = geo_data.features[i]
+    point = feature.geometry
+
+    if within(point, polygon)
+        feature.properties = Dict("marker-color" => "#ff0000")
+    end
+end
+
+# convert back the FeatureCollection to geojson
+result = geojson(geo_data)
+
+```
+
+If we then plot the results here's what we obtain:
+
+Before:
+
+![before (2)](https://user-images.githubusercontent.com/40722053/60754992-a4a53e80-9fe9-11e9-98d5-9bd889fcb0f0.JPG)
+
+After:
+
+![after](https://user-images.githubusercontent.com/40722053/60755010-e33af900-9fe9-11e9-89d9-2e3164e4a7ca.JPG)
 
 ## Getting Help
 
