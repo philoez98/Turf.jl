@@ -1,4 +1,23 @@
-"""Create a Point grid from a bounding box"""
+"""
+    point_grid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
+
+Create a Point grid from a bounding box
+
+# Examples
+```jldoctest
+julia> bbox = [-1, 2, 1, 3]
+4-element Array{Int64,1}:
+ -1
+  2
+  1
+  3
+
+julia> point_grid(bbox, 100)
+FeatureCollection{Feature}(Feature[Feature(Point([-0.899869, 2.05034]), Dict{String,Any}()), Feature(Point([-0.899869, 2.94966]),
+ Dict{String,Any}()), Feature(Point([0.0, 2.05034]), Dict{String,Any}()), Feature(Point([0.0, 2.94966]), Dict{String,Any}()),
+ Feature(Point([0.899869, 2.05034]), Dict{String,Any}()), Feature(Point([0.899869, 2.94966]), Dict{String,Any}())], nothing, nothing
+```
+"""
 function point_grid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
     results = []
 
@@ -7,9 +26,9 @@ function point_grid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=
     east = bbox[3]
     north = bbox[4]
 
-    xfrac = cellSide / (distance([west, south], [east, south], units))
+    xfrac = cellSide / (distance(float([west, south]), float([east, south]), units))
     cellWidth = xfrac * (east - west)
-    yfrac = cellSide / (distance([west, south], [west, north], units))
+    yfrac = cellSide / (distance(float([west, south]), float([west, north]), units))
     cellHeight = yfrac * (north - south)
 
     bbWidth = east - west
@@ -44,7 +63,24 @@ function point_grid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=
     return FeatureCollection([Feature(x) for x in results])
 end
 
-"""Creates a grid of rectangles from a bounding box."""
+"""
+    rectangle_grid(bbox::Vector{T}, width::T, height::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
+
+Create a grid of rectangles from a bounding box.
+
+# Examples
+```jldoctest
+julia> bbox = [-1, 2, 1, 3]
+4-element Array{Int64,1}:
+ -1
+  2
+  1
+  3
+
+julia> rectangle_grid(bbox, 150, 100)
+FeatureCollection{Feature}(Feature[Feature(Polygon(Array{Array{Float64,1},1}[[[-0.674901, 2.05034], [-0.674901, 2.94966], [0.674901, 2.94966], [0.674901, 2.05034], [-0.674901, 2.05034]]]), Dict{String,Any}())], nothing, nothing)
+```
+"""
 function rectangle_grid(bbox::Vector{T}, width::T, height::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
     results = []
 
@@ -53,9 +89,9 @@ function rectangle_grid(bbox::Vector{T}, width::T, height::T, mask::Union{Polygo
     east = bbox[3]
     north = bbox[4]
 
-    xfrac = width / (distance([west, south], [east, south], units))
+    xfrac = width / (distance(float([west, south]), float([east, south]), units))
     cellWidth = xfrac * (east - west)
-    yfrac = height / (distance([west, south], [west, north], units))
+    yfrac = height / (distance(float([west, south]), float([west, north]), units))
     cellHeight = yfrac * (north - south)
 
     bbWidth = east - west
@@ -124,7 +160,9 @@ end
 
 
 """
-Takes a bounding box and the diameter of the cell and returns a FeatureCollection of flat-topped
+     hexgrid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=nothing, triangles::Bool=false, units::String="kilometers") where {T <: Real}
+
+Take a bounding box and the diameter of the cell and return a FeatureCollection of flat-topped
 hexagons or triangles Polygon aligned in an "odd-q" vertical grid as
 described in [Hexagonal Grids](http://www.redblobgames.com/grids/hexagons/).
 """
@@ -137,9 +175,9 @@ function hexgrid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=not
     centerY = (south + north) / 2.
     centerX = (west + east) / 2.
 
-    xfrac = cellSide * 2. / (distance([west, centerY], [east, centerY], units))
+    xfrac = cellSide * 2. / (distance(float([west, centerY]), float([east, centerY]), units))
     cellWidth = xfrac * (east - west)
-    yfrac = cellSide * 2. / (distance([centerX, south], [centerX, north], units))
+    yfrac = cellSide * 2. / (distance(float([centerX, south]), float([centerX, north]), units))
     cellHeight = yfrac * (north - south)
     radius = cellWidth / 2.
 
@@ -179,8 +217,8 @@ function hexgrid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=not
         for j = 1:(county+1)
             odd = (i-1) % 2 === 1
 
-            #(j === 1 && odd) && continue
-            #(j === 1 && hasOffsetY) && continue
+            (j === 1 && odd) && continue
+            (j === 1 && hasOffsetY) && continue
 
             centerx = (i-1) * intx + west - adjustx
             centery = j * inty + south + adjusty
@@ -218,6 +256,20 @@ end
     square_grid(bbox::Vector{T}, cell_side::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
 
 Create a square grid from a bounding box.
+
+# Examples
+```jldoctest
+julia> bbox = [-1, 2, 1, 3]
+4-element Array{Int64,1}:
+ -1
+  2
+  1
+  3
+
+  julia> square_grid(bbox, 100)
+  FeatureCollection{Feature}(Feature[Feature(Polygon(Array{Array{Float64,1},1}[[[-0.899869, 2.05034], [-0.899869, 2.94966], [0.0, 2.94966], [0.0, 2.05034], [-0.899869, 2.05034]]]), Dict{String,Any}()),
+  Feature(Polygon(Array{Array{Float64,1},1}[[[0.0, 2.05034], [0.0, 2.94966], [0.899869, 2.94966], [0.899869, 2.05034], [0.0, 2.05034]]]), Dict{String,Any}())], nothing, nothing)
+```
 """
 function square_grid(bbox::Vector{T}, cell_side::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
     return rectangle_grid(bbox, cell_side, cell_side, mask, units)
@@ -227,13 +279,29 @@ end
     triangle_grid(bbox::Vector{T}, cell_side::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
 
 Take a bounding box and a cell depth and returns a set of triangular Polygons in a grid.
+
+# Examples
+```jldoctest
+julia> bbox = [-1, 2, 1, 3]
+4-element Array{Int64,1}:
+ -1
+  2
+  1
+  3
+
+  julia> triangle_grid(bbox, 200)
+  FeatureCollection{Feature}(Feature[Feature(Polygon(Array{Array{Float64,1},1}[[[-1.0, 2.0], [-1.0, 3.79864], [0.799737, 2.0], [-1.0, 2.0]]]), Dict{String,Any}()),
+  Feature(Polygon(Array{Array{Float64,1},1}[[[-1.0, 3.79864], [0.799737, 3.79864], [0.799737, 2.0], [-1.0, 3.79864]]]), Dict{String,Any}()),
+  Feature(Polygon(Array{Array{Float64,1},1}[[[0.799737, 2.0], [0.799737, 3.79864], [2.59947, 3.79864], [0.799737, 2.0]]]), Dict{String,Any}()),
+  Feature(Polygon(Array{Array{Float64,1},1}[[[0.799737, 2.0], [2.59947, 3.79864], [2.59947, 2.0], [0.799737, 2.0]]]), Dict{String,Any}())], nothing, nothing)
+```
 """
 function triangle_grid(bbox::Vector{T}, cell_side::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
     results = []
 
-    x_frac = cell_side / (distance([bbox[1], bbox[2]], [bbox[3], bbox[2]], units))
+    x_frac = cell_side / (distance(float([bbox[1], bbox[2]]), float([bbox[3], bbox[2]]), units))
     cell_width = x_frac * (bbox[3] - bbox[1])
-    y_frac = cell_side / (distance([bbox[1], bbox[2]], [bbox[1], bbox[4]], units))
+    y_frac = cell_side / (distance(float([bbox[1], bbox[2]]), float([bbox[1], bbox[4]]), units))
     cell_height = y_frac * (bbox[4] - bbox[2])
 
     xi = 0

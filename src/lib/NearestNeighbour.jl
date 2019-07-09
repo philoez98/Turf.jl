@@ -12,6 +12,8 @@ end
 
 
 """
+    analysis(data::F, area::Union{P, Nothing}=nothing, units::String="kilometers") where {F <: AbstractFeatureCollection, P <: AbstractPolygon}
+
 Nearest Neighbor Analysis calculates an index based the average distances
 between points in the dataset, thereby providing inference as to whether the
 data is clustered, dispersed, or randomly distributed within the study area.
@@ -32,7 +34,7 @@ dispersed.
 - Though the analysis will work on any FeatureCollection type, it
 works best with Point collections.
 
-- This analysis is _very_ sensitive to the study area provided.
+- This analysis is **very** sensitive to the study area provided.
 If no Polygon is passed as the study area, the function draws a box
 around the data, which may distort the findings. This analysis works best
 with a bounded area of interest within with the data is either clustered,

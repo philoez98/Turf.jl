@@ -1,5 +1,7 @@
 """
-Takes a bounding box and calculates the minimum square bounding box that would contain the input.
+    square(bbox::Vector{T}) where {T <: Real}
+
+Take a bounding box and calculates the minimum square bounding box that would contain the input.
 """
 function square(bbox::Vector{T}) where {T <: Real}
     west = bbox[1]

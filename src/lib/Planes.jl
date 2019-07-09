@@ -1,9 +1,15 @@
+"""
+    planepoint(point::Point, triangle::Polygon)
+
+Take a triangular plane as a Polygon and a Point within that triangle
+and returns the z-value at that point.
+"""
 function planepoint(point::Point, triangle::Polygon)
     pCoords = point.coordinates
     tCoords = triangle.coordinates
 
     outer = tCoords[1]
-    length(outer) < 4 && throw(error("OuterRing of a Polygon must have 4 or more Points."))
+    length(outer) < 4 && throw(error("The outer ring of a Polygon must have 4 or more Points."))
 
     x = pCoords[1]
     y = pCoords[2]

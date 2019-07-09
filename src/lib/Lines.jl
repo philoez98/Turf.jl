@@ -28,6 +28,17 @@ end
     linesegment(geojson::LineString)
 
 Create a 2-vertex LineString segments from a LineString.
+
+# Examples
+```jldoctest
+julia> line = LineString([[0, 1], [2, 3], [3, 3]])
+LineString(Array{Float64,1}[[0.0, 1.0], [2.0, 3.0], [3.0, 3.0]])
+
+julia> linesegment(line)
+2-element Array{LineString,1}:
+ LineString(Array{Float64,1}[[0.0, 1.0], [2.0, 3.0]])
+ LineString(Array{Float64,1}[[2.0, 3.0], [3.0, 3.0]])
+```
 """
 function linesegment(geojson::LineString)
     result::Vector{LineString} = []
@@ -46,8 +57,19 @@ end
 """
     linearc(center::Point, radius::Real, bearing1::Real, bearing2::Real, steps::Real=64., units::String="kilometers")
 
-Creates a circular arc, of a circle of the given radius and center point, between bearing1 and bearing2;
+Create a circular arc, of a circle of the given radius and center point, between bearing1 and bearing2;
 0 bearing is North of center point, positive clockwise.
+
+# Examples
+```jldoctest
+julia> point = Point([35, 45])
+
+julia> linearc(point, 5, 0, 10, 5)
+LineString(Array{Float64,1}[[35.0, 45.045], [35.0111, 45.0443]])
+
+julia> linearc(point, 5, 0, 270, 5)
+LineString(Array{Float64,1}[[35.0, 45.045], [35.0605, 45.0139], [35.0374, 44.9636], [34.9626, 44.9636], [34.9364, 45.0]])
+```
 """
 function linearc(center::Point, radius::Real, bearing1::Real, bearing2::Real, steps::Real=64., units::String="kilometers")
     angle1 = to360(bearing1)

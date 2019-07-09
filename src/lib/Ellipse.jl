@@ -1,7 +1,9 @@
 """
+    ellipse(; center::Point, xAxis::Real, yAxis::Real, steps::Integer=64, angle::Real=0., pivot::Union{Point, Nothing}=nothing, units::String="kilometers")
+
 Takes a Point and calculates the ellipse polygon given two semi-axes expressed in variable units and steps for precision.
 """
-function ellipse(; center::Point, xAxis::Real, yAxis::Real, steps::Real=64, angle::Real=0., pivot::Union{Point, Nothing}=nothing, units::String="kilometers")
+function ellipse(; center::Point, xAxis::Real, yAxis::Real, steps::Integer=64, angle::Real=0., pivot::Union{Point, Nothing}=nothing, units::String="kilometers")
     pivot == nothing && (pivot = center)
 
     coords = center.coordinates

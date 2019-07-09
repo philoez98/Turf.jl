@@ -31,4 +31,9 @@
 
     @test distance(Point([0, 10]), mid) ≈ distance(Point([0, 0]), mid)
 
+    point = Point([0, 0])
+    line = LineString([[1, 1],[-1, 1]])
+
+    @test point_to_line_distance(point, line, "miles") ≈ 69.11854715938406 atol=0.05
+
 end

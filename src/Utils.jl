@@ -1,8 +1,10 @@
 """
+    radians_to_length(radians::Real, units::String="kilometers")::Real
+
 Convert a distance measurement (assuming a spherical Earth) from radians to a more friendly unit.
 Valid units: miles, nauticalmiles, inches, yards, meters, metres, kilometers, centimeters, feet
 """
-function radians_to_length(radians::Number, units::String="kilometers")::Number
+function radians_to_length(radians::Real, units::String="kilometers")::Real
     factor = factors[units]
     if factor == nothing
         throw(error("$(units) is not a valid unit."))
@@ -11,10 +13,12 @@ function radians_to_length(radians::Number, units::String="kilometers")::Number
 end
 
 """
+    length_to_radians(distance::Real, units::String="kilometers")::Real
+
 Convert a distance measurement (assuming a spherical Earth) from a real-world unit to radians.
 Valid units: miles, nauticalmiles, inches, yards, meters, metres, kilometers, centimeters, feet
 """
-function length_to_radians(distance::Number, units::String="kilometers")::Number
+function length_to_radians(distance::Real, units::String="kilometers")::Real
     factor =  factors[units]
     if factor == nothing
         throw(error("$(units) is not a valid unit."))
@@ -23,25 +27,31 @@ function length_to_radians(distance::Number, units::String="kilometers")::Number
 end
 
 """
+    length_to_degrees(distance::Real, units::String="kilometers")::Real
+
 Convert a distance measurement (assuming a spherical Earth) from a real-world unit into degrees.
 Valid units: miles, nauticalmiles, inches, yards, meters, metres, centimeters, kilometres, feet
 """
-function length_to_degrees(distance::Number, units::String="kilometers")::Number
+function length_to_degrees(distance::Real, units::String="kilometers")::Real
     return rad2deg(length_to_radians(distance, units))
 end
 
 """
-Converts a length to the requested unit.
+    convert_length(length::Real, originalUnit::String="kilometers", finalUnit::String="kilometers")::Real
+
+Convert a length to the requested unit.
 """
-function convert_length(length::Number, originalUnit::String="kilometers", finalUnit::String="kilometers")::Number
+function convert_length(length::Real, originalUnit::String="kilometers", finalUnit::String="kilometers")::Real
     return length >= 0 ? radians_to_length(length_to_radians(length, originalUnit), finalUnit) : error("'length' must be a positive number.")
 end
 
 
 """
-Converts an area to the requested unit.
+    convert_area(area::Real, originalUnit::String="meters", finalUnit::String="kilometers")::Real
+
+Convert an area to the requested unit.
 """
-function convert_area(area::Number, originalUnit::String="meters", finalUnit::String="kilometers")::Number
+function convert_area(area::Real, originalUnit::String="meters", finalUnit::String="kilometers")::Real
     if area < 0
         throw(error("'area' must be a positive number."))
     end
@@ -62,7 +72,11 @@ end
     return true
 end
 
-"""Convert 900913 x/y values to lon/lat."""
+"""
+    to_WGS84(pos::Point)
+
+Convert 900913 x/y values to lon/lat.
+"""
 function to_WGS84(pos::Point)
     a = 6378137.0
 
@@ -70,7 +84,11 @@ function to_WGS84(pos::Point)
         rad2deg((pi * 0.5) - atan(exp(-pos.coordinates[2] / a)))]
 end
 
-"""Convert lon/lat values to 900913 x/y."""
+"""
+    to_mercator(pos::Point)
+
+Convert lon/lat values to 900913 x/y.
+"""
 function to_mercator(pos::Point)
     a = 6378137.0
     extent = 20037508.342789244
@@ -88,7 +106,10 @@ function to_mercator(pos::Point)
     return xy
 end
 
-"""Takes one or more features and returns their area in square meters."""
+"""
+    area(geojson::T) where {T <: Union{AbstractFeatureCollection, AbstractGeometry}}
+Take one or more features and return their area in square meters.
+"""
 function area(geojson::T) where {T <: Union{AbstractFeatureCollection, AbstractGeometry}}
     if geotype(geojson) === :FeatureCollection
         results = []

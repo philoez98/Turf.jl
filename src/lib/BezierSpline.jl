@@ -1,7 +1,7 @@
 """
     bezier(line::LineString; resolution::Real=10000, sharpness::Real=0.85)
 
-Takes a LineString and returns a curved version
+Take a LineString and returns a curved version
 by applying a [Bezier spline](http://en.wikipedia.org/wiki/B%C3%A9zier_spline)
 algorithm.
 """

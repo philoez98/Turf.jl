@@ -3,7 +3,22 @@
 
 Take a Point or a Position and calculate the location of a destination point given a distance in
 degrees, radians, miles, or kilometers; and bearing in degrees.
-It use the [Haversine formula](http://en.wikipedia.org/wiki/Haversine_formula) to account for global curvature.
+The destination is calculated using the [Haversine formula](http://en.wikipedia.org/wiki/Haversine_formula) to account for global curvature.
+
+# Examples
+```jldoctest
+julia> point = Point([-75, 38])
+Point([-75.0, 38.0])
+
+julia> destination(point, 100, 0)
+Point([-75.0, 38.8993])
+
+julia> destination(point, 100, 45)
+Point([-74.1859, 38.6331])
+
+julia> destination(point, 50, 0, "miles")
+Point([-75.0, 38.7237])
+```
 """
 function destination(origin::Position, distance::Real, bearing::Real, units::String="kilometers")
     lon1 = deg2rad(origin[1])
@@ -25,6 +40,21 @@ destination(origin::Point, distance::Real, bearing::Real, units::String="kilomet
 
 Take a Point or a Position and return the destination Point having travelled the given distance along a Rhumb line from the
 origin Point with the (varant) given bearing.
+
+# Examples
+```jldoctest
+julia> point = Point([-75, 38])
+Point([-75.0, 38.0])
+
+julia> rhumb_destination(point, 100, 0)
+Point([-75.0, 38.8993])
+
+julia> rhumb_destination(point, 100, 45)
+Point([-74.1895, 38.6359])
+
+julia> rhumb_destination(point, 50, 0, "miles")
+Point([-75.0, 38.7237])
+```
 """
 function rhumb_destination(origin::Position, distance::Real, bearing::Real, units::String="kilometers")
     negative::Bool = distance < 0
