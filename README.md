@@ -10,7 +10,7 @@ Turf.jl uses [GeoInteface.jl](https://github.com/JuliaGeo/GeoInterface.jl) and [
 
 ## Installation
 
-Turf.jl can be installed either from the Pkg REPL mode:
+Turf.jl can be installed either from the REPL using Pkg mode:
 
 ```
 pkg> add Turf
@@ -20,11 +20,16 @@ or via `Pkg`:
 ```
 julia> import Pkg; Pkg.add("Turf")
 ```
+Alternatively if you want to use the latest version available, you can do:
+
+```
+pkg> add Turf#master
+```
 
 ## Example
 
-For example, let's try to identify which points are within a certain polygon on the map and mark them with a different color.
-We can do this only using Turf.
+As an example, let's try to identify which points are within a certain polygon on the map and mark them with a different color.
+We can do this using Turf.
 
 ```
 # Turf already exports all symbols of GeoInterface.jl and GeoJSON.jl, so there's no need to import them
@@ -101,18 +106,18 @@ for i in 2:length(geo_data.features)
     end
 end
 
-# convert back the FeatureCollection to geojson
+# convert the FeatureCollection back to geojson
 result = geojson(geo_data)
 
 ```
 
-If we then plot the results here's what we obtain:
+If we then plot the results here's what we get:
 
-Before:
+before:
 
 ![before (2)](https://user-images.githubusercontent.com/40722053/60754992-a4a53e80-9fe9-11e9-98d5-9bd889fcb0f0.JPG)
 
-After:
+after:
 
 ![after](https://user-images.githubusercontent.com/40722053/60755010-e33af900-9fe9-11e9-89d9-2e3164e4a7ca.JPG)
 
