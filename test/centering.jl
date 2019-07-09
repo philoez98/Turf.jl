@@ -60,8 +60,7 @@
       Feature(Point([1, 0])), Feature(Point([0, 1])),
       Feature(Point([5, 8]))])
 
-    coll2 = FeatureCollection([Feature(Point([0, 0])),
-      Feature(Point([9, 9])), Feature(Point([9.25, 9.25])),
+    coll2 = FeatureCollection([Feature(Point([0, 0])),Feature(Point([9, 9])), Feature(Point([9.25, 9.25])),
       Feature(Point([9.5, 9.5])), Feature(Point([9.75, 9.75])), Feature(Point([10, 10]))])
 
     @test mediancenter(coll).coordinates ≈ [0.383876,0.616989] atol=0.0001

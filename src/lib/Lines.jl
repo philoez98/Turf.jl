@@ -25,6 +25,8 @@ function linesegmentFeature(geojson::Union{LineString, Polygon}, result::Vector{
 end
 
 """
+    linesegment(geojson::LineString)
+
 Create a 2-vertex LineString segments from a LineString.
 """
 function linesegment(geojson::LineString)

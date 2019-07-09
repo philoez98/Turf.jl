@@ -1,7 +1,9 @@
 """
-Takes a Point or a Position and calculates the circle polygon given a radius in degrees, radians, miles, or kilometers; and steps for precision.
+    circle(; center::Union{Point, Position}, radius::Real=5., steps::Integer=64, units::String="kilometers")
+
+Take a Point or a Position and calculate the circle polygon given a radius in degrees, radians, miles, or kilometers; and steps for precision.
 """
-function circle(; center::Union{Point, Position}, radius::Real=5, steps::Integer=64, units::String="kilometers")
+function circle(; center::Union{Point, Position}, radius::Real=5., steps::Integer=64, units::String="kilometers")
     coords = []
     position::Position = []
 
@@ -20,10 +22,12 @@ function circle(; center::Union{Point, Position}, radius::Real=5, steps::Integer
 end
 
 """
+    sector(center::Point, radius::Real, bearing1::Real, bearing2::Real, steps::Integer=64, units::String="kilometers")
+
 Creates a circular sector of a circle of given radius and center Point,
 between (clockwise) bearing1 and bearing2; 0 bearing is North of center point, positive clockwise.
 """
-function sector(center::Point, radius::Real, bearing1::Real, bearing2::Real, steps::Real=64., units::String="kilometers")
+function sector(center::Point, radius::Real, bearing1::Real, bearing2::Real, steps::Integer=64, units::String="kilometers")
     complem(bearing1) === complem(bearing2) && return circle(center=center, radius=radius, steps=steps, units=units)
 
     coords = center.coordinates

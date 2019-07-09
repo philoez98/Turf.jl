@@ -1,4 +1,11 @@
-function distance(from::Position, to::Position, options::String="kilometers")
+
+"""
+    distance(from::Position, to::Position, units::String="kilometers")
+
+Calculate the distance between two Points or Positions in degrees, radians, miles, or kilometers.
+It use the [Haversine formula](http://en.wikipedia.org/wiki/Haversine_formula) to account for global curvature.
+"""
+function distance(from::Position, to::Position, units::String="kilometers")
     δlat = deg2rad((ycoord(to) - ycoord(from)))
     δlon = deg2rad((xcoord(to) - xcoord(from)))
 
@@ -7,26 +14,18 @@ function distance(from::Position, to::Position, options::String="kilometers")
 
     res = sin(δlat / 2)^2 + sin(δlon / 2)^2 * cos(latFrom) * cos(latTo)
 
-    return radians_to_length(2 * atan(sqrt(res), sqrt(1 - res)), options)
+    return radians_to_length(2 * atan(sqrt(res), sqrt(1 - res)), units)
 end
 
 
-function distance(from::Point, to::Point, options::String="kilometers")
-    from = from.coordinates
-    to = to.coordinates
+distance(from::Point, to::Point, units::String="kilometers") = distance(from.coordinates, to.coordinates, units)
 
-    δlat = deg2rad((ycoord(to) - ycoord(from)))
-    δlon = deg2rad((xcoord(to) - xcoord(from)))
+"""
+    rhumb_distance(from::Position, to::Position, units::String="kilometers")
 
-    latFrom = deg2rad(ycoord(from))
-    latTo = deg2rad(ycoord(to))
-
-    res = sin(δlat / 2)^2 + sin(δlon / 2)^2 * cos(latFrom) * cos(latTo)
-
-    return radians_to_length(2 * atan(sqrt(res), sqrt(1 - res)), options)
-end
-
-
+Calculate the distance along a rhumb line between two Points or Positions in degrees, radians,
+miles, or kilometers.
+"""
 function rhumb_distance(from::Position, to::Position, units::String="kilometers")
     toLon = xcoord(to)
     toLon += (xcoord(to) - xcoord(from) > 180) ? -360 : ((xcoord(from) - xcoord(to) > 180)) ? 360 : 0
@@ -51,6 +50,9 @@ function rhumb_distance(from::Position, to::Position, units::String="kilometers"
     return convert_length(res, "metres", units)
 end
 
+rhumb_distance(from::Point, to::Point, units::String="kilometers") = rhumb_distance(from.coordinates, to.coordinates, units)
+
+
 function distance_to_segment(point::Point, first::Point, last::Point, units::String="degrees", method::String="planar")
     v = [last.coordinates[1] - first.coordinates[1], last.coordinates[2], first.coordinates[2]]
     w = [point.coordinates[1] - first.coordinates[1], point.coordinates[2] - first.coordinates[2]]
@@ -72,7 +74,12 @@ function distance_to_segment(point::Point, first::Point, last::Point, units::Str
     return method === "planar" ? rhumb_distance(point.coordinates, p.coordinates, units) : distance(point.coordinates, p.coordinates, "degrees")
 end
 
+"""
+    nearestpoint(target::Point, points::Vector{Point})
 
+Take a reference Point and an array of Points and return the point from the
+array closest to the reference. This calculation is geodesic.
+"""
 function nearestpoint(target::Point, points::Vector{Point})
     minDistance = Inf
     index = 0
@@ -89,6 +96,11 @@ function nearestpoint(target::Point, points::Vector{Point})
     return nearest
 end
 
+"""
+    distance_weight(; geojson::T, treshold::Real=10000, p::Real=2, binary::Bool=false, alpha::Real=-1., standardization::Bool=false) where {T <: AbstractFeatureCollection}
+
+Calculate the Minkowski p-norm distance between two Points.
+"""
 function distance_weight(; geojson::T, treshold::Real=10000, p::Real=2, binary::Bool=false, alpha::Real=-1., standardization::Bool=false) where {T <: AbstractFeatureCollection}
     features = []
 
@@ -147,7 +159,11 @@ function distance_weight(; geojson::T, treshold::Real=10000, p::Real=2, binary::
     return weights
 end
 
-""" Calcualte the Minkowski p-norm distance between two Points. """
+"""
+    pnorm_distance(point1::Point, point2::Point, p::Real=2)::Real
+
+Calculate the Minkowski p-norm distance between two Points.
+"""
 function pnorm_distance(point1::Point, point2::Point, p::Real=2)::Real
     coords1 = point1.coordinates
     coords2 = point2.coordinates
@@ -162,7 +178,9 @@ function pnorm_distance(point1::Point, point2::Point, p::Real=2)::Real
 end
 
 """
-Takes two Points and returns a point midway between them.
+    midpoint(first::Point, second::Point)
+
+Take two Points and returns a point midway between them.
 The midpoint is calculated geodesically, meaning the curvature of the earth is taken into account.
 """
 function midpoint(first::Point, second::Point)

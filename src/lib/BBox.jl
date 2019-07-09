@@ -1,12 +1,14 @@
-# TODO: implement bbox for featurecollections
-# TODO: check correctness
 
 isdefined(Turf, :BBox2D) || const BBox2D = Vector{Float64}(undef, 4)
 isdefined(Turf, :BBox3D) || const BBox3D = Vector{Float64}(undef, 6)
 
 
 
-""" Takes a set of features, calculates the bbox of all input features, and returns a bounding box."""
+"""
+    bbox(geojson::T) where {T<:AbstractFeatureCollection}
+
+Take a set of features, calculate the bbox of all input features, and returns a bounding box.
+"""
 function bbox(geojson::T) where {T<:AbstractFeatureCollection}
     results::Vector{Vector{Float64}} = []
     for feat in geojson.features
@@ -17,6 +19,12 @@ function bbox(geojson::T) where {T<:AbstractFeatureCollection}
     return results
 end
 
+
+"""
+    bbox(geojson::T) where {T <: AbstractGeometry}
+
+Take a GeoJSON Geometry and calculate its bounding box.
+"""
 function bbox(geojson::T) where {T <: AbstractGeometry}
     result = [Inf, Inf, -Inf, -Inf]
 
@@ -55,12 +63,22 @@ function bbox(geojson::T) where {T <: AbstractGeometry}
     return result
 end
 
+"""
+     bbox(geojson::T) where {T<: AbstractFeature}
+
+Take a Feature and return a bounding box around its geometry.
+"""
 function bbox(geojson::T) where {T<: AbstractFeature}
     return bbox(geojson.geometry)
 end
 
-"""Takes a bbox and returns an equivalent Polygon."""
-function bbox_polygon(bbox::Vector{T}) where {T <: Real}
+
+"""
+    bbox_polygon(bbox::Vector{T}) where {T <: Real}
+
+Take a bbox and return an equivalent Polygon.
+"""
+function bbox_polygon(bbox::Vector{T})::Polygon where {T <: Real}
     west = bbox[1]
     south = bbox[2]
     east = bbox[3]
@@ -74,5 +92,4 @@ function bbox_polygon(bbox::Vector{T}) where {T <: Real}
     lowRight = [east, south]
 
     return Polygon([[lowLeft, lowRight, topRight, topLeft, lowLeft]])
-
 end
