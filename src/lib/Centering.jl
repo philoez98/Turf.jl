@@ -6,6 +6,8 @@ This lessens the effect of small islands and artifacts when calculating the cent
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> line = LineString([[1, 2], [4, 6], [8, 9.5], [12, 13.4]])
 LineString(Array{Float64,1}[[1.0, 2.0], [4.0, 6.0], [8.0, 9.5], [12.0, 13.4]])
 
@@ -50,6 +52,8 @@ Take a GeoJson Geometry and return the absolute center point.
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> line = LineString([[1, 2], [4, 6], [8, 9.5], [12, 13.4]])
 LineString(Array{Float64,1}[[1.0, 2.0], [4.0, 6.0], [8.0, 9.5], [12.0, 13.4]])
 
@@ -74,6 +78,8 @@ Take any GeoJson Geometry and return its [center of mass](https://en.wikipedia.o
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> line = LineString([[1, 2], [4, 6], [8, 9.5], [12, 13.4]])
 LineString(Array{Float64,1}[[1.0, 2.0], [4.0, 6.0], [8.0, 9.5], [12.0, 13.4]])
 
@@ -137,6 +143,8 @@ Take a GeoJson Geometry and return the mean center. Can be weighted.
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> line = LineString([[1, 2], [4, 6], [8, 9.5], [12, 13.4]])
 LineString(Array{Float64,1}[[1.0, 2.0], [4.0, 6.0], [8.0, 9.5], [12.0, 13.4]])
 
@@ -217,6 +225,8 @@ requires the least total travel from all other points.
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> fc = FeatureCollection([Feature(Point([0, 0])),Feature(Point([9, 9])), Feature(Point([9.25, 9.25])),
              Feature(Point([9.5, 9.5])), Feature(Point([9.75, 9.75])), Feature(Point([10, 10]))])
 [...]

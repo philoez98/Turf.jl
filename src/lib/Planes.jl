@@ -3,6 +3,20 @@
 
 Take a triangular plane as a Polygon and a Point within that triangle
 and returns the z-value at that point.
+
+# Examples
+```jldoctest
+julia> using Turf
+
+julia> point = Point([-175, 22])
+Point([-175.0, 22.0])
+
+julia> triangle = Polygon([[-174.55, 32.54, 55], [-186.94, 17.64, 24.5], [-167.95, 17.81, 33.6], [-174.55, 32.54, 55]])
+Polygon(Array{Array{Float64,1},1}[[[-174.55, 32.54, 55.0], [-186.94, 17.64, 24.5], [-167.95, 17.81, 33.6], [-174.55, 32.54, 55.0]]])
+
+julia> planepoint(point, triangle)
+37.28550123965308
+```
 """
 function planepoint(point::Point, triangle::Polygon)
     pCoords = point.coordinates

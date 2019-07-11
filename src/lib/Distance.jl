@@ -7,6 +7,8 @@ The distance is calculated using the [Haversine formula](http://en.wikipedia.org
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> point1 = Point([35, 45])
 Point([35.0, 45.0])
 
@@ -46,6 +48,8 @@ miles, or kilometers.
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> point1 = Point([35, 45])
 Point([35.0, 45.0])
 
@@ -96,6 +100,8 @@ minimum distance between the point and any segment of the `LineString`.
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> point = Point([35, 45])
 Point([35.0, 45.0])
 
@@ -165,6 +171,8 @@ array closest to the reference. This calculation is geodesic.
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> point = Point([35, 45])
 Point([35.0, 45.0])
 
@@ -267,6 +275,8 @@ Calculate the Minkowski p-norm distance between two Points.
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> point = Point([35, 45])
 Point([35.0, 45.0])
 
@@ -304,6 +314,8 @@ The midpoint is calculated geodesically, meaning the curvature of the earth is t
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> point = Point([35, 45])
 Point([35.0, 45.0])
 

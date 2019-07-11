@@ -7,6 +7,8 @@ The destination is calculated using the [Haversine formula](http://en.wikipedia.
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> point = Point([-75, 38])
 Point([-75.0, 38.0])
 
@@ -43,6 +45,8 @@ origin Point with the (varant) given bearing.
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> point = Point([-75, 38])
 Point([-75.0, 38.0])
 

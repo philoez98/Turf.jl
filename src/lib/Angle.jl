@@ -6,6 +6,8 @@ angle with origin on the `start-mid` segment, or its explementary angle if requi
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> angle_adjacent(p1, p2, p3, false, false)
 38.98929595940595
 

@@ -6,6 +6,8 @@ and return an angle between 0-360 degrees (positive clockwise), 0 being the nort
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> bearing_to_azimuth(40)
 40
 
@@ -33,6 +35,8 @@ i.e. the angle measured in degrees start the north line (0 degrees).
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> start = Position([-75, 45])
 2-element Array{Float64,1}:
  -75.0
@@ -88,6 +92,8 @@ i.e. the angle measured in degrees from the north line (0 degrees).
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> start = Position([-75, 45])
 2-element Array{Float64,1}:
  -75.0

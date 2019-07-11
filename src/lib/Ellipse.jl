@@ -1,7 +1,19 @@
 """
     ellipse(; center::Point, xAxis::Real, yAxis::Real, steps::Integer=64, angle::Real=0., pivot::Union{Point, Nothing}=nothing, units::String="kilometers")
 
-Takes a Point and calculates the ellipse polygon given two semi-axes expressed in variable units and steps for precision.
+Take a Point and calculates the ellipse polygon given two semi-axes expressed in variable units and steps for precision.
+
+# Examples
+```jldoctest
+julia> using Turf
+
+julia> center = Point([10, 45])
+Point([10.0, 45.0])
+
+julia> ellipse(center=center, xAxis=20, yAxis=7.5, steps=10)
+Polygon(Array{Array{Float64,1},1}[[[10.0872, 45.0634], [10.0218, 45.0672], [9.97817, 45.0672], [9.91279, 45.0634],
+ [9.74563, 45.0], [9.91279, 44.9366], [9.97817, 44.9328], [10.0218, 44.9328], [10.0872, 44.9366], [10.2544, 45.0], [10.0872, 45.0634]]])
+```
 """
 function ellipse(; center::Point, xAxis::Real, yAxis::Real, steps::Integer=64, angle::Real=0., pivot::Union{Point, Nothing}=nothing, units::String="kilometers")
     pivot == nothing && (pivot = center)

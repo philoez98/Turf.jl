@@ -5,6 +5,8 @@ Take a Point or a Position and calculate the circle polygon given a radius in de
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> point = Point([35, 45])
 Point([35.0, 45.0])
 
@@ -41,6 +43,8 @@ between (clockwise) bearing1 and bearing2; 0 bearing is North of center point, p
 
 # Examples
 ```jldoctest
+julia> using Turf
+
 julia> point = Point([35, 45])
 Point([35.0, 45.0])
 
