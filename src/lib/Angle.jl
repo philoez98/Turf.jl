@@ -5,7 +5,7 @@ Find the angle formed by two adjacent segments defined by 3 points. The result w
 angle with origin on the `start-mid` segment, or its explementary angle if required.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> angle_adjacent(p1, p2, p3, false, false)

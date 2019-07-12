@@ -7,7 +7,7 @@ Rotates any geojson Feature or Geometry of a specified angle, around its `centro
 all rotations follow the right-hand rule.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> point = Point([-75.69926351308823,45.43145021122502])
@@ -78,7 +78,7 @@ Moves any geojson Feature or Geometry of a specified distance along a Rhumb Line
 on the provided direction angle.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> poly = Polygon([[[0, 29], [3.5, 29], [2.5, 32], [0, 29]]])
@@ -144,7 +144,7 @@ Scale a GeoJson from a given point by a factor of scaling (ex: factor=2 would ma
 If a FeatureCollection is provided, the origin point will be calculated based on each individual Feature.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> coll = FeatureCollection([Feature(Point([-75.69926351308823,45.43145021122502])), Feature(Polygon([[[0, 29], [3.5, 29], [2.5, 32], [0, 29]]]))])
@@ -178,7 +178,7 @@ transform_scale!(geojson::T, factor::Real, origin::String="centroid") where {T <
 Scale a Feature.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> feature = Feature(Polygon([[[0, 29], [3.5, 29], [2.5, 32], [0, 29]]]))
@@ -277,7 +277,7 @@ end
 Takes a Geometry or a FeatureCollection and returns all positions as Points.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> poly = Polygon([[[100, 0], [101, 0], [101, 1], [100, 1], [100, 0]]])
@@ -344,7 +344,7 @@ end
 Take input Features and Geometries and flips all of their coordinates from `[x, y]` to `[y, x]`.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> point = Point([77.34374999999999,43.58039085560784,3000])
@@ -516,7 +516,7 @@ end
 Finds the tangents of a Polygon from a Point.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> point = Point([92.46093749999999,54.67383096593114])
@@ -599,7 +599,7 @@ end
 Converts a Polygon to LineString or MultiLineString
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> poly = Polygon([[[-2.275543, 53.464547],[-2.275543, 53.489271],[-2.215118, 53.489271],[-2.215118, 53.464547],[-2.275543, 53.464547]]])
@@ -670,7 +670,7 @@ Combine a FeatureCollection of Point, LineString, or Polygon features
 into MultiPoint, MultiLineString, or MultiPolygon features.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> l1 = LineString([[102.0,-10.0],[130.0,4.0]])

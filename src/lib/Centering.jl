@@ -5,7 +5,7 @@ Takes one or more features and calculates the centroid using the mean of all ver
 This lessens the effect of small islands and artifacts when calculating the centroid of a set of polygons.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> line = LineString([[1, 2], [4, 6], [8, 9.5], [12, 13.4]])
@@ -51,7 +51,7 @@ end
 Take a GeoJson Geometry and return the absolute center point.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> line = LineString([[1, 2], [4, 6], [8, 9.5], [12, 13.4]])
@@ -77,7 +77,7 @@ Take any GeoJson Geometry and return its [center of mass](https://en.wikipedia.o
 [Centroid of Polygon](https://en.wikipedia.org/wiki/Centroid#Centroid_of_polygon).
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> line = LineString([[1, 2], [4, 6], [8, 9.5], [12, 13.4]])
@@ -142,7 +142,7 @@ end
 Take a GeoJson Geometry and return the mean center. Can be weighted.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> line = LineString([[1, 2], [4, 6], [8, 9.5], [12, 13.4]])
@@ -224,7 +224,7 @@ algorithimically. The median center is understood as the point that is
 requires the least total travel from all other points.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> fc = FeatureCollection([Feature(Point([0, 0])),Feature(Point([9, 9])), Feature(Point([9.25, 9.25])),

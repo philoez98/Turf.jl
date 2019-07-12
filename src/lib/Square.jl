@@ -4,7 +4,7 @@
 Take a bounding box and calculates the minimum square bounding box that would contain the input.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> bbox = [-1, 1, 2, 3.5]

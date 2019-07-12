@@ -6,7 +6,7 @@ degrees, radians, miles, or kilometers; and bearing in degrees.
 The destination is calculated using the [Haversine formula](http://en.wikipedia.org/wiki/Haversine_formula) to account for global curvature.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> point = Point([-75, 38])
@@ -44,7 +44,7 @@ Take a Point or a Position and return the destination Point having travelled the
 origin Point with the (varant) given bearing.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> point = Point([-75, 38])

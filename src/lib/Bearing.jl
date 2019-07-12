@@ -5,7 +5,7 @@ Convert any bearing angle from the north line direction (positive clockwise)
 and return an angle between 0-360 degrees (positive clockwise), 0 being the north line.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> bearing_to_azimuth(40)
@@ -34,7 +34,7 @@ Take two Positions and finds the bearing angle between them along a Rhumb line
 i.e. the angle measured in degrees start the north line (0 degrees).
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> start = Position([-75, 45])
@@ -91,7 +91,7 @@ Take two Points or Positions and finds the geographic bearing between them,
 i.e. the angle measured in degrees from the north line (0 degrees).
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> start = Position([-75, 45])

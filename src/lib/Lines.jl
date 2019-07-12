@@ -30,7 +30,7 @@ end
 Create a 2-vertex LineString segments from a LineString.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> line = LineString([[0, 1], [2, 3], [3, 3]])
@@ -63,7 +63,7 @@ Create a circular arc, of a circle of the given radius and center point, between
 0 bearing is North of center point, positive clockwise.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> point = Point([35, 45])

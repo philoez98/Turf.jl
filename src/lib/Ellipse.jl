@@ -4,7 +4,7 @@
 Take a Point and calculates the ellipse polygon given two semi-axes expressed in variable units and steps for precision.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> center = Point([10, 45])

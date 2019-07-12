@@ -4,7 +4,7 @@
 Create a Point grid from a bounding box
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> bbox = [-1, 2, 1, 3]
@@ -71,7 +71,7 @@ end
 Create a grid of rectangles from a bounding box.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> bbox = [-1, 2, 1, 3]
@@ -262,7 +262,7 @@ end
 Create a square grid from a bounding box.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> bbox = [-1, 2, 1, 3]
@@ -287,7 +287,7 @@ end
 Take a bounding box and a cell depth and returns a set of triangular Polygons in a grid.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> bbox = [-1, 2, 1, 3]

@@ -4,7 +4,7 @@
 Take a ring and return true or false whether or not the ring is clockwise or counter-clockwise.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> line = LineString([[0, 0], [1, 1], [1, 0], [0, 0]])
@@ -45,7 +45,7 @@ end
 Take a polygon and return true or false as to whether it is concave or not.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> poly = Polygon([[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]])
@@ -113,7 +113,7 @@ end
 Return `true` if each segment of `line1` is parallel to the correspondent segment of `line2`
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> line1 = LineString([[9.170356, 45.477985], [9.164434, 45.482551], [9.166644, 45.484003]])
@@ -160,7 +160,7 @@ Return true if a point is on a line. Accept a optional parameter to ignore the
 start and end vertices of the linestring.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> point = Point([1,1])
@@ -234,7 +234,7 @@ Take a Point and a Polygon and determine if the point
 resides inside the polygon. The polygon can be convex or concave. The function accounts for holes.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> point = Point([-77, 44])
@@ -313,7 +313,7 @@ must not intersect the exterior of the primary (geometry a).
 `contains` returns the exact opposite result of `within`.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> line = LineString([[1, 1], [1, 2], [1, 3], [1, 4]])
@@ -436,7 +436,7 @@ must not intersect the exterior of the secondary (geometry b).
 `within` returns the exact opposite result of `contains`.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> line = LineString([[1, 1], [1, 2], [1, 3], [1, 4]])
@@ -509,7 +509,7 @@ end
 Return `true` if the intersection of the two geometries is an empty set.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> poly = Polygon([[[-1, 2], [3, 2], [3, 3], [-1, 3], [-1, 2]]])
@@ -589,7 +589,7 @@ end
 Find a point that intersects LineStrings with two coordinates each.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> line1 = LineString([[124.584961,-12.768946],[126.738281,-17.224758]])
@@ -664,7 +664,7 @@ the maximum dimension of the two source geometries and the intersection set is i
 both source geometries.
 
 # Examples
-```jldoctest
+```julia
 julia> using Turf
 
 julia> line = LineString([[1, 1], [1, 2], [1, 3], [1, 4]])
