@@ -10,15 +10,44 @@ isdefined(Turf, :BBox3D) || const BBox3D = Vector{Float64}(undef, 6)
 Take a set of features, calculate the bbox of all input features, and returns a bounding box.
 """
 function bbox(geojson::T) where {T<:AbstractFeatureCollection}
-    results::Vector{Vector{Float64}} = []
+    result = [Inf, Inf, -Inf, -Inf]
+
     for feat in geojson.features
         geom = feat.geometry
-        push!(results, bbox(geom))
+        coords = geom.coordinates
+
+        if geotype(geom) === :LineString || geotype(geom) === :MultiPoint
+            for i in eachindex(coords)
+                result[1] > coords[i][1] && (result[1] = coords[i][1])
+
+                result[2] > coords[i][2] && (result[2] = coords[i][2])
+
+                result[3] < coords[i][1] && (result[3] = coords[i][1])
+
+                result[4] < coords[i][2] && (result[4] = coords[i][2])
+            end
+        elseif geotype(geom) === :Polygon || geotype(geom) === :MultiLineString
+            for i in eachindex(coords[1])
+                result[1] > coords[1][i][1] && (result[1] = coords[1][i][1])
+
+                result[2] > coords[1][i][2] && (result[2] = coords[1][i][2])
+
+                result[3] < coords[1][i][1] && (result[3] = coords[1][i][1])
+
+                result[4] < coords[1][i][2] && (result[4] = coords[1][i][2])
+            end
+        elseif geotype(geom) === :Point
+                result[1] > coords[1] && (result[1] = coords[1])
+
+                result[2] > coords[2] && (result[2] = coords[2])
+
+                result[3] < coords[1] && (result[3] = coords[1])
+
+                result[4] < coords[2] && (result[4] = coords[2])
+        end
     end
-
-    return results
+    return result
 end
-
 
 """
     bbox(geojson::T) where {T <: AbstractGeometry}
@@ -50,7 +79,7 @@ function bbox(geojson::T) where {T <: AbstractGeometry}
 
             result[4] < coords[1][i][2] && (result[4] = coords[1][i][2])
         end
-    else
+    elseif geotype(geojson) === :Point
             result[1] > coords[1] && (result[1] = coords[1])
 
             result[2] > coords[2] && (result[2] = coords[2])

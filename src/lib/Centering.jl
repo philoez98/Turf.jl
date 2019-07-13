@@ -1,5 +1,5 @@
 """
-    centroid([geojson::T]) where {T <: AbstractGeometry}
+    centroid([geojson::T])::Point where {T <: AbstractGeometry}
 
 Takes one or more features and calculates the centroid using the mean of all vertices.
 This lessens the effect of small islands and artifacts when calculating the centroid of a set of polygons.
@@ -45,6 +45,58 @@ function centroid(geojson::T)::Point where {T<:AbstractGeometry}
     return Point([x / len, y / len])
 end
 
+
+"""
+    centroid([geojson::T])::Point where {T <: AbstractFeatureCollection}
+
+Takes one or more features and calculates the centroid using the mean of all vertices.
+This lessens the effect of small islands and artifacts when calculating the centroid of a set of polygons.
+
+# Examples
+```julia
+julia> using Turf
+
+julia> line = LineString([[1, 2], [4, 6], [8, 9.5], [12, 13.4]])
+LineString(Array{Float64,1}[[1.0, 2.0], [4.0, 6.0], [8.0, 9.5], [12.0, 13.4]])
+
+julia> centroid(line)
+Point([6.25, 7.725])
+```
+"""
+function centroid(geojson::T)::Point where {T <: AbstractFeatureCollection}
+    x = 0.
+    y = 0.
+    len = 0.
+
+    for feat in geojson.features
+        geometry = feat.geometry
+
+        data = geometry.coordinates
+        type = geotype(geometry)
+
+        if type === :Point
+            x = data[1]
+            y = data[2]
+            len = 1.
+        elseif type === :LineString || type === :MultiPoint
+            for i in eachindex(data)
+                x += data[i][1]
+                y += data[i][2]
+                len += 1.
+            end
+        elseif type === :Polygon || type === :MultiLineString
+            for i in eachindex(data[1])
+                x += data[1][i][1]
+                y += data[1][i][2]
+                len += 1.
+            end
+        end
+    end
+
+    return Point([x / len, y / len])
+end
+
+
 """
     center(geojson::T) where {T <: AbstractGeometry}
 
@@ -61,7 +113,7 @@ julia> center(line)
 Point([6.5, 7.7])
 ```
 """
-function center(geojson::T)::Point where {T <: AbstractGeometry}
+function center(geojson::T)::Point where {T <: Union{AbstractGeometry, AbstractFeatureCollection}}
     box = bbox(geojson)
 
     x = (box[1] + box[3]) / 2

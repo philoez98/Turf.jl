@@ -66,4 +66,9 @@
     @test mediancenter(coll).coordinates ≈ [0.383876,0.616989] atol=0.0001
     @test mediancenter(coll2).coordinates ≈ [9.254246,9.254246] atol=0.0001
 
+    fc = FeatureCollection([Feature(Point([4.833351373672485,45.760809294695534])),
+      Feature(Point([4.8331475257873535,45.760296567821456])), Feature(Point([4.833984374999999,45.76073818687033])),
+      Feature(Point([4.834005832672119,45.76022171678877]))])
+
+    @test centroid(fc).coordinates ≈ [4.8336222767829895,45.76051644154402] atol=0.001
 end
