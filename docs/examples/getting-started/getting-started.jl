@@ -1,6 +1,6 @@
 using Turf
 
-fc = GeoJSON.parsefile(pwd() * "/docs/examples/example.geojson")
+fc = GeoJSON.parsefile(pwd() * "/docs/examples/getting-started/example.geojson")
 
 centroid_point = centroid(fc)
 center_point = center(fc)
@@ -10,6 +10,6 @@ push!(fc.features, Feature(center_point, Dict("marker-color" => "#eaa000")))
 
 result = GeoJSON.geojson(fc)
 
-open(pwd() * "/docs/examples/example.result.geojson", "w") do file
+open(pwd() * "/docs/examples/getting-started/example.result.geojson", "w") do file
     write(file, result)
 end

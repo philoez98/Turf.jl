@@ -14,7 +14,7 @@ using Turf
 To read a `.geojson` file into a `String` we use the function `parsefile()` from the `GeoJSON.jl` package:
 
 ```
-fc = GeoJSON.parsefile(pwd() * "/docs/examples/example.geojson")
+fc = GeoJSON.parsefile(pwd() * "/docs/examples/getting-started/example.geojson")
 ```
 So now we have a FeatureCollection object created from our file. We start to work on it by calculating both the center and the centroid of its features:
 
@@ -39,7 +39,7 @@ result = GeoJSON.geojson(fc)
 As a last step, we write the modified FeatureCollection into a new file, called `example.result.geojson`:
 
 ```
-open(pwd() * "/docs/examples/example.result.geojson", "w") do file
+open(pwd() * "/docs/examples/getting-started/example.result.geojson", "w") do file
     write(file, result)
 end
 ```
@@ -55,7 +55,7 @@ Here's the entire script:
 ```
 using Turf
 
-fc = GeoJSON.parsefile(pwd() * "/docs/examples/example.geojson")
+fc = GeoJSON.parsefile(pwd() * "/docs/examples/getting-started/example.geojson")
 
 centroid_point = centroid(fc)
 center_point = center(fc)
@@ -65,7 +65,7 @@ push!(fc.features, Feature(center_point, Dict("marker-color" => "#eaa000")))
 
 result = GeoJSON.geojson(fc)
 
-open(pwd() * "/docs/examples/example.result.geojson", "w") do file
+open(pwd() * "/docs/examples/getting-started/example.result.geojson", "w") do file
     write(file, result)
 end
 ```
