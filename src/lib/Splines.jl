@@ -4,22 +4,22 @@ abstract type AbstractSpline end
 
 @kwdef struct Spline
     points::Vector{Point}
-    duration::Real = 10000
+    duration::Real = 10000.
     sharpness::Real = 0.85
-    centers::Vector{Point} = []
-    controls::Vector{Vector{Point}} = []
+    centers = []
+    controls = [[]]
     stepLength::Real = 60
     length::Real = length(points)
     delay::Real = 0
-    steps::Vector{Real} = []
+    steps = []
 
-    function Spline(points::Vector{Point}, duration::Real, sharpness::Real,
-        centers::Vector{Point},
-        controls::Vector{Vector{Point}},
-        stepLength::Real,
-        length::Real,
-        delay::Real,
-        steps::Vector{Real})
+    function Spline(; points=points::Vector{Point}, duration=duration::Real=10000., sharpness=sharpness::Real=0.85,
+        centers=centers=[],
+        controls=controls=[[]],
+        stepLength=stepLength::Real=60,
+        length=length::Real = length(points),
+        delay=delay::Real= 0,
+        steps=steps= [])
 
         for point in points
             point.coordinates[3] = length(point) > 2 ? point.coordinates[3] : 0
@@ -56,10 +56,11 @@ abstract type AbstractSpline end
         push!(controls, [points[length - 1], points[length - 1]])
         steps = cacheSteps(stepLength)
 
-        new(points, duration, sharpness, centers, controls, stepLength, length, delay, steps)
+        return new(points, duration, sharpness, centers, controls, stepLength, length, delay, steps)
     end
 
 end # struct
+
 
 
 

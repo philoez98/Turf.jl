@@ -191,3 +191,75 @@ function ringArea(coords)
 
     return total
 end
+
+"""
+    clean(geojson::AbstractGeometry, mutate::Bool=false)
+
+Remove redundant coordinates from any GeoJSON Geometry.
+"""
+function clean(geojson::AbstractGeometry, mutate::Bool=false)
+
+    type = geotype(geojson)
+    coords = []
+
+    isequal(type, :Point) && return geojson
+
+    !mutate && (geojson = deepcopy(geojson))
+
+    if isequal(type, :LineString) || isequal(type, :MultiPoint)
+        coords = cleanline(geojson)
+    elseif isequal(type, :MultiLineString) || isequal(type, :Polygon)
+        foreach(x -> push!(coords, cleanline(x)), geojson.coordinates[1])
+    elseif isequal(type, :MultiPolygon)
+        points = []
+
+        foreach(x -> push!(points, cleanline(x)), geojson.coordinates)
+        push!(coords, points)
+    else
+        throw(error("$(type) is not supported."))
+
+    end
+
+    mutate && (geojson.coordinates = coords); return geojson
+    return Feature(geojson)
+end
+
+clean!(geojson::AbstractGeometry) = clean(geojson, true)
+
+function cleanline(line)
+    points = line.coordinates
+
+    (length(points) == 2 && point[1] != point[2]) && return points
+
+    new_points = []
+    index = length(points) - 1
+    np_length = length(new_points)
+
+    push!(new_points, points[1])
+
+    for i in 2:index
+        prev = new_points[length(new_points)]
+
+        (points[i][1] == prev[1] && points[i][2] == prev[2]) && continue
+
+        push!(new_points, points[i])
+        np_length = length(new_points)
+
+        if np_length > 2
+            if point_on_line(Point(new_points[np_length - 2]), LineString([new_points[np_length], new_points[np_length- 1]]))
+                splice!(new_points, length(new_points)-1)
+            end
+        end
+    end
+
+    push!(new_points, points[length(points)])
+
+    np_length = length(new_points)
+
+    (points[1] == points[end] && np_length < 4) && throw(error("invalid polygon."))
+    if point_on_line(Point(new_points[np_length - 2]), LineString([new_points[np_length], new_points[np_length- 1]]))
+        splice!(new_points, length(new_points)-1)
+    end
+
+    return new_points
+end

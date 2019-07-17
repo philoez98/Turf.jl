@@ -290,6 +290,7 @@ julia> explode(poly, true)
  Point([101.0, 1.0])
  Point([100.0, 1.0])
  Point([100.0, 0.0])
+
 ```
 """
 function explode(geojson::T, pointsOnly::Bool=false) where {T <: Union{AbstractFeatureCollection, AbstractGeometry}}
@@ -772,5 +773,171 @@ function tag(fc1::FeatureCollection, fc2::FeatureCollection, in_field::String, o
             end
         end
     end
+    return points
+end
+
+
+"""
+    simplify(geojson::FeatureCollection, tolerance::Real=1., hq::Bool=false, mutate::Bool=false)
+
+Take a GeoJSON object and return a simplified version.
+Internally uses an adaptation of [simplify-js](http://mourner.github.io/simplify-js/) to perform simplification using the Ramer-Douglas-Peucker algorithm.
+"""
+function simplify(geojson::FeatureCollection, tolerance::Real=1., hq::Bool=false, mutate::Bool=false)
+    !mutate && (geojson = deepcopy(geojson))
+
+    for feat in geojson.features
+        geometry = feat.geometry
+
+        simplify_geometry(geometry, tolerance, hq)
+    end
+
+    return geojson
+end
+
+simplify!(geojson::FeatureCollection, tolerance::Real=1., hq::Bool=false) = simplify(geojson, tolerance, hq, true)
+
+
+function simplify_geometry(geom::AbstractGeometry, tol::Real, hq::Bool)
+    type = geotype(geom)
+
+    isequal(type, :Point) || isequal(type, :MultiPoint) && return geom
+
+    coords = geom.coordinates
+
+    if isequal(type, :LineString)
+        geom.coordinates = simplify_line(coords, tol, hq)
+    elseif isequal(type, :MultiLineString)
+        geom.coordinates = map(lines -> simplify_line(lines, tol, hq), coords[1])
+
+    elseif isequal(type, :Polygon)
+        geom.coordinates = simplify_polygon(coords, tol, hq)
+    else
+        geom.coordinates = map(rings -> simplify_polygon(rings, tol, hq), coords[1])
+    end
+
+    return geom
+end
+
+
+function simplify_line(coords, tol::Real, hq::Bool)
+    return map(coords -> (coords[3]) ? [coords[1], coords[2], coords[3]] : [coords[1], coords[2]],
+        DP_simplify(map(coord -> [coord[1], coord[2], coord[3]], coords), tol, hq))
+end
+
+function simplify_polygon(coords, tol::Real, hq::Bool)
+    return map(ring -> begin
+        pts = map(coord -> [coord[1], coord[2]], ring)
+
+        length(pts) < 4 && throw(error("Invalid Polygon."))
+
+        simple = map(p -> [p.coordinates[1], p.coordinates[2]], DP_simplify([Point(p) for p in pts], tol, hq))
+
+        while !valid(simple)
+            tol -= tol * 0.01
+            simple = map(p -> [p.coordinates[1], p.coordinates[2]], DP_simplify([Point(p) for p in pts], tol, hq))
+        end
+
+        ((simple[length(simple)][1] != simple[1][1]) ||
+            (simple[length(simple)][2] != simple[1][2])) && push!(simple, simple[1])
+
+        return simple
+
+        end, coords)
+end
+
+function valid(ring)
+    length(ring) < 3 && return false
+
+    return !(isequal(length(ring), 3) && (isequal(ring[3][1], ring[1][1]) && isequal(ring[3][2], ring[1][2])))
+end
+
+function dist²(p1::Point, p2::Point)
+    dx = p1.coordinates[1] - p2.coordinates[1]
+    dy = p1.coordinates[2] - p2.coordinates[2]
+
+    return dx * dx + dy * dy
+end
+
+function segdist²(p::Point, l1::Point, l2::Point)
+    x, y = l1.coordinates
+    dx = l2.coordinates[1] - x
+    dy = l2.coordinates[2] - y
+
+    if !iszero(dx) || !iszero(dy)
+        t = ((p.coordinates[1] - x) * dx + (p.coordinates[2] - y) * dy) / (dx * dx + dy * dy)
+
+        if t > 1
+            x = l2.coordinates[1]
+            y = l2.coordinates[2]
+        elseif t > 0
+            x += dx * t
+            y += dy * t
+        end
+    end
+
+    dx = p.coordinates[1] - x
+    dy = p.coordinates[2] - y
+
+    return dx * dx + dy * dy
+end
+
+
+function simplify_radial_distance(points::Vector, tol::Real)
+    previous = points[1]
+    new_points = [previous]
+    point = nothing
+
+    for i in eachindex(points)
+        point = points[i]
+        if dist²(point, previous) > tol
+            push!(new_points, point)
+            previous = point
+        end
+    end
+
+    !isequal(previous, point) && push!(new_points, point)
+
+    return new_points
+end
+
+function simplify_DP_step(points::Vector, first::Integer, last::Integer, tol::Real, simplified)
+    max_dist = tol
+    index = 0
+
+    for i = first+1:last
+        dist = segdist²(points[i], points[first], points[last])
+
+        if dist > max_dist
+            index = i
+            max_dist = dist
+        end
+    end
+
+    if max_dist > tol
+        (index - first > 1) && simplify_DP_step(points, first, index, tol, simplified)
+        push!(simplified, points[index])
+        (last - index > 1) && simplify_DP_step(points, index, last, tol, simplified)
+    end
+end
+
+
+function douglas_peucker(points::Vector, tol::Real)
+    last = length(points)
+
+    simplified = [points[1]]
+    simplify_DP_step(points, 1, last, tol, simplified)
+    push!(simplified, points[last])
+
+    return simplified
+end
+
+function DP_simplify(points::Vector, tol::Real, hq::Bool)
+    length(points) <= 2 && return points
+    sq_tol = tol * tol
+
+    points = hq ? points : simplify_radial_distance(points, sq_tol)
+    points = douglas_peucker(points, sq_tol)
+
     return points
 end

@@ -1,5 +1,11 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+Turf = "e89237b0-9201-11e9-31b0-6361926203f7"
+GeoInterface = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
+GeoJSON = "61d90e0f-e114-555e-ac52-39dfb47a3ef9"
+Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
-Documenter = "~0.22.5"
+Documenter = "~0.22"
+GeoJSON = "0.4.0"
+GeoInterface = "0.4.1"
