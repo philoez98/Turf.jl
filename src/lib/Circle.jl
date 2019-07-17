@@ -4,9 +4,7 @@
 Take a Point or a Position and calculate the circle polygon given a radius in degrees, radians, miles, or kilometers; and steps for precision.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> point = Point([35, 45])
 Point([35.0, 45.0])
 
@@ -42,9 +40,7 @@ Creates a circular sector of a circle of given radius and center Point,
 between (clockwise) bearing1 and bearing2; 0 bearing is North of center point, positive clockwise.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> point = Point([35, 45])
 Point([35.0, 45.0])
 

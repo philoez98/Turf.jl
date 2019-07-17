@@ -6,9 +6,7 @@ Calculate the distance between two Points or Positions in degrees, radians, mile
 The distance is calculated using the [Haversine formula](http://en.wikipedia.org/wiki/Haversine_formula) to account for global curvature.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> point1 = Point([35, 45])
 Point([35.0, 45.0])
 
@@ -47,9 +45,7 @@ Calculate the distance along a rhumb line between two Points or Positions in deg
 miles, or kilometers.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> point1 = Point([35, 45])
 Point([35.0, 45.0])
 
@@ -99,9 +95,7 @@ Return the minimum distance between a Point and a LineString, being the distance
 minimum distance between the point and any segment of the `LineString`.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> point = Point([35, 45])
 Point([35.0, 45.0])
 
@@ -170,9 +164,7 @@ Take a reference Point and an array of Points and return the point from the
 array closest to the reference. This calculation is geodesic.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> point = Point([35, 45])
 Point([35.0, 45.0])
 
@@ -274,9 +266,7 @@ end
 Calculate the Minkowski p-norm distance between two Points.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> point = Point([35, 45])
 Point([35.0, 45.0])
 
@@ -313,9 +303,7 @@ Take two Points and returns a point midway between them.
 The midpoint is calculated geodesically, meaning the curvature of the earth is taken into account.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> point = Point([35, 45])
 Point([35.0, 45.0])
 

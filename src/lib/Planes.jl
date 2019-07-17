@@ -5,9 +5,7 @@ Take a triangular plane as a Polygon and a Point within that triangle
 and returns the z-value at that point.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> point = Point([-175, 22])
 Point([-175.0, 22.0])
 

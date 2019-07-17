@@ -4,9 +4,7 @@
 Create a Point grid from a bounding box
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> bbox = [-1, 2, 1, 3]
 4-element Array{Int64,1}:
  -1
@@ -15,9 +13,7 @@ julia> bbox = [-1, 2, 1, 3]
   3
 
 julia> point_grid(bbox, 100)
-FeatureCollection{Feature}(Feature[Feature(Point([-0.899869, 2.05034]), Dict{String,Any}()), Feature(Point([-0.899869, 2.94966]),
- Dict{String,Any}()), Feature(Point([0.0, 2.05034]), Dict{String,Any}()), Feature(Point([0.0, 2.94966]), Dict{String,Any}()),
- Feature(Point([0.899869, 2.05034]), Dict{String,Any}()), Feature(Point([0.899869, 2.94966]), Dict{String,Any}())], nothing, nothing
+FeatureCollection{Feature}(Feature[Feature(Point([-0.899869, 2.05034]), Dict{String,Any}()), Feature(Point([-0.899869, 2.94966]), Dict{String,Any}()), Feature(Point([0.0, 2.05034]), Dict{String,Any}()), Feature(Point([0.0, 2.94966]), Dict{String,Any}()), Feature(Point([0.899869, 2.05034]), Dict{String,Any}()), Feature(Point([0.899869, 2.94966]), Dict{String,Any}())], nothing, nothing)
 ```
 """
 function point_grid(bbox::Vector{T}, cellSide::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
@@ -71,9 +67,7 @@ end
 Create a grid of rectangles from a bounding box.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> bbox = [-1, 2, 1, 3]
 4-element Array{Int64,1}:
  -1
@@ -262,9 +256,7 @@ end
 Create a square grid from a bounding box.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> bbox = [-1, 2, 1, 3]
 4-element Array{Int64,1}:
  -1
@@ -273,8 +265,7 @@ julia> bbox = [-1, 2, 1, 3]
   3
 
 julia> square_grid(bbox, 100)
-FeatureCollection{Feature}(Feature[Feature(Polygon(Array{Array{Float64,1},1}[[[-0.899869, 2.05034], [-0.899869, 2.94966], [0.0, 2.94966], [0.0, 2.05034], [-0.899869, 2.05034]]]), Dict{String,Any}()),
-Feature(Polygon(Array{Array{Float64,1},1}[[[0.0, 2.05034], [0.0, 2.94966], [0.899869, 2.94966], [0.899869, 2.05034], [0.0, 2.05034]]]), Dict{String,Any}())], nothing, nothing)
+FeatureCollection{Feature}(Feature[Feature(Polygon(Array{Array{Float64,1},1}[[[-0.899869, 2.05034], [-0.899869, 2.94966], [0.0, 2.94966], [0.0, 2.05034], [-0.899869, 2.05034]]]), Dict{String,Any}()), Feature(Polygon(Array{Array{Float64,1},1}[[[0.0, 2.05034], [0.0, 2.94966], [0.899869, 2.94966], [0.899869, 2.05034], [0.0, 2.05034]]]), Dict{String,Any}())], nothing, nothing)
 ```
 """
 function square_grid(bbox::Vector{T}, cell_side::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}
@@ -287,9 +278,7 @@ end
 Take a bounding box and a cell depth and returns a set of triangular Polygons in a grid.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> bbox = [-1, 2, 1, 3]
 4-element Array{Int64,1}:
  -1
@@ -298,10 +287,7 @@ julia> bbox = [-1, 2, 1, 3]
   3
 
 julia> triangle_grid(bbox, 200)
-FeatureCollection{Feature}(Feature[Feature(Polygon(Array{Array{Float64,1},1}[[[-1.0, 2.0], [-1.0, 3.79864], [0.799737, 2.0], [-1.0, 2.0]]]), Dict{String,Any}()),
-Feature(Polygon(Array{Array{Float64,1},1}[[[-1.0, 3.79864], [0.799737, 3.79864], [0.799737, 2.0], [-1.0, 3.79864]]]), Dict{String,Any}()),
-Feature(Polygon(Array{Array{Float64,1},1}[[[0.799737, 2.0], [0.799737, 3.79864], [2.59947, 3.79864], [0.799737, 2.0]]]), Dict{String,Any}()),
-Feature(Polygon(Array{Array{Float64,1},1}[[[0.799737, 2.0], [2.59947, 3.79864], [2.59947, 2.0], [0.799737, 2.0]]]), Dict{String,Any}())], nothing, nothing)
+FeatureCollection{Feature}(Feature[Feature(Polygon(Array{Array{Float64,1},1}[[[-1.0, 2.0], [-1.0, 3.79864], [0.799737, 2.0], [-1.0, 2.0]]]), Dict{String,Any}()), Feature(Polygon(Array{Array{Float64,1},1}[[[-1.0, 3.79864], [0.799737, 3.79864], [0.799737, 2.0], [-1.0, 3.79864]]]), Dict{String,Any}()), Feature(Polygon(Array{Array{Float64,1},1}[[[0.799737, 2.0], [0.799737, 3.79864], [2.59947, 3.79864], [0.799737, 2.0]]]), Dict{String,Any}()), Feature(Polygon(Array{Array{Float64,1},1}[[[0.799737, 2.0], [2.59947, 3.79864], [2.59947, 2.0], [0.799737, 2.0]]]), Dict{String,Any}())], nothing, nothing)
 ```
 """
 function triangle_grid(bbox::Vector{T}, cell_side::T, mask::Union{Polygon, Nothing}=nothing, units::String="kilometers") where {T <: Real}

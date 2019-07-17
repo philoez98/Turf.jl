@@ -4,9 +4,7 @@
 Take a bounding box and calculates the minimum square bounding box that would contain the input.
 
 # Examples
-```julia
-julia> using Turf
-
+```jldoctest
 julia> bbox = [-1, 1, 2, 3.5]
 4-element Array{Float64,1}:
  -1.0
