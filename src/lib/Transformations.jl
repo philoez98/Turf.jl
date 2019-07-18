@@ -854,7 +854,7 @@ simplify!(geojson::AbstractGeometry, tolerance::Real=1., hq::Bool=false) = simpl
 Take a GeoJSON Feature and return a simplified version.
 Internally uses an adaptation of [simplify-js](http://mourner.github.io/simplify-js/) to perform simplification using the Ramer-Douglas-Peucker algorithm.
 """
-simplify(geojson::AbstractFeature, tolerance::Real=1., hq::Bool=false, mutate::Bool=false) = simplify(geojson, tolerance, hq, mutate)
+simplify(geojson::AbstractFeature, tolerance::Real=1., hq::Bool=false, mutate::Bool=false) = simplify(geojson.geometry, tolerance, hq, mutate)
 
 
 """
