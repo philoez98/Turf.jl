@@ -765,3 +765,77 @@ function MpCrossPoly(mp::MultiPoint, poly::Polygon)
     end
     return intPoint && extPoint
 end
+
+"""
+    overlap(geom1::AbstractGeometry, geom2::AbstractGeometry)::Bool
+
+Compare two Geometries of the same dimension and return true if their intersection set results in a geometry
+different from both but of the same dimension. It applies to Polygon/Polygon, LineString/LineString,
+Multipoint/Multipoint, MultiLineString/MultiLineString and MultiPolygon/MultiPolygon.
+
+# Examples
+```jldoctest
+julia> poly1 = Polygon([[[0,0],[0,5],[5,5],[5,0],[0,0]]])
+Polygon(Array{Array{Float64,1},1}[[[0.0, 0.0], [0.0, 5.0], [5.0, 5.0], [5.0, 0.0], [0.0, 0.0]]])
+
+julia> poly2 = Polygon([[[1,1],[1,6],[6,6],[6,1],[1,1]]])
+Polygon(Array{Array{Float64,1},1}[[[1.0, 1.0], [1.0, 6.0], [6.0, 6.0], [6.0, 1.0], [1.0, 1.0]]])
+
+julia> overlap(poly1, poly2)
+true
+```
+"""
+function overlap(geom1::AbstractGeometry, geom2::AbstractGeometry)::Bool
+    # TODO: add support for LineStrings and ML
+
+    type1 = geotype(geom1)
+    type2 = geotype(geom2)
+
+    !isequal(type1, type2) && throw(error("Gometries must be of the same type."))
+    type1 === :Point && throw(error("$(type1) geometry is not supported."))
+
+
+    if length(geom1.coordinates) === length(geom2.coordinates)
+        geom1.coordinates ≈ geom2.coordinates && return false
+    end
+
+    overlap = 0
+    coords1 = geom1.coordinates
+    coords2 = geom2.coordinates
+
+    if isequal(type1, :MultiPoint)
+        for i in eachindex(coords1)
+            for j in eachindex(coords2)
+                (coords1[i][1] == coords2[j][1] && coords1[i][2] == coords2[j][2]) && (overlap += 1)
+            end
+        end
+    elseif isequal(type1, :Polygon)
+        line1 = polygon_to_line(geom1)
+        line2 = polygon_to_line(geom2)
+
+        (line_intersects(line1, line2) != []) && (overlap += 1)
+
+    elseif isequal(type1, :MultiPolygon)
+        for poly1 in coords1
+            for poly2 in coords2
+                line1 = polygon_to_line(poly1)
+                line2 = polygon_to_line(poly2)
+
+                (line_intersects(line1, line2) != []) && (overlap += 1)
+            end
+        end
+    else
+        throw(error("Unsupported geometry."))
+    end
+
+    return overlap > 0
+end
+
+"""
+    overlap(feat1::AbstractFeature, feat2::AbstractFeature)::Bool
+
+Compare two Features of the same dimension and return true if their intersection set results in a geometry
+different from both but of the same dimension. It applies to Polygon/Polygon, LineString/LineString,
+Multipoint/Multipoint, MultiLineString/MultiLineString and MultiPolygon/MultiPolygon.
+"""
+overlap(feat1::AbstractFeature, feat2::AbstractFeature)::Bool = overlap(feat1.geometry, feat2.geometry)

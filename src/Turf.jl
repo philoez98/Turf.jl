@@ -12,7 +12,7 @@ export radians_to_length, length_to_radians, length_to_degrees, convert_length, 
     pnorm_distance, distance_weight, ellipse, explode, midpoint, square, flip, lineclip, polygonclip,
     linearc, sector, planepoint, to_WGS84, to_mercator, point_grid, rectangle_grid, hexgrid, polygon_tangents,
     area, contains, within, disjoint, line_intersects, polygon_to_line, transform_translate, valid, crosses, convert_to,
-    combine, scale, square_grid, triangle_grid, tag, point_to_line_distance, simplify, simplify!, clean, clean!
+    combine, scale, square_grid, triangle_grid, tag, point_to_line_distance, simplify, simplify!, clean, clean!, overlap
 
 
 include("Constants.jl")
