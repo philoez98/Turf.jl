@@ -256,7 +256,89 @@
 	fc5 = FeatureCollection([Feature(Polygon([[[49, 52], [51, 50.5], [49, 51], [49, 52], [49, 52]]]), Dict("poly" => true))])
 	@test tag(fc4, fc5,"poly", "inside").features[1].properties == Dict("inside" => true)
 
-	#fcoll = GeoJSON.parsefile(pwd() * "/simplify.geojson")
+	fcoll = GeoJSON.parsefile(string(@__DIR__) * "/simplify.geojson")
+	fcoll2 = GeoJSON.parsefile(string(@__DIR__) * "/simplify2.geojson")
 
-	#@test simplify(fcoll, 100).features[1].geometry.coordinates
+	@test simplify(fcoll, 100).features[1].geometry.coordinates ≈ [
+			[
+				[
+					26.14843,
+					-28.297552
+				],
+				[
+					26.150354,
+					-28.302606
+				],
+				[
+					26.135463,
+					-28.304283
+				],
+				[
+					26.14843,
+					-28.297552
+				]
+			]
+		]
+
+	@test_throws ErrorException simplify(fcoll2, -1)
+	@test simplify(fcoll2, 0.005, true).features[1].geometry.coordinates ≈ [
+			[
+				[
+					179.975281,
+					-16.51477
+				],
+				[
+					179.980431,
+					-16.539127
+				],
+				[
+					180.0103,
+					-16.523328
+				],
+				[
+					180.007553,
+					-16.534848
+				],
+				[
+					180.018196,
+					-16.539127
+				],
+				[
+					180.061455,
+					-16.525632
+				],
+				[
+					180.066605,
+					-16.513124
+				],
+				[
+					180.046349,
+					-16.479547
+				],
+				[
+					180.086861,
+					-16.44761
+				],
+				[
+					180.084114,
+					-16.441354
+				],
+				[
+					180.055618,
+					-16.439707
+				],
+				[
+					180.026093,
+					-16.464732
+				],
+				[
+					180.01442,
+					-16.464073
+				],
+				[
+					179.975281,
+					-16.51477
+				]
+			]
+		]
 end

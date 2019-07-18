@@ -772,10 +772,40 @@ end
 """
     simplify(geojson::FeatureCollection, tolerance::Real=1., hq::Bool=false, mutate::Bool=false)
 
-Take a GeoJSON object and return a simplified version.
+Take a FeatureCollection and return a simplified version.
 Internally uses an adaptation of [simplify-js](http://mourner.github.io/simplify-js/) to perform simplification using the Ramer-Douglas-Peucker algorithm.
+
+# Examples
+```jldoctest
+julia> poly = Polygon([[
+    [-70.603637, -33.399918],
+    [-70.614624, -33.395332],
+    [-70.639343, -33.392466],
+    [-70.659942, -33.394759],
+    [-70.683975, -33.404504],
+    [-70.697021, -33.419406],
+    [-70.701141, -33.434306],
+    [-70.700454, -33.446339],
+    [-70.694274, -33.458369],
+    [-70.682601, -33.465816],
+    [-70.668869, -33.472117],
+    [-70.646209, -33.473835],
+    [-70.624923, -33.472117],
+    [-70.609817, -33.468107],
+    [-70.595397, -33.458369],
+    [-70.587158, -33.442901],
+    [-70.587158, -33.426283],
+    [-70.590591, -33.414248],
+    [-70.594711, -33.406224],
+    [-70.603637, -33.399918]]])
+
+julia> simplify(poly, 0.01)
+Polygon(Array{Array{Float64,1},1}[[[-70.6036, -33.3999], [-70.684, -33.4045], [-70.7011, -33.4343], [-70.6943, -33.4584], [-70.6689, -33.4721], [-70.6098, -33.4681], [-70.5872, -33.4429], [-70.6036, -33.3999]]])
+```
 """
 function simplify(geojson::FeatureCollection, tolerance::Real=1., hq::Bool=false, mutate::Bool=false)
+    tolerance < 0 && throw(error("Invalid tolerance. It must be a positive number!"))
+
     !mutate && (geojson = deepcopy(geojson))
 
     for feat in geojson.features
@@ -787,13 +817,61 @@ function simplify(geojson::FeatureCollection, tolerance::Real=1., hq::Bool=false
     return geojson
 end
 
+
+"""
+    simplify(geojson::FeatureCollection, tolerance::Real=1., hq::Bool=false)
+
+Take a FeatureCollection and return a simplified version, modifying the original FeatureCollection.
+Internally uses an adaptation of [simplify-js](http://mourner.github.io/simplify-js/) to perform simplification using the Ramer-Douglas-Peucker algorithm.
+"""
 simplify!(geojson::FeatureCollection, tolerance::Real=1., hq::Bool=false) = simplify(geojson, tolerance, hq, true)
+
+
+"""
+    simplify(geojson::AbstractGeometry, tolerance::Real=1., hq::Bool=false, mutate::Bool=false)
+
+Take a GeoJSON Geometry and return a simplified version.
+Internally uses an adaptation of [simplify-js](http://mourner.github.io/simplify-js/) to perform simplification using the Ramer-Douglas-Peucker algorithm.
+"""
+function simplify(geojson::AbstractGeometry, tolerance::Real=1., hq::Bool=false, mutate::Bool=false)
+    !mutate && (geojson = deepcopy(geojson))
+    return simplify_geometry(geojson, tolerance, hq)
+end
+
+
+"""
+    simplify(geojson::AbstractGeometry, tolerance::Real=1., hq::Bool=false)
+
+Take a GeoJSON Geometry and return a simplified version, modifying the original Geometry.
+Internally uses an adaptation of [simplify-js](http://mourner.github.io/simplify-js/) to perform simplification using the Ramer-Douglas-Peucker algorithm.
+"""
+simplify!(geojson::AbstractGeometry, tolerance::Real=1., hq::Bool=false) = simplify(geojson, tolerance, hq, true)
+
+
+"""
+    simplify(geojson::AbstractFeature, tolerance::Real=1., hq::Bool=false, mutate::Bool=false)
+
+Take a GeoJSON Feature and return a simplified version.
+Internally uses an adaptation of [simplify-js](http://mourner.github.io/simplify-js/) to perform simplification using the Ramer-Douglas-Peucker algorithm.
+"""
+simplify(geojson::AbstractFeature, tolerance::Real=1., hq::Bool=false, mutate::Bool=false) = simplify(geojson, tolerance, hq, mutate)
+
+
+"""
+    simplify(geojson::AbstractFeature, tolerance::Real=1., hq::Bool=false)
+
+Take a GeoJSON Feature and return a simplified version, modifying the original Feature.
+Internally uses an adaptation of [simplify-js](http://mourner.github.io/simplify-js/) to perform simplification using the Ramer-Douglas-Peucker algorithm.
+"""
+simplify!(geojson::AbstractFeature, tolerance::Real=1., hq::Bool=false) = simplify(geojson, tolerance, hq, true)
 
 
 function simplify_geometry(geom::AbstractGeometry, tol::Real, hq::Bool)
     type = geotype(geom)
 
     isequal(type, :Point) || isequal(type, :MultiPoint) && return geom
+
+    clean!(geom)
 
     coords = geom.coordinates
 
