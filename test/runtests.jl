@@ -14,6 +14,7 @@ using Test, Turf
     include("planes.jl")
     include("grids.jl")
     include("lines.jl")
+    include("bbox.jl")
     #include("bezier.jl")
     include("square.jl")
 end # begin

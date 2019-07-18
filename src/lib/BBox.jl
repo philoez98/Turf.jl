@@ -27,14 +27,16 @@ function bbox(geojson::T) where {T<:AbstractFeatureCollection}
                 result[4] < coords[i][2] && (result[4] = coords[i][2])
             end
         elseif geotype(geom) === :Polygon || geotype(geom) === :MultiLineString
-            for i in eachindex(coords[1])
-                result[1] > coords[1][i][1] && (result[1] = coords[1][i][1])
+            for j in eachindex(coords)
+                for i in eachindex(coords[j])
+                    result[1] > coords[j][i][1] && (result[1] = coords[j][i][1])
 
-                result[2] > coords[1][i][2] && (result[2] = coords[1][i][2])
+                    result[2] > coords[j][i][2] && (result[2] = coords[j][i][2])
 
-                result[3] < coords[1][i][1] && (result[3] = coords[1][i][1])
+                    result[3] < coords[j][i][1] && (result[3] = coords[j][i][1])
 
-                result[4] < coords[1][i][2] && (result[4] = coords[1][i][2])
+                    result[4] < coords[j][i][2] && (result[4] = coords[j][i][2])
+                end
             end
         elseif geotype(geom) === :Point
                 result[1] > coords[1] && (result[1] = coords[1])
@@ -44,6 +46,20 @@ function bbox(geojson::T) where {T<:AbstractFeatureCollection}
                 result[3] < coords[1] && (result[3] = coords[1])
 
                 result[4] < coords[2] && (result[4] = coords[2])
+        elseif geotype(geom) === :MultiPolygon
+            for i in eachindex(coords)
+                for j in eachindex(coords[i])
+                    for k in eachindex(coords[i][j])
+                        result[1] > coords[i][j][k][1] && (result[1] = coords[i][j][k][1])
+
+                        result[2] > coords[i][j][k][2] && (result[2] = coords[i][j][k][2])
+
+                        result[3] < coords[i][j][k][1] && (result[3] = coords[i][j][k][1])
+
+                        result[4] < coords[i][j][k][2] && (result[4] = coords[i][j][k][2])
+                    end
+                end
+            end
         end
     end
     return result
@@ -59,7 +75,7 @@ function bbox(geojson::T) where {T <: AbstractGeometry}
 
     coords = geojson.coordinates
 
-    if geotype(geojson) === :LineString
+    if geotype(geojson) === :LineString || geotype(geojson) === :MultiPoint
         for i in eachindex(coords)
             result[1] > coords[i][1] && (result[1] = coords[i][1])
 
@@ -69,15 +85,17 @@ function bbox(geojson::T) where {T <: AbstractGeometry}
 
             result[4] < coords[i][2] && (result[4] = coords[i][2])
         end
-    elseif geotype(geojson) === :Polygon
-        for i in eachindex(coords[1])
-            result[1] > coords[1][i][1] && (result[1] = coords[1][i][1])
+    elseif geotype(geojson) === :Polygon || geotype(geojson) === :MultiLineString
+        for j in eachindex(coords)
+            for i in eachindex(coords[j])
+                result[1] > coords[j][i][1] && (result[1] = coords[j][i][1])
 
-            result[2] > coords[1][i][2] && (result[2] = coords[1][i][2])
+                result[2] > coords[j][i][2] && (result[2] = coords[j][i][2])
 
-            result[3] < coords[1][i][1] && (result[3] = coords[1][i][1])
+                result[3] < coords[j][i][1] && (result[3] = coords[j][i][1])
 
-            result[4] < coords[1][i][2] && (result[4] = coords[1][i][2])
+                result[4] < coords[j][i][2] && (result[4] = coords[j][i][2])
+            end
         end
     elseif geotype(geojson) === :Point
             result[1] > coords[1] && (result[1] = coords[1])
@@ -87,6 +105,20 @@ function bbox(geojson::T) where {T <: AbstractGeometry}
             result[3] < coords[1] && (result[3] = coords[1])
 
             result[4] < coords[2] && (result[4] = coords[2])
+    elseif geotype(geojson) === :MultiPolygon
+        for i in eachindex(coords)
+            for j in eachindex(coords[i])
+                for k in eachindex(coords[i][j])
+                    result[1] > coords[i][j][k][1] && (result[1] = coords[i][j][k][1])
+
+                    result[2] > coords[i][j][k][2] && (result[2] = coords[i][j][k][2])
+
+                    result[3] < coords[i][j][k][1] && (result[3] = coords[i][j][k][1])
+
+                    result[4] < coords[i][j][k][2] && (result[4] = coords[i][j][k][2])
+                end
+            end
+        end
     end
 
     return result
@@ -97,9 +129,7 @@ end
 
 Take a Feature and return a bounding box around its geometry.
 """
-function bbox(geojson::T) where {T<: AbstractFeature}
-    return bbox(geojson.geometry)
-end
+bbox(geojson::T) where {T<: AbstractFeature} = bbox(geojson.geometry)
 
 
 """
