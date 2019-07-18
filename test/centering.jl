@@ -43,6 +43,7 @@
           45.79398056386735
         ]]])
 
+
     @test centroid(p1).coordinates == [4.831961989402771, 45.75764678012361]
     @test centroid(l1).coordinates == [4.860076904296875,45.75919915723537]
     @test centroid(poly).coordinates == [4.839177131652832,45.76256007199914]
@@ -52,6 +53,7 @@
     @test meancenter(poly).coordinates ≈ [4.839177,45.76256]
     @test meancenter(poly2).coordinates == [0, 0]
     @test meancenter(l1).coordinates ≈ [4.860077,45.759199]
+    @test meancenter(p1).coordinates == p1.coordinates
 
     @test masscenter(poly2).coordinates == [0, 0]
     @test masscenter(poly).coordinates == [4.840728965137111,45.75581209996416]
@@ -71,4 +73,5 @@
       Feature(Point([4.834005832672119,45.76022171678877]))])
 
     @test centroid(fc).coordinates ≈ [4.8336222767829895,45.76051644154402] atol=0.001
+    @test center(fc).coordinates ≈ centroid(fc).coordinates atol=0.01
 end

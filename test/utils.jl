@@ -21,6 +21,8 @@
     @test convert_area(1, "metres", "centimeters") == 10000
     @test convert_area(100, "meters", "feet") ≈ 1076.39 atol=0.01
 
+    @test_throws ErrorException convert_area(-5, "meters", "feet")
+
     poly = Polygon([[[125, -15],[113, -22],[117, -37],[130, -33],[148, -39],[154, -27],[144, -15],[125, -15]]])
     @test area(poly) ≈ 7766240997209
 

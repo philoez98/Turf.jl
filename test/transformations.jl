@@ -27,6 +27,7 @@
 									29.675]]]
 
     @test transform_scale(coll, 5., "sw").features[1].geometry.coordinates ≈ [-75.699264,45.43145]
+    @test_throws ErrorException transform_scale(coll, 5., "qw")
 
 	poly2 = Polygon([[[100, 0], [101, 0], [101, 1], [100, 1], [100, 0]]])
 	feats = explode(poly2).features
@@ -255,7 +256,7 @@
 	fc5 = FeatureCollection([Feature(Polygon([[[49, 52], [51, 50.5], [49, 51], [49, 52], [49, 52]]]), Dict("poly" => true))])
 	@test tag(fc4, fc5,"poly", "inside").features[1].properties == Dict("inside" => true)
 
-	fcoll = GeoJSON.parsefile(pwd() * "/simplify.geojson")
+	fcoll = GeoJSON.parsefile(pwd() * "/test/simplify.geojson")
 
 	#@test simplify(fcoll, 100).features[1].geometry.coordinates
 end

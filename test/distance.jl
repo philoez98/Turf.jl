@@ -14,6 +14,8 @@
     @test rhumb_distance(p3, p4, "degrees") ≈ 0.87 atol=0.01
     @test rhumb_distance(p3, p4, "nauticalmiles") ≈ 52.44 atol=0.01
 
+    @test rhumb_distance(Point([-75.343, 39.984]), Point([-75.534, 39.123]), "miles") == rhumb_distance(p3, p4, "miles")
+
     a =  Point([-75.833, 39.284])
     b =  Point([-75.6, 39.984])
     c =  Point([-75.221, 39.125])
