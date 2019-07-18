@@ -196,40 +196,89 @@ end
     clean(geojson::AbstractGeometry, mutate::Bool=false)
 
 Remove redundant coordinates from any GeoJSON Geometry.
+
+# Examples
+```jldoctest
+julia> line = LineString([[0, 0], [0, 2], [0, 5], [0, 8], [0, 10], [0, 10]])
+LineString(Array{Float64,1}[[0.0, 0.0], [0.0, 2.0], [0.0, 5.0], [0.0, 8.0], [0.0, 10.0], [0.0, 10.0]])
+
+julia> clean(line)
+LineString(Array{Float64,1}[[0.0, 0.0], [0.0, 10.0]])
+```
 """
 function clean(geojson::AbstractGeometry, mutate::Bool=false)
 
     type = geotype(geojson)
-    coords = []
-
     isequal(type, :Point) && return geojson
 
-    !mutate && (geojson = deepcopy(geojson))
+    coords = []
 
     if isequal(type, :LineString) || isequal(type, :MultiPoint)
         coords = cleanline(geojson)
-    elseif isequal(type, :MultiLineString) || isequal(type, :Polygon)
-        foreach(x -> push!(coords, cleanline(x)), geojson.coordinates[1])
+    elseif isequal(type, :Polygon)
+
+        line = polygon_to_line(geojson)
+        push!(coords, cleanline(line))
+
     elseif isequal(type, :MultiPolygon)
         points = []
-
-        foreach(x -> push!(points, cleanline(x)), geojson.coordinates)
+        for poly in geojson.coordinates
+            line = polygon_to_line(Polygon(poly))
+            if geotype(line) === :MultiLineString
+                for i in eachindex(line.coordinates)
+                    push!(points, cleanline(LineString(line.coordinates[i])))
+                end
+            else
+                push!(points, cleanline(line))
+            end
+        end
         push!(coords, points)
+    elseif isequal(type, :MultiLineString)
+        for line in geojson.coordinates
+            push!(coords, cleanline(LineString(line)))
+        end
+
     else
         throw(error("$(type) is not supported."))
 
     end
 
-    mutate && (geojson.coordinates = coords); return geojson
-    return Feature(geojson)
+    if mutate
+        geojson.coordinates = coords
+    else
+        geojson = deepcopy(geojson)
+        geojson.coordinates = coords
+    end
+
+    return geojson
 end
 
+
+"""
+    clean!(geojson::AbstractGeometry)
+
+Remove redundant coordinates from any GeoJSON Geometry. It modifies the GeoJSON geometry in place.
+"""
 clean!(geojson::AbstractGeometry) = clean(geojson, true)
+
+"""
+    clean(geojson::AbstractFeature, mutate::Bool=false)
+
+Remove redundant coordinates from any GeoJSON Feature.
+"""
+clean(geojson::AbstractFeature, mutate::Bool=false) = clean(geojson.geometry, mutate)
+
+"""
+    clean!(geojson::AbstractFeature)
+
+Remove redundant coordinates from any GeoJSON Feature. It modifies the GeoJSON geometry in place.
+"""
+clean!(geojson::AbstractFeature) = clean!(geojson.geometry)
 
 function cleanline(line)
     points = line.coordinates
 
-    (length(points) == 2 && point[1] != point[2]) && return points
+    (length(points) == 2 && points[1] != points[2]) && return points
 
     new_points = []
     index = length(points) - 1
@@ -240,14 +289,16 @@ function cleanline(line)
     for i in 2:index
         prev = new_points[length(new_points)]
 
-        (points[i][1] == prev[1] && points[i][2] == prev[2]) && continue
+        if points[i][1] == prev[1] && points[i][2] == prev[2]
+            continue
+        else
+            push!(new_points, points[i])
+            np_length = length(new_points)
 
-        push!(new_points, points[i])
-        np_length = length(new_points)
-
-        if np_length > 2
-            if point_on_line(Point(new_points[np_length - 2]), LineString([new_points[np_length], new_points[np_length- 1]]))
-                splice!(new_points, length(new_points)-1)
+            if np_length > 2
+                if isPointOnSegment(new_points[np_length - 2], new_points[np_length], new_points[np_length- 1])
+                    splice!(new_points, length(new_points)-1)
+                end
             end
         end
     end
@@ -257,7 +308,7 @@ function cleanline(line)
     np_length = length(new_points)
 
     (points[1] == points[end] && np_length < 4) && throw(error("invalid polygon."))
-    if point_on_line(Point(new_points[np_length - 2]), LineString([new_points[np_length], new_points[np_length- 1]]))
+    if isPointOnSegment(new_points[np_length - 2], new_points[np_length], new_points[np_length- 1])
         splice!(new_points, length(new_points)-1)
     end
 

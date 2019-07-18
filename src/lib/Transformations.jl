@@ -44,13 +44,15 @@ function transform_rotate(; geojson::T, angle::Real, pivot::Point=nothing, mutat
 
     elseif type === :Polygon || type === :MultiLineString
 
-        for i in eachindex(coords[1])
-            initAngle = rhumb_bearing(pivot.coordinates, coords[1][i])
-            finalAngle = initAngle + angle
-            dist = rhumb_distance(pivot.coordinates, coords[1][i])
-            newCoords = rhumb_destination(pivot.coordinates, dist, finalAngle).coordinates
-            coords[1][i][1] = newCoords[1]
-            coords[1][i][2] = newCoords[2]
+        for i in eachindex(coords)
+            for j in eachindex(coords[i])
+                initAngle = rhumb_bearing(pivot.coordinates, coords[i][j])
+                finalAngle = initAngle + angle
+                dist = rhumb_distance(pivot.coordinates, coords[i][j])
+                newCoords = rhumb_destination(pivot.coordinates, dist, finalAngle).coordinates
+                coords[i][j][1] = newCoords[1]
+                coords[i][j][2] = newCoords[2]
+            end
         end
     elseif type === :LineString
 
@@ -112,11 +114,13 @@ function transform_translate(geojson::T, distance::R, direction::R, vertical::R=
         (vertical != 0 && length(coords) === 3) && (coords[3] += vertical)
 
     elseif type === :Polygon || type === :MultiLineString
-        for i in eachindex(coords[1])
-            newCoords = rhumb_destination(coords[1][i], distance, direction, units).coordinates
-            coords[1][i][1] = newCoords[1]
-            coords[1][i][2] = newCoords[2]
-            (vertical != 0 && length(coords[1][i]) === 3) && (coords[1][i][3] += vertical)
+        for i in eachindex(coords)
+            for j in eachindex(coords[i])
+                newCoords = rhumb_destination(coords[i][j], distance, direction, units).coordinates
+                coords[i][j][1] = newCoords[1]
+                coords[i][j][2] = newCoords[2]
+                (vertical != 0 && length(coords[i][j]) === 3) && (coords[i][j][3] += vertical)
+            end
         end
     elseif type === :LineString
         for i in eachindex(coords)
@@ -210,18 +214,20 @@ function scale(feature::Feature, factor::Real, origin::String="centroid")
         end
     elseif type === :Polygon || type === :MultiLineString
 
-        for i in eachindex(coords[1])
-            start = rhumb_distance(center.coordinates, coords[1][i])
-            bearing = rhumb_bearing(center.coordinates, coords[1][i])
-            distance = start * factor
+        for i in eachindex(coords)
+            for j in eachindex(coords[i])
+                start = rhumb_distance(center.coordinates, coords[i][j])
+                bearing = rhumb_bearing(center.coordinates, coords[i][j])
+                distance = start * factor
 
-            newCoords = rhumb_destination(center.coordinates, distance, bearing).coordinates
+                newCoords = rhumb_destination(center.coordinates, distance, bearing).coordinates
 
-            coords[1][i][1] = newCoords[1]
-            coords[1][i][2] = newCoords[2]
+                coords[i][j][1] = newCoords[1]
+                coords[i][j][2] = newCoords[2]
 
-            if length(coords) === 3
-                coords[1][i][3] *= factor
+                if length(coords) === 3
+                    coords[i][j][3] *= factor
+                end
             end
         end
     end
@@ -295,8 +301,10 @@ function explode(geojson::T, pointsOnly::Bool=false) where {T <: Union{AbstractF
 
             elseif geotype(geom) === :Polygon || geotype(geom) === :MultiLineString
 
-                for i in eachindex(geom.coordinates[1])
-                    push!(points, Point(geom.coordinates[1][i]))
+                for i in eachindex(geom.coordinates)
+                    for j in eachindex(geom.coordinates[i])
+                        push!(points, Point(geom.coordinates[i][j]))
+                    end
                 end
             elseif geotype(geom) === :LineString
 
@@ -312,8 +320,10 @@ function explode(geojson::T, pointsOnly::Bool=false) where {T <: Union{AbstractF
 
         elseif geotype(geojson) === :Polygon || geotype(geojson) === :MultiLineString
 
-            for i in eachindex(geojson.coordinates[1])
-                push!(points, Point(geojson.coordinates[1][i]))
+            for i in eachindex(geojson.coordinates)
+                for j in eachindex(geojson.coordinates[i])
+                    push!(points, Point(geojson.coordinates[i][j]))
+                end
             end
         elseif geotype(geojson) === :LineString
 
