@@ -1,6 +1,6 @@
 # Simplify a Geometry
 
-This example shows how to simplify any geometry. Adjust the `tolerance` parameter to tune how much simpler the image should be.
+This example shows how to simplify any geometry. Adjust the `tolerance` parameter to tune how much simpler the shape should be.
 
 ```
 
