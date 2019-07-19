@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Points inside a Polygon · Turf.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Turf.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><span class="toctext">Home</span><ul><li><a class="toctext" href="../">Turf.jl</a></li></ul></li><li><span class="toctext">Manual</span><ul><li><a class="toctext" href="../getting-started/">Getting Started</a></li><li><a class="toctext" href="../examples/">Examples</a></li><li class="current"><a class="toctext" href>Points inside a Polygon</a><ul class="internal"></ul></li><li><a class="toctext" href="../methods/">Methods</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li>Manual</li><li><a href>Points inside a Polygon</a></li></ul><a class="edit-page" href="https://github.com/philoez98/Turf.jl/blob/master/docs/src/points-inside-polygon.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Points inside a Polygon</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Points-inside-a-Polygon-1" href="#Points-inside-a-Polygon-1">Points inside a Polygon</a></h1><p>Example that shows how to find all points that are inside a specific shape (polygon) on the map.</p><pre><code class="language-none">
+using Turf
+
+geo_data = GeoJSON.parsefile(joinpath(dirname(pathof(Turf)), &quot;..&quot;, &quot;docs&quot;) * &quot;/examples/points-inside-polygon/points-inside-polygon.geojson&quot;)
+
+polygon = geo_data.features[1].geometry
+
+for i in 2:length(geo_data.features)
+    feature = geo_data.features[i]
+    point = feature.geometry
+
+    if within(point, polygon)
+        feature.properties = Dict(&quot;marker-color&quot; =&gt; &quot;#ff0000&quot;)
+    end
+end
+
+result = geojson(geo_data)
+
+open(joinpath(dirname(pathof(Turf)), &quot;..&quot;, &quot;docs&quot;) * &quot;/examples/points-inside-polygon/points-inside-polygon.result.geojson&quot;, &quot;w&quot;) do file
+    write(file, result)
+end
+</code></pre><p><img src="https://user-images.githubusercontent.com/40722053/61465345-2f862180-a978-11e9-9b52-9a2488ebc1c3.JPG" alt="inside"/></p><footer><hr/><a class="previous" href="../examples/"><span class="direction">Previous</span><span class="title">Examples</span></a><a class="next" href="../simplify/"><span class="direction">Next</span><span class="title">Simplify a Geometry</span></a></footer></article></body></html>
