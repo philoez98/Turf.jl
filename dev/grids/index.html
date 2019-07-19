@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Grids · Turf.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Turf.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><span class="toctext">Home</span><ul><li><a class="toctext" href="../">Turf.jl</a></li></ul></li><li><span class="toctext">Manual</span><ul><li><a class="toctext" href="../getting-started/">Getting Started</a></li><li><a class="toctext" href="../examples/">Examples</a></li><li class="current"><a class="toctext" href>Grids</a><ul class="internal"></ul></li><li><a class="toctext" href="../methods/">Methods</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li>Manual</li><li><a href>Grids</a></li></ul><a class="edit-page" href="https://github.com/philoez98/Turf.jl/blob/master/docs/src/grids.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Grids</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Grids-1" href="#Grids-1">Grids</a></h1><p>This example showcases different types of grids on a map, delimited by a bbox (bounding box).</p><pre><code class="language-none">using Turf
+
+box = [-95, 30 ,-85, 40]
+cellside = 60
+
+pg = point_grid(box, cellside) # a grid of points
+rg = rectangle_grid(box, cellside, cellside / 2) # a grid of rectangles
+tg = triangle_grid(box, cellside) # a grid of triangles
+sg = square_grid(box, cellside) # a grid of squares
+
+fc = [pg, rg, tg, sg]
+
+for (i, fcoll) in enumerate(fc)
+    open(joinpath(dirname(pathof(Turf)), &quot;..&quot;, &quot;docs&quot;) * &quot;/examples/grids/grid$(i).result.geojson&quot;, &quot;w&quot;) do file
+        write(file, geojson(fcoll))
+    end
+end
+</code></pre><p><img src="https://user-images.githubusercontent.com/40722053/61557883-bbc24280-aa65-11e9-9ae8-0db256a53828.JPG" alt="points"/>     </p><p><img src="https://user-images.githubusercontent.com/40722053/61557889-c4b31400-aa65-11e9-9541-1ecbbc7a024e.JPG" alt="rect"/></p><p><img src="https://user-images.githubusercontent.com/40722053/61557902-d1376c80-aa65-11e9-9096-ee52df7254c4.JPG" alt="square"/>     </p><p><img src="https://user-images.githubusercontent.com/40722053/61557911-d85e7a80-aa65-11e9-9148-7e207906928a.JPG" alt="tri"/></p><footer><hr/><a class="previous" href="../nearest-point/"><span class="direction">Previous</span><span class="title">Nearest Point</span></a><a class="next" href="../methods/"><span class="direction">Next</span><span class="title">Methods</span></a></footer></article></body></html>

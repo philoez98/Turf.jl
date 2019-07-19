@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Nearest Point · Turf.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Turf.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><span class="toctext">Home</span><ul><li><a class="toctext" href="../">Turf.jl</a></li></ul></li><li><span class="toctext">Manual</span><ul><li><a class="toctext" href="../getting-started/">Getting Started</a></li><li><a class="toctext" href="../examples/">Examples</a></li><li class="current"><a class="toctext" href>Nearest Point</a><ul class="internal"></ul></li><li><a class="toctext" href="../methods/">Methods</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li>Manual</li><li><a href>Nearest Point</a></li></ul><a class="edit-page" href="https://github.com/philoez98/Turf.jl/blob/master/docs/src/nearest-point.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Nearest Point</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Nearest-Point-1" href="#Nearest-Point-1">Nearest Point</a></h1><p>This example shows how to find the nearest point to a specific location on the map. The destination is shown in red.</p><pre><code class="language-none">using Turf
+
+fc = GeoJSON.parsefile(joinpath(dirname(pathof(Turf)), &quot;..&quot;, &quot;docs&quot;) * &quot;/examples/nearest-point/points.geojson&quot;)
+
+function get_point_with_property(features, prop)
+    point = nothing
+    for (i, feature) in enumerate(features)
+        if haskey(feature.properties, prop)
+            point = features[i]
+            deleteat!(features, i)
+        end
+    end
+    return point
+end
+
+destination = get_point_with_property(fc.features, &quot;tag&quot;)
+
+nearest = nearestpoint(destination.geometry, [x.geometry for x in fc.features])
+
+index = findfirst(x -&gt; x.geometry.coordinates == nearest.coordinates, fc.features)
+
+fc.features[index].properties = Dict(&quot;marker-color&quot; =&gt; &quot;#fbb000&quot;, &quot;tag&quot; =&gt; &quot;nearest-point&quot;) # yellow marker
+push!(fc.features, destination)
+
+result = geojson(fc)
+
+open(joinpath(dirname(pathof(Turf)), &quot;..&quot;, &quot;docs&quot;) * &quot;/examples/nearest-point/points.result.geojson&quot;, &quot;w&quot;) do file
+    write(file, result)
+end
+</code></pre><p><img src="https://user-images.githubusercontent.com/40722053/61554099-75b4b100-aa5c-11e9-909f-57f9d8f82969.JPG" alt="near"/></p><footer><hr/><a class="previous" href="../simplify/"><span class="direction">Previous</span><span class="title">Simplify a Geometry</span></a><a class="next" href="../grids/"><span class="direction">Next</span><span class="title">Grids</span></a></footer></article></body></html>
