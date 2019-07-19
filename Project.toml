@@ -1,7 +1,7 @@
 name = "Turf"
 uuid = "e89237b0-9201-11e9-31b0-6361926203f7"
 authors = ["Filippo Nori <nori.filippo@gmail.com>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 GeoInterface = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
