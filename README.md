@@ -2,7 +2,7 @@
 
 | **Documentation** | **Build Status** |
 |:---:|:---:|
-| [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://philoez98.github.io/Turf.jl/latest) | [![Linux/MacOS](https://travis-ci.org/philoez98/Turf.jl.svg?branch=master)](https://travis-ci.org/philoez98/Turf.jl)  [![Windows](https://ci.appveyor.com/api/projects/status/deghewsv2gra487s?svg=true)](https://ci.appveyor.com/project/philoez98/turf-jl)  [![Coverage Status](https://coveralls.io/repos/github/philoez98/Turf.jl/badge.svg?branch=master)](https://coveralls.io/github/philoez98/Turf.jl?branch=master) |
+| [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://philoez98.github.io/Turf.jl/stable) | [![Linux/MacOS](https://travis-ci.org/philoez98/Turf.jl.svg?branch=master)](https://travis-ci.org/philoez98/Turf.jl)  [![Windows](https://ci.appveyor.com/api/projects/status/deghewsv2gra487s?svg=true)](https://ci.appveyor.com/project/philoez98/turf-jl)  [![Coverage Status](https://coveralls.io/repos/github/philoez98/Turf.jl/badge.svg?branch=master)](https://coveralls.io/github/philoez98/Turf.jl?branch=master) |
 
 
 A spatial analysis library written in Julia, ported from the great [*Turf.js*](https://github.com/Turfjs/turf).
@@ -128,7 +128,7 @@ For more examples, please take a look at the [Examples](https://philoez98.github
 
 ## Documentation
 
-- [**STABLE**](https://philoez98.github.io/Turf.jl/latest): most recent tagged version.
+- [**STABLE**](https://philoez98.github.io/Turf.jl/stable): most recent tagged version.
 - [**DEVEL**](https://philoez98.github.io/Turf.jl/latest): development version.
 
 
