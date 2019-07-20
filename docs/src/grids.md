@@ -1,5 +1,4 @@
-# Grids
-
+# Different Grids
 This example showcases different types of grids on a map, delimited by a bbox (bounding box).
 
 ```
