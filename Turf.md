@@ -21,7 +21,7 @@ This document tracks the currently implemented features of the Turf.js library.
 - [x] turf-midpoint
 - [ ] turf-point-on-feature
 - [x] turf-polygon-tangents
-- [ ] turf-point-to-line-distance
+- [x] turf-point-to-line-distance
 - [x] turf-rhumb-bearing
 - [x] turf-rhumb-destination
 - [x] turf-rhumb-distance
@@ -29,7 +29,7 @@ This document tracks the currently implemented features of the Turf.js library.
 - [ ] turf-great-circle
 
 ## Coordinate Mutation
-- [ ] turf-clean-coords
+- [x] turf-clean-coords
 - [x] turf-flip
 - [ ] turf-rewind
 - [ ] turf-truncate
@@ -48,7 +48,7 @@ This document tracks the currently implemented features of the Turf.js library.
 - [ ] turf-dissolve
 - [ ] turf-intersect
 - [ ] turf-line-offset
-- [ ] turf-simplify
+- [x] turf-simplify
 - [ ] turf-tesselate
 - [x] turf-transform-rotate
 - [x] turf-transform-translate
@@ -68,7 +68,7 @@ This document tracks the currently implemented features of the Turf.js library.
 - [ ] turf-kinks
 - [x] turf-line-arc
 - [ ] turf-line-chunk
-- [ ] turf-line-intersect
+- [x] turf-line-intersect
 - [ ] turf-line-overlap
 - [x] turf-line-segment
 - [x] turf-line-slice
@@ -129,7 +129,7 @@ The meta functions are not implemented because of the *GeoInterface.jl* module. 
 - [x] turf-boolean-disjoint
 - [x] turf-boolean-equal
 - [ ] turf-boolean-intersects
-- [ ] turf-boolean-overlap
+- [x] turf-boolean-overlap
 - [x] turf-boolean-parallel
 - [x] turf-boolean-point-in-polygon
 - [x] turf-boolean-point-on-line
