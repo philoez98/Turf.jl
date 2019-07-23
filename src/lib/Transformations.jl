@@ -421,24 +421,23 @@ function lineclip(points::Vector{P}, bbox::Vector{T}) where {T <: Real, P <: Abs
             if !(codeA | codeB)
                 push!(parts, a)
 
-                if codeB !== lastCode
+                if codeB != lastCode
                     push!(parts, b)
 
-                    if i < len - 1
+                    if i < len
                         push!(results, parts)
                         parts = []
                     end
-                elseif i === len - 1
+                elseif i === len
                     push!(parts, b)
                 end
-
                 break
             elseif (codeA & codeB)
                 break
 
             elseif codeA
                 a = intersection(a, b, codeB, bbox)
-                codeA = bitcode(b, bbox)
+                codeA = bitcode(a, bbox)
 
             else
                 b = intersection(a, b, codeB, bbox)
@@ -447,7 +446,7 @@ function lineclip(points::Vector{P}, bbox::Vector{T}) where {T <: Real, P <: Abs
         end
         codeA = lastCode
     end
-    length(part) > 0 && push!(results, parts)
+    length(parts) > 0 && push!(results, parts)
 
     return results
 end
@@ -489,22 +488,25 @@ end
 Intersect a segment against one of the 4 lines that make up the bbox
 """
 function intersection(a::Point, b::Point, edge, bbox::Vector{T}) where {T <: Real}
-    return edge & 8 ? [a[1] + (b[1] - a[1]) * (bbox[4] - a[1]) / (b[1] - a[1]), bbox[4]] : # top
-           edge & 4 ? [a[1] + (b[1] - a[1]) * (bbox[2] - a[2]) / (b[2] - a[2]), bbox[2]] : # bottom
-           edge & 2 ? [bbox[3], a[2] + (b[2] - a[2]) * (bbox[3] - a[1]) / (b[1] - a[1])] : # right
-           edge & 1 ? [bbox[1], a[2] + (b[2] - a[2]) * (bbox[1] - a[1]) / (b[1] - a[1])] : # left
+    ac = a.coordinates
+    bc = b.coordinates
+    return edge & 8 ? [ac[1] + (bc[1] - ac[1]) * (bbox[4] - ac[2]) / (bc[2] - ac[2]), bbox[4]] : # top
+           edge & 4 ? [ac[1] + (bc[1] - ac[1]) * (bbox[2] - ac[2]) / (bc[2] - ac[2]), bbox[2]] : # bottom
+           edge & 2 ? [bbox[3], ac[2] + (bc[2] - ac[2]) * (bbox[3] - ac[1]) / (bc[1] - ac[1])] : # right
+           edge & 1 ? [bbox[1], ac[2] + (bc[2] - ac[2]) * (bbox[1] - ac[1]) / (bc[1] - ac[1])] : # left
            nothing
 end
 
 
 @inline function bitcode(p::Point, bbox::Vector{T}) where {T <: Real}
     code = 0
+    c = p.coordinates
 
-    p[1] < bbox[1] && (code |= 1)
-    p[1] > bbox[3] && (code |= 2)
+    c[1] < bbox[1] && (code |= 1)
+    c[1] > bbox[3] && (code |= 2)
 
-    p[2] < bbox[2] && (code |= 4)
-    p[2] > bbox[4] && (code |= 8)
+    c[2] < bbox[2] && (code |= 4)
+    c[2] > bbox[4] && (code |= 8)
 
     return code
 end

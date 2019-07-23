@@ -152,3 +152,45 @@ function bbox_polygon(bbox::Vector{T})::Polygon where {T <: Real}
 
     return Polygon([[lowLeft, lowRight, topRight, topLeft, lowLeft]])
 end
+
+
+function clip_to_bbox(geom::AbstractGeometry, box::Vector{T}) where {T <: Real}
+    type = geotype(geom)
+    coords = geom.coordinates
+
+    if isequal(type, :LineString) || isequal(type, :MultiLineString)
+        lines = []
+
+        type === :Linestring && (coords = [geom.coordinates])
+        println(coords)
+        for line in coords
+            println(lineclip([Point(line)], box))
+            push!(lines, lineclip([Point(line)], box))
+        end
+
+        length(lines) === 1 && return LineString(lines[1])
+        return MultiLineString(lines)
+    elseif isequal(type, :Polygon)
+        return Polygon(polyclip(coords, box))
+    elseif isequal(type, :MultiPolygon)
+        return MultiPolygon(map(x -> return polyclip(x, box), coords))
+    else
+        throw(error("Unsupported Geometry."))
+    end
+end
+
+function polyclip(rings, box::Vector{T}) where {T <: Real}
+    out = []
+    for ring in rings
+        clipped = polygonclip([Point(x) for x in ring], box)
+
+        if length(clipped) > 0
+            if (clipped[1][1] !== clipped[end][1] || clipped[1][2] !== clipped[end][2])
+                push!(clipped, clipped[1])
+            end
+            length(clipped) >= 4 && push!(out, clipped)
+        end
+    end
+
+    return out
+end
