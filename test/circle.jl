@@ -308,4 +308,11 @@
 						[
 							11.343,
 							44.495]]]
+
+    p3 = Point([1, 2])
+	p4 = Point([3, 5])
+	p5 = Point([3, 6])
+	p6 = Point([4, 8])
+
+	#println(geojson(smallest_circle([p3, p4, p5, p6])))
 end

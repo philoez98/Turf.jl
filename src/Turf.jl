@@ -13,7 +13,7 @@ export radians_to_length, length_to_radians, length_to_degrees, convert_length, 
     linearc, sector, planepoint, to_WGS84, to_mercator, point_grid, rectangle_grid, hexgrid, polygon_tangents,
     area, contains, within, disjoint, line_intersects, polygon_to_line, transform_translate, valid, crosses, convert_to,
     combine, scale, square_grid, triangle_grid, tag, point_to_line_distance, simplify, simplify!, clean, clean!, overlap,
-    clip_to_bbox
+    clip_to_bbox, smallest_circle
 
 
 include("Constants.jl")
