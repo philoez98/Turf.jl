@@ -33,7 +33,7 @@ pkg> add Turf#master
 As an example, let's try to identify which points are within a certain polygon on the map and mark them with a different color.
 We can do this using Turf.
 
-```
+```julia
 # Turf already exports all symbols of GeoInterface.jl and GeoJSON.jl, so there's no need to import them
 using Turf
 
