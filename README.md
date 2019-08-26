@@ -7,7 +7,7 @@
 
 A spatial analysis library written in Julia, ported from the great [*Turf.js*](https://github.com/Turfjs/turf).
 
-Turf.jl uses [GeoInteface.jl](https://github.com/JuliaGeo/GeoInterface.jl) and [GeoJSON.jl](https://github.com/JuliaGeo/GeoJSON.jl) to create and handle all geographic data.
+Turf.jl uses [GeoInterface.jl](https://github.com/JuliaGeo/GeoInterface.jl) and [GeoJSON.jl](https://github.com/JuliaGeo/GeoJSON.jl) to create and handle all geographic data.
 
 
 ## Installation
