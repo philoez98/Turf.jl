@@ -1,3 +1,6 @@
+using Base.Iterators: flatten
+using Statistics: mean
+
 """
     centroid([geojson::T])::Point where {T <: AbstractGeometry}
 
@@ -17,7 +20,6 @@ function centroid(geojson::T)::Point where {T<:AbstractGeometry}
     x = 0.
     y = 0.
     len = 0.
-    # TODO: support MultiPolygon
 
     data = geojson.coordinates
     type = geotype(geojson)
@@ -38,6 +40,9 @@ function centroid(geojson::T)::Point where {T<:AbstractGeometry}
             y += data[1][i][2]
             len += 1
         end
+    elseif type === :MultiPolygon
+        (x, y) = data |> flatten |> flatten |> mean
+        len = 1
     end
 
     return Point([x / len, y / len])
