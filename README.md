@@ -1,5 +1,7 @@
 # Turf.jl
 
+# NOTE: This project is no longer maintaned.
+
 | **Documentation** | **Build Status** |
 |:---:|:---:|
 | [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://philoez98.github.io/Turf.jl/stable) | [![Linux/MacOS](https://travis-ci.org/philoez98/Turf.jl.svg?branch=master)](https://travis-ci.org/philoez98/Turf.jl)  [![Windows](https://ci.appveyor.com/api/projects/status/deghewsv2gra487s?svg=true)](https://ci.appveyor.com/project/philoez98/turf-jl)  [![Coverage Status](https://coveralls.io/repos/github/philoez98/Turf.jl/badge.svg?branch=master)](https://coveralls.io/github/philoez98/Turf.jl?branch=master)  [![codecov](https://codecov.io/gh/philoez98/Turf.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/philoez98/Turf.jl) |
