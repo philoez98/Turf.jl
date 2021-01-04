@@ -1,6 +1,6 @@
 # Turf.jl
 
-# NOTE: This project is no longer maintaned.
+# NOTE: This project is no longer maintained.
 
 | **Documentation** | **Build Status** |
 |:---:|:---:|
