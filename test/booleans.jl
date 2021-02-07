@@ -77,12 +77,11 @@
 	poly5 = Polygon( [[[1, 1], [1, 20], [1, 3], [1, 4], [1, 1]]])
 	line7 = LineString([[1, 2], [1, 3], [1, 3.5]])
 
-    # # These tests fail. sue me
-	# @test contains(poly3, poly4) == true
-	# @test contains(poly3, line5) == true
-	# @test contains(line6, Point([1, 2])) == true
-	# @test contains(poly3, poly5) == false
-	# @test contains(poly3 , line7) == false
+	@test contains(poly3, poly4) == true
+	@test contains(poly3, line5) == true
+	@test contains(line6, Point([1, 2])) == true
+	@test contains(poly3, poly5) == false
+	@test contains(poly3 , line7) == false
 
 	@test within(poly4, poly3) == true
 	@test within(line5, poly3) == true
