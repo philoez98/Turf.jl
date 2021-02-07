@@ -9,5 +9,5 @@ makedocs(sitename="Turf.jl", doctest = false, pages=["Home" => ["index.md"],
         prettyurls = get(ENV, "CI", nothing) == "true"))
 
 deploydocs(
-    repo = "github.com/philoez98/Turf.jl.git",
+    repo = "github.com/bovine3dom/Turf.jl.git",
 )
