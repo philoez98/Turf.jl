@@ -1,6 +1,6 @@
 # Turf.jl
 
-# NOTE: This project is no longer maintained.
+This project is lightly maintained by @bovine3dom.
 
 | **Documentation** | **Build Status** |
 |:---:|:---:|
