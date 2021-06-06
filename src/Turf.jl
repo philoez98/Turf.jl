@@ -1,5 +1,7 @@
 module Turf
 
+import Base: contains
+
 using Reexport
 @reexport using GeoInterface
 @reexport using GeoJSON
