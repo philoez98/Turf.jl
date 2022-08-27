@@ -133,14 +133,17 @@ julia> line = LineString([[1, 2], [4, 6], [8, 9.5], [12, 13.4]])
 LineString(Array{Float64,1}[[1.0, 2.0], [4.0, 6.0], [8.0, 9.5], [12.0, 13.4]])
 
 julia> masscenter(line)
-Point([6.25, 7.725])
+Point([5.211382113821138, 6.645528455284552])
 ```
 """
 function masscenter(geojson::T) where {T <: AbstractGeometry}
     type = geotype(geojson)
 
-
     type === :Point && return Point(geojson.coordinates)
+    if type === :LineString # Convert LineString object to a Polygon
+        geojson = Polygon(geojson)
+        type = geotype(geojson)
+    end
     if type === :Polygon
         coords = deepcopy(geojson.coordinates)
 
@@ -156,6 +159,10 @@ function masscenter(geojson::T) where {T <: AbstractGeometry}
             coords[1][i][2] = coords[1][i][2] - trans[2]
         end
 
+        # Make coords wrap around so that we can easily iterate through the loop
+        if coords[1][1] != coords[1][end]
+            push!(coords[1], coords[1][1])
+        end
 
         for i in 1:length(coords[1]) - 1
             pi = coords[1][i]
